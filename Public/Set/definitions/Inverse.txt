@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Inverse id="aInv">
+    <requiredURIs>
+        <dictionary>Set/dictionaries/ElementsAndEquality</dictionary>
+        <definition id="BinOp">Set/definitions/BinaryOperation</definition>
+        <definition id="Identity">Set/definitions/Identity</definition>
+    </requiredURIs>
+    <statements>
+        <Set id="X"/>
+        <BinOp id="op">
+            <on>X</on>
+        </BinOp>
+        <Element id="e">
+            <of>X</of>
+        </Element>
+        <Identity id="identity">
+            <this>e</this>
+            <under>op</under>
+        </Identity>
+        <Element id="of">
+            <of>X</of>
+        </Element>
+        <Element id="this">
+            <of>X</of>
+        </Element>
+    </statements>
+    <viewings>
+        <GraphViewer><pts><X x="250" y="250" r="8"/><op x="196" y="171" r="8"/><e x="162" y="211" r="8"/><identity x="125" y="150" r="8"/><of x="250" y="150" r="8"/><this x="375" y="150" r="8"/><aInv x="250" y="50" r="8"/></pts></GraphViewer>
+    </viewings>
+</Inverse>

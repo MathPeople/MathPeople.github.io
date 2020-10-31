@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>SCRML</title>
+    </head>
+    <body>
+        <p>I am creating a markup language to handle advanced mathematical statements. The goal is to allow for creating new definitions, stating theorems, and proving them in a way natural to mathematicians. This is embodied in a system of <a href="https://en.wikipedia.org/wiki/Directed_acyclic_graph">graphs</a>. I have been working on a pdf document to define the mathematical content of the language, it can be found <a href="media/graphs.pdf" download="">here</a>. The intended goal is to implement this abstract material into a markup language which I call Self Contained Rigor Markup Language (SCRML). That is where this website comes in.</p>
+        <p>The project is very much still in development but <a href="Books/fromPaper.txt">here</a> is the SCRML file (in XML) which makes some mathematical statements. The home page of this website is where this document is compiled and displayed. I am still learning about the best way to organize and distribute code. All of the code in this project is just contained in this website. Some examples of javascript files are the <a href="scripts/Graph.js">compiler</a>, <a href="scripts/TypedGraph.js">compiler extension</a>, <a href="scripts/Claims.js">further compiler extension</a>, and a <a href="scripts/gui.js">tool</a> for organizing DOM manipulations and creating GUI pieces.</p>
+    </body>
+</html>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ref>
+    <requiredURIs>
+        <definition id="Set">Set/definitions/Set</definition>
+        <definition id="Element">Set/definitions/SetElement</definition>
+        <definition id="Equals">Set/definitions/EqualityOfSetElements</definition>
+    </requiredURIs>
+    <statements>
+        <Set id = "X"/>
+        <Element id = "a">
+            <of>X</of>
+        </Element>
+        <Equals id = "aEa" freebie="">
+            <first>a</first>
+            <second>a</second>
+        </Equals>
+    </statements>
+</ref>

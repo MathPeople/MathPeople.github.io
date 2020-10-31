@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SetElement id="x">
+    <requiredURIs>
+        <definition id="Set">Set/definitions/Set</definition>
+    </requiredURIs>
+    <statements>
+        <Set id="of"/>
+    </statements>
+    <viewings>
+        <GraphViewer><pts><of x="250" y="175" r="8"/><x x="250" y="75" r="8"/></pts></GraphViewer>
+    </viewings>
+</SetElement>

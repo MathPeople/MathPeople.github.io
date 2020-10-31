@@ -1,0 +1,17 @@
+https://math.stackexchange.com/questions/2147720/relationship-between-cauchys-integral-formula-and-poisson-kernel?rq=1
+
+interesting derivation of the Poisson kernel
+
+
+
+Construct an analytic function on the disc which does not extend analytically beyond any boundary point. Can you do so in such a way that the function is continuous on the closed unit disc? Bonus: Can you find such a function which is smooth on the boundary? 
+Solution: Use Poisson kernel to construct a harmonic function with this property and then add its harmonic conjugate. Any continuous but not differentiable function will work for the first part, so |Re z|. I don't know about the bonus.
+
+
+
+bergman metric version of schwarz lemma
+
+Let P be a discrete subset of C (each point of P is isolated). Prove that any nonconstant holomorphic function f:C\P->C must have some z for which f(z) is real.
+Give a function from D to C which is holomorphic and surjective. Can such a function be conformal? same question but from D to C\P.
+
+Let f:D\to C with f(0)=0. Is it possible to have the bound |Im(f(z))|\leq1 for all z but to have some a for which |Re(f(a))|>1?

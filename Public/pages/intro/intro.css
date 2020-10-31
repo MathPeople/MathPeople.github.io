@@ -1,0 +1,133 @@
+.section {
+    border-style: inset;
+    border-width: 5px;
+    border-color: rgb(190, 160, 40);
+    margin: 9px;
+}
+
+.section > summary {
+    font-size: 1.5em;
+    font-weight: bolder;
+    color: yellow;
+    background-color: rgb(60, 100, 0);
+    padding: 5px;
+    border-style: inset;
+    border-width: 3px;
+    border-color: rgb(190, 160, 40);
+}
+
+.section > :not(summary) {
+    padding: 1em;
+}
+
+span.defName {
+    color: red;
+}
+
+.dropList {
+    display: inline-block;
+    max-width: 80%;
+}
+
+.dropList > details {
+    background: rgb(255, 245, 220);
+    position: relative;
+    left: 20px;
+    border-style: solid;
+    border-width: 1px;
+    padding: 5px;
+}
+
+.xmlFile {
+    background: rgb(220, 210, 255);
+    border-style: outset;
+    border-color: olivedrab;
+}
+
+.xmlFile p {
+    position: relative;
+    left: 1.6em;
+    margin: 0;
+}
+
+details.xmlFile[open] summary {
+    margin-bottom: 1em;
+}
+
+p {
+    text-indent: .3em;
+}
+
+[math]{
+    color: rgb(45, 0, 80);
+    background: papayawhip;
+    border-color: olivedrab;
+    border-style: outset;
+    display: inline-block;
+    text-indent: 0;
+    padding: .3em;
+    font-family: Brush Script MT, cursive;
+    color: rgb(40, 0, 60);
+}
+
+th, td {
+    border: 1px solid black;
+    padding: .4em;
+}
+
+tr.proving {
+    background: rgb(230, 240, 255);
+}
+
+details.problems {
+    border-style: solid;
+    border-width: 2px;
+    border-color: green;
+    margin: 9px;
+    background-color: azure;
+}
+
+details.problems[unfinished] {
+    border-color: red;
+}
+
+details.problems[unfinished="partial"] {
+    border-color: yellow;
+}
+
+details.theorems {
+    border-style: solid;
+    border-width: 3px;
+    border-color: blue;
+    margin: 9px;
+    background-color: rgb(255, 255, 180);
+}
+
+textarea.texInput {
+    width: 90%;
+    height: 6em;
+    margin: 1em;
+}
+
+#texLiveOut {
+    border: 3px outset skyblue;
+    margin: 2em;
+    background-color: rgb(230,230,255);
+}
+
+#texLiveOut p {
+    display: inline-block;
+    margin .6em;
+    padding: .1em;
+    background-color: rgb(230,230,230);
+    border: 3px outset skyblue;
+}
+
+#texOut {
+    border: 1px dotted black;
+    background-color: palegoldenrod;
+}
+
+.allBlock > *:not(summary) {
+    display: block;
+}

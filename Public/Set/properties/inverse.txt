@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inverse>
+    <requiredURIs>
+        <dictionary>Set/dictionaries/ElementsAndEquality</dictionary>
+        <definition id="BinOp">Set/definitions/BinaryOperation</definition>
+        <definition id="Applied">Set/definitions/AppliedBinaryOperation</definition>
+        <definition id="Identity">Set/definitions/Identity</definition>
+        <definition id="Inverse">Set/definitions/Inverse</definition>
+    </requiredURIs>
+    <statements>
+        <Set id = "X"/>
+        <BinOp id = "op">
+            <on>X</on>
+        </BinOp>
+        <Element id = "e">
+            <of>X</of>
+        </Element>
+        <Identity id = "id">
+            <this>e</this>
+            <under>op</under>
+        </Identity>
+        <Element id = "a">
+            <of>X</of>
+        </Element>
+        <Element id = "aI">
+            <of>X</of>
+        </Element>
+        <Inverse id = "aInv" definingProperty="">
+            <this>aI</this>
+            <of>a</of>
+            <identity>id</identity>
+        </Inverse>
+        <Element id = "aaI">
+            <of>X</of>
+        </Element>
+        <Applied id = "aaIA">
+            <this>aaI</this>
+            <first>a</first>
+            <second>aI</second>
+            <operation>op</operation>
+        </Applied>
+        <Element id = "aIa">
+            <of>X</of>
+        </Element>
+        <Applied id = "aIaA">
+            <this>aIa</this>
+            <first>aI</first>
+            <second>a</second>
+            <operation>op</operation>
+        </Applied>
+        <Equals id = "aaIEe" freebie="">
+            <first>aaI</first>
+            <second>e</second>
+        </Equals>
+        <Equals id = "eEaaI" freebie="">
+            <first>e</first>
+            <second>aaI</second>
+        </Equals>
+        <Equals id = "aIaEe" freebie="">
+            <first>aIa</first>
+            <second>e</second>
+        </Equals>
+        <Equals id = "eEaIa" freebie="">
+            <first>e</first>
+            <second>aIa</second>
+        </Equals>
+    </statements>
+    <viewings><GraphViewer><pts><X x="254" y="245"/><op x="106" y="281"/><e x="431" y="223"/><id x="420" y="276"/><a x="217" y="195"/><aI x="171" y="194"/><aInv x="225" y="111"/><aaI x="291" y="192"/><aaIA x="94" y="117"/><aIa x="368" y="196"/><aIaA x="153" y="109"/><aaIEe x="293" y="88"/><eEaaI x="337" y="83"/><aIaEe x="385" y="83"/><eEaIa x="441" y="78"/><inverse x="252" y="22"/></pts></GraphViewer></viewings>
+</inverse>

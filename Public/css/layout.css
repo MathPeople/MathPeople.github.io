@@ -1,0 +1,53 @@
+/* Layout for desktop version */
+
+body { background:#aaa;}
+.row { background:#fff; }
+
+#header .logo { display:block; font-size:2em; line-height:2em; margin: 0 2em; border:0; }
+#header p {text-align:right; margin: 15px;}
+#header p a { margin:10px; }
+
+#nav { background:#555; font-size:1em; }
+#nav ul { list-style:none; margin:0 0 0 1em; }
+#nav li { float:left; margin:5px 2em; }
+#nav a { color:#eee; border:none; }
+
+#content .breadcrumbs ul { list-style:none; margin:0; font-size:.9em; }
+#content .breadcrumbs li { float:left; margin-right:.5em; }
+#content .breadcrumbs li:before { content:"> "; }
+#content .breadcrumbs li:first-child:before { content:""; }
+
+h1, h2, h3 { clear:left; }
+.article { margin: 10px 0; padding:0 20px; border-right:1px solid #ddd; }
+.article ul, .article ol { margin-left:20px; }
+
+#aside h3 {margin:10px;}
+#aside ul {list-style:none; padding:10px;}
+
+#footer { background:#ddd; }
+#footer h3 {margin:10px;}
+#footer ul { padding:10px; margin:0; list-style: none; }
+
+/* Layout for mobile version */
+
+@media handheld, only screen and (max-width: 767px) {
+
+#header .logo { margin:0; }
+#nav li { margin:5px 1em; }
+.article {border:none;}
+#aside {border-top:1px solid #ddd;}
+}
+
+
+/* Provide higher res assets for iPhone 4 */
+
+@media only screen and (-webkit-min-device-pixel-ratio: 2) { 
+
+/* An example of how to override an image with one twice the size for iPhone 4. Specify the original pixel size with background-size.
+.download {
+background: url(../img/downarrow@2x.png) no-repeat;
+background-size: 27px 28px;
+}
+*/
+
+}

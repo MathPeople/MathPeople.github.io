@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BinaryOperationDictionary>
+    <requiredURIs>
+        <extendsDictionary>Set/dictionaries/ElementsAndEquality</extendsDictionary>
+        <definition id="BinOp">Set/definitions/BinaryOperation</definition>
+        <definition id="Applied">Set/definitions/AppliedBinaryOperation</definition>
+        <definition id="Associative">Set/definitions/AssociativeBinaryOperation</definition>
+        <definition id="Identity">Set/definitions/Identity</definition>
+        <definition id="Inverse">Set/definitions/Inverse</definition>
+        <definingProperty id="AssociativeProp" propertyDefines="Associative">Set/properties/associative</definingProperty>
+        <lemma id="BinOpWellDefined">Set/properties/binaryOperation</lemma>
+        <definingProperty id="IdentityProp" propertyDefines="Identity">Set/properties/identity</definingProperty>
+        <definingProperty id="InverseProp" propertyDefines="Inverse">Set/properties/inverse</definingProperty>
+    </requiredURIs>
+</BinaryOperationDictionary>

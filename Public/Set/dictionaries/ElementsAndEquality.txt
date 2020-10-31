@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ElementsAndEqualityDictionary>
+    <requiredURIs>
+        <definition id="Set">Set/definitions/Set</definition>
+        <definition id="Element">Set/definitions/SetElement</definition>
+        <definition id="Equals">Set/definitions/EqualityOfSetElements</definition>
+        <lemma id="ref">Set/properties/EqualityReflexive</lemma>
+        <lemma id="sym">Set/properties/EqualitySymmetric</lemma>
+        <lemma id="trans">Set/properties/EqualityTransitive</lemma>
+    </requiredURIs>
+</ElementsAndEqualityDictionary>

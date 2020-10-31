@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<BinaryOperation id="op">
+    <requiredURIs>
+        <dictionary>Set/dictionaries/ElementsAndEquality</dictionary>
+    </requiredURIs>
+    <statements>
+        <Set id="on"/>
+    </statements>
+    <viewings>
+        <GraphViewer><pts><on x="250" y="175" r="8"/><op x="250" y="75" r="8"/></pts></GraphViewer>
+    </viewings>
+</BinaryOperation>
