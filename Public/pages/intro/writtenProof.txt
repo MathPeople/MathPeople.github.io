@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<div class="dropList">
+    <details>
+        <summary>Sets and Elements</summary>
+        <p>We think of sets as being collections of things and we think of elements as the things in the collection. For example, let <math><mi>W</mi></math> be the set of weekdays. Then "Sunday" is an element of <math><mi>W</mi></math>, but "July" is not. We denote this as "Sunday"<math><mo>&#8712;</mo><mi>W</mi></math> while "July"<math><mo>&#8713;</mo><mi>W</mi></math>.</p>
+    </details>
+    <details>
+        <summary>Definition: Binary Operation</summary>
+        <p>A <span class="defName">binary operation</span> <math><mo>&#183;</mo></math> on a set <math><mi>X</mi></math> is a way of plugging in two elements of <math><mi>X</mi></math> and getting another element of <math><mi>X</mi></math>. Given any elements <math><mi>a</mi>,<mi>b</mi></math> in <math><mi>X</mi></math> there is a unique <math><mi>c</mi></math> in <math><mi>X</mi></math> such that <math><mi>a</mi><mo>&#183;</mo><mi>b</mi><mo>=</mo><mi>c</mi></math></p>
+        <p>For example, consider the set <math><mi mathvariant="double-struck">Z</mi></math> of integers. The operation of multiplication is a binary operation on <math><mi mathvariant="double-struck">Z</mi></math>. For an example of the uniqueness, take the product <math><mn>2</mn><mo>&#183;</mo><mn>3</mn></math>. We know that <math><mn>2</mn><mo>&#183;</mo><mn>3</mn><mo>=</mo><mn>6</mn></math>. Suppose now that we have an integer <math><mi>x</mi></math> and we assume that <math><mi>x</mi><mo>=</mo><mn>2</mn></math>. Then what is <math><mi>x</mi><mo>&#183;</mo><mn>3</mn></math>? It has to be <math><mn>6</mn></math>, the result shouldn't change just because we relabelled the inputs. That is what uniqueness means.</p>
+    </details>
+    <details>
+        <summary>Definition: Associative</summary>
+        <p>We say a binary operation <math><mo>&#183;</mo></math> on the set <math><mi>X</mi></math> is <span class="defName">associative</span> if for all <math><mi>a</mi>,<mi>b</mi>,<mi>c</mi></math> in <math><mi>X</mi></math> it is true that</p>
+        <math>
+            <mi>a</mi><mo>&#183;</mo><mfenced separators=""><mi>b</mi><mo>&#183;</mo><mi>c</mi></mfenced><mo>=</mo><mfenced separators=""><mi>a</mi><mo>&#183;</mo><mi>b</mi></mfenced><mo>&#183;</mo><mi>c</mi>
+        </math>
+        <p>For example, if our set is <math><mi mathvariant="double-struck">Z</mi></math>, the product <math><mn>2</mn><mo>&#183;</mo><mn>3</mn><mo>&#183;</mo><mn>5</mn></math> is <math><mn>30</mn></math> whether it is interpreted as <math><mfenced separators=""><mn>2</mn><mo>&#183;</mo><mn>3</mn></mfenced><mo>&#183;</mo><mn>5</mn></math> or <math><mn>2</mn><mo>&#183;</mo><mfenced separators=""><mn>3</mn><mo>&#183;</mo><mn>5</mn></mfenced></math>.</p>
+    </details>
+    <details>
+        <summary>Definition: Identity</summary>
+        <p>An element <math><mi>e</mi></math> of the set <math><mi>X</mi></math> is called an <span class="defName">identity under <math><mo>&#183;</mo></math></span> if, for all <math><mi>a</mi></math> in <math><mi>X</mi></math>, we have that</p>
+        <math><mi>e</mi><mo>&#183;</mo><mi>a</mi><mo>=</mo><mi>a</mi><mo>&#183;</mo><mi>e</mi><mo>=</mo><mi>a</mi></math>
+        <p>In our example, where <math><mi>X</mi><mo>=</mo><mi mathvariant="double-struck">Z</mi></math> and <math><mo>&#183;</mo></math> is multiplication, the identity is <math><mn>1</mn></math>.</p>
+    </details>
+    <details>
+        <summary>Definition: Inverse</summary>
+        <p>Suppose <math><mi>X</mi></math> is a set, <math><mo>&#183;</mo></math> is a binary operation on <math><mi>X</mi></math>, <math><mi>e</mi><mo>&#8712;</mo><mi>X</mi></math> is an identity under <math><mo>&#183;</mo></math>, and <math><mi>a</mi><mo>&#8712;</mo><mi>X</mi></math>. We call an element <math><mi>b</mi></math> of <math><mi>X</mi></math> to be an <span class="defName">inverse of <math><mi>a</mi></math> under <math><mo>&#183;</mo></math></span> if it is true that</p>
+        <math><mi>a</mi><mo>&#183;</mo><mi>b</mi><mo>=</mo><mi>b</mi><mo>&#183;</mo><mi>a</mi><mo>=</mo><mi>e</mi></math>
+        <p>Note that this is a definition, it is not a guarantee. Elements may not have inverses in general.</p>
+        <p>In our example of integers and multiplication, most nubmbers do not have inverses. If <math><mi>x</mi><mo>&#8712;</mo><mi mathvariant="double-struck">Z</mi></math> does not happen to be <math><mn>1</mn></math> or <math><mn>-1</mn></math> then there is no inverse for <math><mi>x</mi></math>. If <math><mi>x</mi></math> does happen to be <math><mn>1</mn></math> or <math><mn>-1</mn></math> then <math><mi>x</mi></math> is its own inverse. The inverse of <math><mn>2</mn></math> is <math><mfrac><mn>1</mn><mn>2</mn></mfrac></math>, but that is not an integer. If we restrict ourselves to <math><mi mathvariant="double-struck">Z</mi></math> (which we have done) then <math><mn>2</mn></math> has no inverse.</p>
+    </details>
+    <details>
+        <summary>Lemma: Inverse is Unique</summary>
+        <p>Suppose <math><mi>X</mi></math> is a set, <math><mo>&#183;</mo></math> is an associative binary operation on <math><mi>X</mi></math>, <math><mi>e</mi><mo>&#8712;</mo><mi>X</mi></math> is an identity under <math><mo>&#183;</mo></math>, and <math><mi>a</mi><mo>&#8712;</mo><mi>X</mi></math>. Assume that there are elements <math><mi>b</mi></math> and <math><mi>c</mi></math> of <math><mi>X</mi></math> which are both inverses of <math><mi>a</mi></math>. Then it must be that <math><mi>b</mi><mo>=</mo><mi>c</mi></math>.</p>
+        <p>Note that the result of this lemma, that <math><mi>b</mi><mo>=</mo><mi>c</mi></math>, is not immediate from the definition of inverse. The definition only says what <math><mi>b</mi></math> and <math><mi>c</mi></math> do under multiplication with <math><mi>a</mi></math>, it does not say anything about what <math><mi>b</mi></math> and <math><mi>c</mi></math> do with anything else. This lemma is not a trivial statement, we can come up with counterexamples if we drop one of the hypotheses. This lemma needs to be proven for us as mathematicians to be satisfied.</p>
+    </details>
+    <details>
+        <summary>Proof: Inverse is Unique</summary>
+        <p>Because <math><mi>b</mi></math> is an inverse of <math><mi>a</mi></math> under <math><mo>&#183;</mo></math>,</p>
+        <math><mi>a</mi><mo>&#183;</mo><mi>b</mi><mo>=</mo><mi>e</mi></math>
+        <p>Because <math><mi>c</mi></math> is an inverse of <math><mi>a</mi></math> under <math><mo>&#183;</mo></math>,</p>
+        <math><mi>a</mi><mo>&#183;</mo><mi>c</mi><mo>=</mo><mi>e</mi></math>
+        <p>Therefore</p>
+        <math><mi>a</mi><mo>&#183;</mo><mi>b</mi><mo>=</mo><mi>a</mi><mo>&#183;</mo><mi>c</mi></math>
+        <p>Multiply both sides of this equation on the left by <math><mi>b</mi></math>.</p>
+        <math><mi>b</mi><mo>&#183;</mo><mfenced separators=""><mi>a</mi><mo>&#183;</mo><mi>b</mi></mfenced><mo>=</mo><mi>b</mi><mo>&#183;</mo><mfenced separators=""><mi>a</mi><mo>&#183;</mo><mi>c</mi></mfenced></math>
+        <p>Reassociate both sides, using the fact that <math><mo>&#183;</mo></math> is associative, to get</p>
+        <math><mfenced separators=""><mi>b</mi><mo>&#183;</mo><mi>a</mi></mfenced><mo>&#183;</mo><mi>b</mi><mo>=</mo><mfenced separators=""><mi>b</mi><mo>&#183;</mo><mi>a</mi></mfenced><mo>&#183;</mo><mi>c</mi></math>
+        <p>Now use the fact that <math><mi>b</mi></math> is an inverse of <math><mi>a</mi></math>, meaning <math><mi>b</mi><mo>&#183;</mo><mi>a</mi><mo>=</mo><mi>e</mi></math>, to get</p>
+        <math><mi>e</mi><mo>&#183;</mo><mi>b</mi><mo>=</mo><mi>e</mi><mo>&#183;</mo><mi>c</mi></math>
+        <p>Because <math><mi>e</mi></math> is an identity, <math><mi>e</mi><mo>&#183;</mo><mi>b</mi><mo>=</mo><mi>b</mi></math> and <math><mi>e</mi><mo>&#183;</mo><mi>c</mi><mo>=</mo><mi>c</mi></math>. That is,</p>
+        <math><mi>b</mi><mo>=</mo><mi>c</mi></math>
+        <p>That is what we wanted to show, so we are done.</p>
+    </details>
+</div>

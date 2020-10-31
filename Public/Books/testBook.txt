@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<book>
+  <items>
+    <item title="Set" itemType="section"/>
+    <item title="Set" parent="0" itemType="phrase">
+      <contents>
+        <Set>
+          <requiredURIs/>
+          <statements/>
+        </Set>
+      </contents>
+    </item>
+    <item title="SetElement" parent="0" itemType="phrase">
+      <contents>
+        <SetElement>
+          <requiredURIs>
+            <definition id="Set">book/Set/Set</definition>
+          </requiredURIs>
+          <statements>
+            <Set id="of"/>
+          </statements>
+        </SetElement>
+      </contents>
+    </item>
+    <item title="EqualityOfSetElements" parent="0" itemType="phrase">
+      <contents>
+        <EqualityOfSetElements>
+          <requiredURIs>
+            <definition id="Set">book/Set/Set</definition>
+            <definition id="Element">book/Set/SetElement</definition>
+          </requiredURIs>
+          <statements>
+            <Set id="X"/>
+            <Element id="first">
+              <of>X</of>
+            </Element>
+            <Element id="second">
+              <of>X</of>
+            </Element>
+          </statements>
+        </EqualityOfSetElements>
+      </contents>
+    </item>
+    <item title="EqualityReflexive" parent="0" itemType="phrase">
+      <contents>
+        <EqualityReflexive>
+          <requiredURIs>
+            <definition id="Set">book/Set/Set</definition>
+            <definition id="Element">book/Set/SetElement</definition>
+            <definition id="Equality">book/Set/EqualityOfSetElements</definition>
+          </requiredURIs>
+          <statements>
+            <Set id="X"/>
+            <Element id="x">
+              <of>X</of>
+            </Element>
+            <Equality id="xEx" freebie="">
+              <first>x</first>
+              <second>x</second>
+            </Equality>
+          </statements>
+        </EqualityReflexive>
+      </contents>
+    </item>
+    <item title="EqualitySymmetric" parent="0" itemType="phrase">
+      <contents>
+        <EqualitySymmetric>
+          <requiredURIs>
+            <definition id="Set">book/Set/Set</definition>
+            <definition id="Element">book/Set/SetElement</definition>
+            <definition id="Equality">book/Set/EqualityOfSetElements</definition>
+          </requiredURIs>
+          <statements>
+            <Set id="X"/>
+            <Element id="a">
+              <of>X</of>
+            </Element>
+            <Element id="b">
+              <of>X</of>
+            </Element>
+            <Equality id="aEb">
+              <first>a</first>
+              <second>b</second>
+            </Equality>
+            <Equality id="bEa" freebie="">
+              <first>b</first>
+              <second>a</second>
+            </Equality>
+          </statements>
+        </EqualitySymmetric>
+      </contents>
+    </item>
+    <item title="EqualityTransitive" parent="0" itemType="phrase">
+      <contents>
+        <EqualityTransitive>
+          <requiredURIs>
+            <definition id="Set">book/Set/Set</definition>
+            <definition id="Element">book/Set/SetElement</definition>
+            <definition id="Equality">book/Set/EqualityOfSetElements</definition>
+          </requiredURIs>
+          <statements>
+            <Set id="X"/>
+            <Element id="a">
+              <of>X</of>
+            </Element>
+            <Element id="b">
+              <of>X</of>
+            </Element>
+            <Element id="c">
+              <of>X</of>
+            </Element>
+            <Equality id="aEb">
+              <first>a</first>
+              <second>b</second>
+            </Equality>
+            <Equality id="bEc">
+              <first>b</first>
+              <second>c</second>
+            </Equality>
+            <Equality id="aEc" freebie="">
+              <first>a</first>
+              <second>c</second>
+            </Equality>
+          </statements>
+        </EqualityTransitive>
+      </contents>
+    </item>
+    <item title="Function" itemType="section"/>
+    <item title="Function" parent="7" itemType="phrase">
+      <contents>
+        <Function>
+          <requiredURIs>
+            <definition id="Set">book/Set/Set</definition>
+          </requiredURIs>
+          <statements>
+            <Set id="domain"/>
+            <Set id="codomain"/>
+          </statements>
+        </Function>
+      </contents>
+    </item>
+    <item title="AppliedFunction" parent="7" itemType="phrase">
+      <contents>
+        <AppliedFunction>
+          <requiredURIs>
+            <definition id="Set">book/Set/Set</definition>
+            <definition id="SetElement">book/Set/SetElement</definition>
+            <definition id="Function">book/Function/Function</definition>
+          </requiredURIs>
+          <statements>
+            <Set id="domain"/>
+            <Set id="codomain"/>
+            <Function id="function">
+              <domain>domain</domain>
+              <codomain>codomain</codomain>
+            </Function>
+            <SetElement id="input">
+              <of>domain</of>
+            </SetElement>
+            <SetElement id="output">
+              <of>codomain</of>
+            </SetElement>
+          </statements>
+        </AppliedFunction>
+      </contents>
+    </item>
+    <item title="WellDefined" parent="7" itemType="phrase">
+      <contents>
+        <WellDefined>
+          <requiredURIs>
+            <definition id="Set">book/Set/Set</definition>
+            <definition id="Function">book/Function/Function</definition>
+            <definition id="Element">book/Set/SetElement</definition>
+            <definition id="Equality">book/Set/EqualityOfSetElements</definition>
+            <definition id="Applied">book/Function/AppliedFunction</definition>
+          </requiredURIs>
+          <statements>
+            <Set id="domain"/>
+            <Set id="codomain"/>
+            <Function id="f">
+              <domain>domain</domain>
+              <codomain>codomain</codomain>
+            </Function>
+            <Element id="a">
+              <of>domain</of>
+            </Element>
+            <Element id="b">
+              <of>domain</of>
+            </Element>
+            <Equality id="aEb">
+              <first>a</first>
+              <second>b</second>
+            </Equality>
+            <Element id="af">
+              <of>codomain</of>
+            </Element>
+            <Element id="bf">
+              <of>codomain</of>
+            </Element>
+            <Applied id="afA">
+              <function>f</function>
+              <input>a</input>
+              <output>af</output>
+            </Applied>
+            <Applied id="bfA">
+              <function>f</function>
+              <input>b</input>
+              <output>bf</output>
+            </Applied>
+            <Equality id="afEbf" freebie="">
+              <first>af</first>
+              <second>bf</second>
+            </Equality>
+          </statements>
+        </WellDefined>
+      </contents>
+    </item>
+    <item title="Composition" parent="7" itemType="phrase">
+      <contents>
+        <Composition>
+          <requiredURIs>
+            <definition id="Set">book/Set/Set</definition>
+            <definition id="Function">book/Function/Function</definition>
+          </requiredURIs>
+          <statements>
+            <Set id="A"/>
+            <Set id="B"/>
+            <Set id="C"/>
+            <Function id="f">
+              <domain>A</domain>
+              <codomain>B</codomain>
+            </Function>
+            <Function id="g">
+              <domain>B</domain>
+              <codomain>C</codomain>
+            </Function>
+            <Function id="fg" freebie="">
+              <domain>A</domain>
+              <codomain>C</codomain>
+            </Function>
+          </statements>
+        </Composition>
+      </contents>
+    </item>
+    <item title="CompositionProperty" parent="7" itemType="phrase">
+      <contents>
+        <CompositionProperty>
+          <requiredURIs>
+            <definition id="Set">book/Set/Set</definition>
+            <definition id="Element">book/Set/SetElement</definition>
+            <definition id="Equals">book/Set/EqualityOfSetElements</definition>
+            <definition id="Function">book/Function/Function</definition>
+            <definition id="Applied">book/Function/AppliedFunction</definition>
+            <definition id="Composition">book/Function/Composition</definition>
+          </requiredURIs>
+          <statements>
+            <Set id="A"/>
+            <Set id="B"/>
+            <Set id="C"/>
+            <Function id="f">
+              <domain>A</domain>
+              <codomain>B</codomain>
+            </Function>
+            <Function id="g">
+              <domain>B</domain>
+              <codomain>C</codomain>
+            </Function>
+            <Function id="fg">
+              <domain>A</domain>
+              <codomain>C</codomain>
+            </Function>
+            <Composition id="fgC">
+              <f>f</f>
+              <g>g</g>
+              <fg>fg</fg>
+            </Composition>
+            <Element id="a">
+              <of>A</of>
+            </Element>
+            <Element id="af">
+              <of>B</of>
+            </Element>
+            <Applied id="afA">
+              <function>f</function>
+              <input>a</input>
+              <output>af</output>
+            </Applied>
+            <Element id="afG">
+              <of>C</of>
+            </Element>
+            <Applied id="afGA">
+              <function>g</function>
+              <input>af</input>
+              <output>afG</output>
+            </Applied>
+            <Element id="aFG">
+              <of>C</of>
+            </Element>
+            <Applied id="aFGA">
+              <function>fg</function>
+              <input>a</input>
+              <output>aFG</output>
+            </Applied>
+            <Equals id="afGEaFG" freebie="">
+              <first>afG</first>
+              <second>aFG</second>
+            </Equals>
+          </statements>
+        </CompositionProperty>
+      </contents>
+    </item>
+    <item title="EqualityOfFunctions" parent="7" itemType="phrase">
+      <contents>
+        <EqualityOfFunctions>
+          <requiredURIs>
+            <definition id="Set">book/Set/Set</definition>
+            <definition id="Function">book/Function/Function</definition>
+          </requiredURIs>
+          <statements>
+            <Set id="A"/>
+            <Set id="B"/>
+            <Function id="first">
+              <domain>A</domain>
+              <codomain>B</codomain>
+            </Function>
+            <Function id="second">
+              <domain>A</domain>
+              <codomain>B</codomain>
+            </Function>
+          </statements>
+        </EqualityOfFunctions>
+      </contents>
+    </item>
+    <item title="EqualityExistence" parent="7" itemType="phrase">
+      <contents>
+        <EqualityExistence>
+          <requiredURIs>
+            <definition id="Set">book/Set/Set</definition>
+            <definition id="SetElement">book/Set/SetElement</definition>
+            <definition id="EqualityOfSetElements">book/Set/EqualityOfSetElements</definition>
+            <definition id="Function">book/Function/Function</definition>
+            <definition id="AppliedFunction">book/Function/AppliedFunction</definition>
+            <definition id="EqualityOfFunctions">book/Function/EqualityOfFunctions</definition>
+          </requiredURIs>
+          <statements>
+            <Set id="domain"/>
+            <Set id="codomain"/>
+            <Function id="f">
+              <domain>domain</domain>
+              <codomain>codomain</codomain>
+            </Function>
+            <Function id="g">
+              <domain>domain</domain>
+              <codomain>codomain</codomain>
+            </Function>
+            <EqualityOfFunctions id="fEg">
+              <first>f</first>
+              <second>g</second>
+            </EqualityOfFunctions>
+            <SetElement id="a">
+              <of>domain</of>
+            </SetElement>
+            <SetElement id="af">
+              <of>codomain</of>
+            </SetElement>
+            <SetElement id="ag" freebie="">
+              <of>codomain</of>
+            </SetElement>
+            <AppliedFunction id="afA">
+              <function>f</function>
+              <input>a</input>
+              <output>af</output>
+            </AppliedFunction>
+            <AppliedFunction id="agA" freebie="">
+              <function>g</function>
+              <input>a</input>
+              <output>ag</output>
+            </AppliedFunction>
+          </statements>
+        </EqualityExistence>
+      </contents>
+    </item>
+    <item title="EqualityProperty" parent="7" itemType="phrase">
+      <contents>
+        <EqualityProperty>
+          <requiredURIs>
+            <definition id="Set">book/Set/Set</definition>
+            <definition id="SetElement">book/Set/SetElement</definition>
+            <definition id="EqualityOfSetElements">book/Set/EqualityOfSetElements</definition>
+            <definition id="Function">book/Function/Function</definition>
+            <definition id="AppliedFunction">book/Function/AppliedFunction</definition>
+            <definition id="EqualityOfFunctions">book/Function/EqualityOfFunctions</definition>
+            <lemma id="EqualityExistence">book/Function/EqualityExistence</lemma>
+          </requiredURIs>
+          <statements>
+            <Set id="A"/>
+            <Set id="B"/>
+            <Function id="f">
+              <domain>A</domain>
+              <codomain>B</codomain>
+            </Function>
+            <Function id="g">
+              <domain>A</domain>
+              <codomain>B</codomain>
+            </Function>
+            <EqualityOfFunctions id="fEg" definingProperty="">
+              <first>f</first>
+              <second>g</second>
+            </EqualityOfFunctions>
+            <SetElement id="a">
+              <of>A</of>
+            </SetElement>
+            <SetElement id="af">
+              <of>B</of>
+            </SetElement>
+            <SetElement id="ag">
+              <of>B</of>
+            </SetElement>
+            <AppliedFunction id="afA">
+              <function>f</function>
+              <input>a</input>
+              <output>af</output>
+            </AppliedFunction>
+            <AppliedFunction id="agA">
+              <function>g</function>
+              <input>a</input>
+              <output>ag</output>
+            </AppliedFunction>
+            <EqualityOfSetElements id="afEag" freebie="">
+              <first>af</first>
+              <second>ag</second>
+            </EqualityOfSetElements>
+          </statements>
+        </EqualityProperty>
+      </contents>
+    </item>
+    <item title="EqualityReflexive" parent="7" itemType="phrase">
+      <contents>
+        <EqualityReflexive>
+          <requiredURIs>
+            <definition id="Set">book/Set/Set</definition>
+            <definition id="SetElement">book/Set/SetElement</definition>
+            <definition id="EqualityOfSetElements">book/Set/EqualityOfSetElements</definition>
+            <lemma id="EqualityReflexive">book/Set/EqualityReflexive</lemma>
+            <definition id="Function">book/Function/Function</definition>
+            <definition id="AppliedFunction">book/Function/AppliedFunction</definition>
+            <lemma id="WellDefined">book/Function/WellDefined</lemma>
+            <definition id="EqualityOfFunctions">book/Function/EqualityOfFunctions</definition>
+            <definingProperty id="EqualityProperty">book/Function/EqualityProperty</definingProperty>
+          </requiredURIs>
+          <statements>
+            <Set id="A"/>
+            <Set id="B"/>
+            <Function id="f">
+              <domain>A</domain>
+              <codomain>B</codomain>
+            </Function>
+            <EqualityOfFunctions id="fEf" freebie="">
+              <first>f</first>
+              <second>f</second>
+            </EqualityOfFunctions>
+          </statements>
+        </EqualityReflexive>
+      </contents>
+    </item>
+    <item title="EqualitySymmetric" parent="7" itemType="phrase">
+      <contents>
+        <EqualitySymmetric>
+          <requiredURIs>
+            <definition id="Set">book/Set/Set</definition>
+            <definition id="SetElement">book/Set/SetElement</definition>
+            <definition id="EqualityOfSetElements">book/Set/EqualityOfSetElements</definition>
+            <lemma id="EqualitySymmetric">book/Set/EqualitySymmetric</lemma>
+            <definition id="Function">book/Function/Function</definition>
+            <definition id="AppliedFunction">book/Function/AppliedFunction</definition>
+            <definition id="EqualityOfFunctions">book/Function/EqualityOfFunctions</definition>
+            <definingProperty id="EqualityProperty">book/Function/EqualityProperty</definingProperty>
+            <definition id="EqualityExistence">book/Function/EqualityExistence</definition>
+          </requiredURIs>
+          <statements>
+            <Set id="A"/>
+            <Set id="B"/>
+            <Function id="f">
+              <domain>A</domain>
+              <codomain>B</codomain>
+            </Function>
+            <Function id="g">
+              <domain>A</domain>
+              <codomain>B</codomain>
+            </Function>
+            <EqualityOfFunctions id="fEg">
+              <first>f</first>
+              <second>g</second>
+            </EqualityOfFunctions>
+            <EqualityOfFunctions id="gEf" freebie="">
+              <first>g</first>
+              <second>f</second>
+            </EqualityOfFunctions>
+          </statements>
+        </EqualitySymmetric>
+      </contents>
+    </item>
+    <item title="EqualityTransitive" parent="7" itemType="phrase">
+      <contents>
+        <EqualityTransitive>
+          <requiredURIs>
+            <definition id="Set">book/Set/Set</definition>
+            <definition id="SetElement">book/Set/SetElement</definition>
+            <definition id="EqualityOfSetElements">book/Set/EqualityOfSetElements</definition>
+            <lemma id="EqualityTransitive">book/Set/EqualityTransitive</lemma>
+            <definition id="Function">book/Function/Function</definition>
+            <definition id="AppliedFunction">book/Function/AppliedFunction</definition>
+            <definition id="EqualityOfFunctions">book/Function/EqualityOfFunctions</definition>
+            <definingProperty id="EqualityProperty">book/Function/EqualityProperty</definingProperty>
+            <lemma id="EqualityExistence">book/Function/EqualityExistence</lemma>
+          </requiredURIs>
+          <statements>
+            <Set id="A"/>
+            <Set id="B"/>
+            <Function id="f">
+              <domain>A</domain>
+              <codomain>B</codomain>
+            </Function>
+            <Function id="g">
+              <domain>A</domain>
+              <codomain>B</codomain>
+            </Function>
+            <Function id="h">
+              <domain>A</domain>
+              <codomain>B</codomain>
+            </Function>
+            <EqualityOfFunctions id="fEg">
+              <first>f</first>
+              <second>g</second>
+            </EqualityOfFunctions>
+            <EqualityOfFunctions id="gEh">
+              <first>g</first>
+              <second>h</second>
+            </EqualityOfFunctions>
+            <EqualityOfFunctions id="fEh" freebie="">
+              <first>f</first>
+              <second>h</second>
+            </EqualityOfFunctions>
+          </statements>
+        </EqualityTransitive>
+      </contents>
+    </item>
+  </items>
+</book>

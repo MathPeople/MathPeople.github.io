@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AssociativeBinaryOperation id="ass">
+    <requiredURIs>
+        <dictionary>Set/dictionaries/ElementsAndEquality</dictionary>
+        <definition id="BinOp">Set/definitions/BinaryOperation</definition>
+    </requiredURIs>
+    <statements>
+        <Set id="X"/>
+        <BinOp id="this">
+            <on>X</on>
+        </BinOp>
+    </statements>
+    <viewings>
+        <GraphViewer><pts><X x="250" y="175" r="8"/><this x="250" y="125" r="8"/><ass x="250" y="75" r="8"/></pts></GraphViewer>
+    </viewings>
+</AssociativeBinaryOperation>

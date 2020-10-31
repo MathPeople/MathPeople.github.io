@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cancel proof = "Set/proofs/cancel">
+    <requiredURIs>
+        <dictionary>Set/dictionaries/BinaryOperation</dictionary>
+    </requiredURIs>
+    <statements>
+        <Set id = "X"/>
+        <BinOp id = "op">
+            <on>X</on>
+        </BinOp>
+        <Associative id = "ass">
+            <this>op</this>
+        </Associative>
+        <Element id = "a">
+            <of>X</of>
+        </Element>
+        <Element id = "b">
+            <of>X</of>
+        </Element>
+        <Element id = "c">
+            <of>X</of>
+        </Element>
+        <Element id = "e">
+            <of>X</of>
+        </Element>
+        <Identity id = "id">
+            <this>e</this>
+            <under>op</under>
+        </Identity>
+        <Element id = "aI">
+            <of>X</of>
+        </Element>
+        <Inverse id = "aInv">
+            <this>aI</this>
+            <of>a</of>
+            <identity>id</identity>
+        </Inverse>
+        <Element id = "ab">
+            <of>X</of>
+        </Element>
+        <Element id = "ac">
+            <of>X</of>
+        </Element>
+        <Applied id = "abA">
+            <this>ab</this>
+            <first>a</first>
+            <second>b</second>
+            <operation>op</operation>
+        </Applied>
+        <Applied id = "acA">
+            <this>ac</this>
+            <first>a</first>
+            <second>c</second>
+            <operation>op</operation>
+        </Applied>
+        <Equals id = "abEac">
+            <first>ab</first>
+            <second>ac</second>
+        </Equals>
+        <Equals id = "bEc" freebie="">
+            <first>b</first>
+            <second>c</second>
+        </Equals>
+    </statements>
+    <viewings><GraphViewer><pts><X x="221" y="284"/><op x="110" y="271"/><ass x="41" y="215"/><a x="180" y="204"/><b x="222" y="161"/><c x="303" y="226"/><e x="126" y="221"/><id x="19" y="140"/><aI x="101" y="167"/><aInv x="79" y="117"/><ab x="179" y="141"/><ac x="268" y="129"/><abA x="127" y="31"/><acA x="418" y="220"/><abEac x="223" y="81"/><bEc x="359" y="110"/><cancel x="190" y="15"/></pts></GraphViewer></viewings>
+</cancel>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<trans>
+    <requiredURIs>
+        <definition id="Set">Set/definitions/Set</definition>
+        <definition id="Element">Set/definitions/SetElement</definition>
+        <definition id="Equals">Set/definitions/EqualityOfSetElements</definition>
+    </requiredURIs>
+    <statements>
+        <Set id = "X"/>
+        <Element id = "a">
+            <of>X</of>
+        </Element>
+        <Element id = "b">
+            <of>X</of>
+        </Element>
+        <Element id = "c">
+            <of>X</of>
+        </Element>
+        <Equals id = "aEb">
+            <first>a</first>
+            <second>b</second>
+        </Equals>
+        <Equals id = "bEc">
+            <first>b</first>
+            <second>c</second>
+        </Equals>
+        <Equals id = "aEc" freebie="">
+            <first>a</first>
+            <second>c</second>
+        </Equals>
+    </statements>
+</trans>

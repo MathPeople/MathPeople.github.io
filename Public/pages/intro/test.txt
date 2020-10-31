@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<div class="GraphViewer">
+    <svg xmlns="http://www.w3.org/2000/svg">
+        <line class="arrowBottom" x1="80" x2="110" y1="50" y2="170"/>
+        <line class="arrowBottom" x1="80" x2="250" y1="50" y2="100"/>
+        <circle class="dot" cx="80" cy="50" r="8" stroke="red" fill="white"/>
+        <circle class="dot" cx="250" cy="100" r="8" stroke="green" fill="white"/>
+        <circle class="dot" cx="110" cy="170" r="8" stroke="blue" fill="white"/>
+    </svg>
+</div>

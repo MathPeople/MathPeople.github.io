@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Set id="set">
+    <requiredURIs/>
+    <statements/>
+    <viewings>
+        <GraphViewer><pts><set x="250" y="150" r="8"/></pts></GraphViewer>
+    </viewings>
+</Set>

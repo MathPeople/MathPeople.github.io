@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inverseIsUnique>
+    <requiredURIs>
+        <dictionary>Set/dictionaries/BinaryOperation</dictionary>
+    </requiredURIs>
+    <statements>
+        <Set id="X"/>
+        <BinOp id="op">
+            <on>X</on>
+        </BinOp>
+        <Associative id="ass">
+            <this>op</this>
+        </Associative>
+        <Element id="e">
+            <of>X</of>
+        </Element>
+        <Identity id="id">
+            <this>e</this>
+            <under>op</under>
+        </Identity>
+        <Element id="a">
+            <of>X</of>
+        </Element>
+        <Element id="aI1">
+            <of>X</of>
+        </Element>
+        <Inverse id="aInv1">
+            <this>aI1</this>
+            <of>a</of>
+            <identity>id</identity>
+        </Inverse>
+        <Element id="aI2">
+            <of>X</of>
+        </Element>
+        <Inverse id="aInv2">
+            <this>aI2</this>
+            <of>a</of>
+            <identity>id</identity>
+        </Inverse>
+        <Equals id="aI1EaI2" freebie="">
+            <first>aI1</first>
+            <second>aI2</second>
+        </Equals>
+    </statements>
+    <viewings><GraphViewer><pts><X x="227" y="268" r="8"/><op x="67" y="205" r="8"/><ass x="21" y="98" r="8"/><e x="124" y="164" r="8"/><id x="110" y="80" r="8"/><a x="270" y="160" r="8"/><aI1 x="186" y="182" r="8"/><aInv1 x="183" y="95" r="8"/><aI2 x="331" y="200" r="8"/><aInv2 x="363" y="81" r="8"/><aI1EaI2 x="234" y="98" r="8"/><inverseIsUnique x="201" y="13" r="8"/></pts></GraphViewer></viewings>
+</inverseIsUnique>
