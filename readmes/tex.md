@@ -1,6 +1,10 @@
 # Browser TeX Guide
 
-This page allows you to enter a problem/solution pair in LaTeX (ish) and save it in the format required for display on the rest of the site. LaTeX is completely handled by [MathJax]. The purpose of this page is to offer the opportunity to save metadata about problems and to format them for easy addition to the other pages of this site.
+This page allows you to enter a problem/solution pair in LaTeX (ish) and save it in the format required for display on the rest of the site. Problems are saved in xml files and, as long as you use this editor to obtain them, you don't have to worry about the specific file structure or even what xml is. You just enter the TeX, apply the appropriate metadata, and upload the resulting file appropriately. There is another readme about how to upload problems to the repository.
+
+LaTeX is completely handled by [MathJax]. MathJax struggles with dollar signs for math mode. This page processes the text so that dollar signs work, but not double dollar signs. Don't use double dollar signs.
+
+If you are writing a problem for a specific qual which is supported on this site, be sure to enter which qual before you do any work. This will make sure all the existing metadata corresponding to that qual is loaded and will avoid naming conflicts.
 
 # xmlNodeName Format
 

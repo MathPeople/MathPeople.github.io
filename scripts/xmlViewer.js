@@ -1,10 +1,3 @@
-{
-    let link = document.createElement("link");
-    link.setAttribute("rel", "stylesheet");
-    link.setAttribute("href", filePrefix + "css/xmlViewer.css");
-    document.head.appendChild(link);
-}
-
 var xmlViewer = function xmlViewer(file) {
     xmlImporter.trim(file);
     file = xmlImporter.getRoot(file);
@@ -17,13 +10,13 @@ var xmlViewer = function xmlViewer(file) {
     this.readNode(file, asDetails);
 }
 
-xmlViewer.prototype.readNode = function readNode(node, inDetails) {
+xmlViewer.prototype.readNode = function readNode(node, loadHere) {
     if (node.nodeType == 3) {
-        inDetails.appendChild(document.createTextNode(node.nodeValue));
+        loadHere.appendChild(document.createTextNode(node.nodeValue));
         return;
     }
     let deets = document.createElement("details");
-    inDetails.appendChild(deets);
+    loadHere.appendChild(deets);
     let summary = document.createElement("summary");
     deets.appendChild(summary);
     summary.appendChild(document.createTextNode(node.nodeName));

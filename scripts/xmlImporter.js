@@ -60,10 +60,12 @@ xmlImporter.elementDoc = function elementDoc(doc, type, loadHere, atts = []) {
 }
 
 // create a new node in current DOM
-xmlImporter.element = function element(type, loadHere, atts) {return xml.elementDoc(document, type, loadHere, atts)}
+xmlImporter.element = function element(type, loadHere, atts) {return xmlImporter.elementDoc(document, type, loadHere, atts)}
 
 xmlImporter.text = function text(line, loadHere) {
     let returner = document.createTextNode(line);
     if (loadHere) loadHere.appendChild(returner);
     return returner;
 }
+
+xmlImporter.newDocument = function() {return document.implementation.createDocument(null, "")}

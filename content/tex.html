@@ -5,6 +5,8 @@
         <title>Browser TeX</title>
         <link rel="stylesheet" type="text/css" href="../css/tex.css"/>
         <script src="../scripts/xmlImporter.js"></script>
+        <link rel="stylesheet" type="text/css" href="../css/xmlViewer.css"/>
+        <script src="../scripts/xmlViewer.js"></script>
         <script src="../scripts/tex.js" async defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML" async=""></script>
     </head>
@@ -59,7 +61,7 @@
                 <div class="checkboxHolder">
                     <p>Which theorems/topics are involved?</p>
                     <div id="topics" class="checkboxes"></div>
-                    <button type="button" id = "topicp" class="p">New topic:</button>
+                    <button type="button" id = "newTopicButton">New topic:</button>
                     <input type="text" id="newTopic" placeholder="other topic which some problems may or may not include">
                 </div>
             </details>
@@ -70,6 +72,6 @@
         <div><textarea class="texInput" id="texSolution" spellcheck="false"></textarea></div>
         <div id="texLiveOut"><p>Rendered TeX will go here</p></div>
         <button type="button" id="save">Save</button>
-        <div><textarea id="texOut" spellcheck="false">Formatted code will go here</textarea></div>
+        <div><textarea id="codeOut" spellcheck="false">Formatted code will go here</textarea></div>
     </body>
 </html>

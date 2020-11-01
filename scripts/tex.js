@@ -11,64 +11,51 @@ var qualName = document.getElementById("qualName"),
     instructorsPlace = document.getElementById("instructors"),
     newInstructorButton = document.getElementById("newInstructor"),
     topicsPlace = document.getElementById("topics"),
-    topicp = document.getElementById("topicp"),
+    newTopicButton = document.getElementById("newTopicButton"),
     newTopicIn = document.getElementById("newTopic"),
     texProblem = document.getElementById("texProblem"),
     texSolution = document.getElementById("texSolution"),
     texLiveOut = document.getElementById("texLiveOut"),
     saveButton = document.getElementById("save"),
-    texOut = document.getElementById("texOut");
+    codeOut = document.getElementById("codeOut");
+
+let pairMode = true, serializer = new XMLSerializer(), doc = xmlImporter.newDocument(), id = "changeMe";
 
 // set event listeners
 {
-    let initialRender = function() {
-        window.setTimeout(fixTex, 100);
-        enteringLaTeX.removeEventListener("click", initialRender);
-        enteringLaTeX.addEventListener("click", function() {
-            claimNode(metainformationTex, metainformation);
-            metainformation.mode = "enteringLaTeX";
-        })
-    }
-
     function setListener(element, type, func) {
         try {
             element.addEventListener(type, func);
         } catch (e) {}
     }
-
-    setListener(problemsLoaderButton, "click", function(e) {
-        e = e.target;
-        e.parentElement.removeChild(e);
-        loadFromList("problems", problemsLoader);
-    });
-    setListener(theoremsLoaderButton, "click", function(e) {
-        e = e.target;
-        e.parentElement.removeChild(e);
-        loadFromList("theorems", theoremsLoader);
-    });
-    setListener(newTopicIn, "change", function() {
-        let line = newTopicIn.value;
-        if (!goodTagName(line)) {
-            if (line == "") return;
-            return inputMessage(newTopicIn, "invalid name");
-        }
-        if (topicp.isOnRemove) {
-            try {
-                removeTopic(line);
-            } catch (e) {
-                return inputMessage(newTopicIn, e.message);
-            }
-            newTopicIn.value = "";
-        } else {
-            try {
-                newTopic(line);
-                newTopicIn.value="";
-            } catch (e) {
-                return inputMessage(newTopicIn, e.message);
-            }
-        }
-    });
-    setListener(topicp, "click", function(e) {
+    
+    setListener(clearTexButton, "click", clearTex);
+    
+    pairSoloButton = document.getElementById("pairSolo"),
+    
+    setListener(pairSoloButton, "click", function() {
+        pairSoloButton.firstChild.nodeValue = (pairMode? "Pair": "Solo") + " mode";
+        pairMode = !pairMode;
+        resetDoc();
+    })
+    
+    idInput.addEventListener("change", handleIdChange);
+    idInput.addEventListener("blur", function() {idInput.value = id});
+    
+    for (let e of [solutionFull, solutionPartial, solutionNone, questionGreat, questionGood, questionBad]) setListener(e, "change", resetDoc);
+    
+    //instructorsPlace = document.getElementById("instructors"),
+    //newInstructorButton = document.getElementById("newInstructor"),
+    //topicsPlace = document.getElementById("topics"),
+    //newTopicButton = document.getElementById("newTopicButton"),
+    //newTopicIn = document.getElementById("newTopic"),
+    
+    for (let e of [texProblem, texSolution]) setListener(e, "input", resetDoc);
+    
+    texLiveOut = document.getElementById("texLiveOut"),
+    saveButton = document.getElementById("save"),
+    codeOut = document.getElementById("codeOut");
+    setListener(newTopicButton, "click", function(e) {
         e.stopPropagation();
         topicp.blur();
         topicp.isOnRemove = ! topicp.isOnRemove;
@@ -81,16 +68,28 @@ var qualName = document.getElementById("qualName"),
             newTopicIn.value = "";
         }
     });
-    setListener(enteringLaTeX, "click", initialRender);
-    setListener(clearTexButton, "click", clearTex);
-    setListener(texOut, "click", copyTex);
-    setListener(problemsSection, "click", function() {
-        claimNode(metainformationProblems, metainformation)
-        metainformation.mode = "problemsSection";
+    
+    setListener(newTopicIn, "change", function() {
+        let line = newTopicIn.value;
+        if (!nodeNameScreen(line)) {
+            if (line == "") return;
+            return inputMessage(newTopicIn, "invalid name");
+        }
+        if (newTopicButton.hasAttribute("removingTopic")) {
+            try {
+                removeTopic(line);
+            } catch (e) {
+                return inputMessage(newTopicIn, e.message);
+            }
+        } else {
+            try {
+                newTopic(line);
+                newTopicIn.value="";
+            } catch (e) {
+                return inputMessage(newTopicIn, e.message);
+            }
+        }
     });
-
-    for (let e of [texProblem, texSolution]) setListener(e, "input", fixTex);
-    for (let e of [solutionFull, solutionPartial, solutionNone]) setListener(e, "change", changeInMetainformation);
 
     function fixTextHeight(element) {
         element.style.height = "5px";
@@ -101,34 +100,66 @@ var qualName = document.getElementById("qualName"),
         setListener(textarea, "input", function() {fixTextHeight(textarea)});
         setListener(textarea, "change", function() {fixTextHeight(textarea)});
     }
-    
-    newTestButton.addEventListener("click", makePracticeTest);
+
+    saveButton.addEventListener("click", function() {
+        let file = new File([codeOut.value], idInput.value, {type: "text/xml"});
+        let url = URL.createObjectURL(file);
+        let a = xmlImporter.element("a", document.body, ["href", url, "download", ""]);
+        xmlImporter.text("download link", a);
+        a.click();
+        document.body.removeChild(a);
+    });
 }
 
-var serializer = new XMLSerializer();
-
-function problemsLoader(skip, details, id) {
-    details.titleSpot.nodeValue = id + ":";
-    problemsPlace.appendChild(details);
-    problems[id] = {details: details, id: id, topics: {}, instructors: {}};
-    let meta = details.xml.querySelector("topics");
-    if (meta) for (let topic of meta.childNodes) problems[id].topics[topic.nodeName] = true;
-    meta = details.xml.querySelector("instructors");
-    if (meta) for (let instructor of meta.childNodes) problems[id].instructors[instructor.nodeName] = true;
+function handleIdChange() {
+    if (nodeNameScreen(idInput.value)) {
+        id = idInput.value;
+        resetDoc();
+    } else inputMessage(idInput, "invalid nodeName");
 }
 
-function theoremsLoader(theorems, details, id) {
-    let theorem = details.xml.querySelector("theorem").firstChild.nodeValue;
-    let outerDetails = document.createElement("details");
-    theorems.appendChild(outerDetails);
-    outerDetails.setAttribute("class", "problems");
-    let summary = document.createElement("summary");
-    outerDetails.appendChild(summary);
-    summary.appendChild(document.createTextNode(theorem + " (" + id + ")"));
-    outerDetails.appendChild(details);
-    let proof = document.createElement("p");
-    details.insertBefore(proof, details.firstChild.nextSibling);
-    proof.appendChild(document.createTextNode("Proof:"));
+function resetDoc() {
+    while (doc.firstChild) doc.removeChild(doc.firstChild);
+    let problem = xmlImporter.elementDoc(doc, "problem", xmlImporter.elementDoc(doc, id, doc), [
+        "tex", texProblem.value,
+        "solutionCompleteness", solutionFull.checked? "full": solutionPartial.checked? "partial": "none",
+        "questionViability", questionGreat.checked? "great": questionGood.checked? "good": "bad"
+    ]);
+    if (pairMode) xmlImporter.elementDoc(doc, "solution", problem, ["tex", texSolution.value]);
+    outputFromDoc();
+}
+resetDoc();
+
+function outputFromDoc() {
+    idInput.value = xmlImporter.getRoot(doc).nodeName;
+    let problem = doc.querySelector("problem");
+    switch (problem.getAttribute("solutionCompleteness")) {
+        case "full": solutionFull.checked = true; break;
+        case "partial": solutionPartial.checked = true; break;
+        default: solutionNone.checked = true;
+    }
+    switch (problem.getAttribute("questionViability")) {
+        case "great": questionGreat.checked = true; break;
+        case "good": questionGood.checked = true; break;
+        default: questionBad.checked = true;
+    }
+    if (pairMode) texLiveOut.innerHTML = "<h4>Problem</h4><p>"+fixLineBreaksToP(problem.getAttribute("tex"))+"</p><h4>Solution</h4><p>"+fixLineBreaksToP(doc.querySelector("solution").getAttribute("tex"))+"</p>";
+    else texLiveOut.innerHTML = "<p>"+fixLineBreaksToP(doc.querySelector("problem").getAttribute("tex"))+"</p>";
+    codeOut.value = serializer.serializeToString(doc);
+    refreshMathJax();
+}
+
+function refreshMathJax() {try {MathJax.Hub.Queue(["Typeset", MathJax.Hub])} catch (e) {}}
+
+function fixLineBreaksToP(line) {
+    let lines = line.split("$");
+    line = "";
+    let opening = false;
+    for (let sub of lines) {
+        line += sub + "\\" + ((opening = !opening)? "(": ")");
+    }
+    line = line.substring(0, line.length - 2);
+    return line.replaceAll(/\n/g, "</p><p>");
 }
 
 function loadFromList(type, alter = function(loadHere, details, id) {loadHere.appendChild(details)}) {
@@ -208,26 +239,12 @@ var topics = {}, numTopics = 0;
 
 function inputMessage(input, message) {
     let line = input.value, able = !input.hasAttribute("disabled");
-    input.value = message;
+    window.setTimeout(function() {input.value = message}, 10); // delay is to let blur happen
     input.setAttribute("disabled", "");
     window.setTimeout(function() {
-        input.value = line + "<";
+        input.value = line;
         if (able) input.removeAttribute("disabled");
     }, 1000);
-}
-
-function changeInMetainformation() {
-    switch (metainformation.mode) {
-        case "enteringLaTeX":
-            fixTex();
-        break; case "problemsSection":
-            for (let id in problems) {
-                claimNode(problemsHide, problems[id].details);
-                for (let topic in problems[id].topics) if (topics[topic].checkbox.checked) claimNode(problemsPlace, problems[id].details);
-                for (let i in problems[id].instructors) if (instructors[i].checkbox.checked) claimNode(problemsPlace, problems[id].details);
-            }
-        break; default: console.log("change in metainformation but mode is " + metainformation.mode);
-    }
 }
 
 function newTopic(topic) {
@@ -246,7 +263,7 @@ function newTopic(topic) {
     returner.checkbox.setAttribute("type", "checkbox");
     returner.checkbox.setAttribute("id", "topic" + returner.id);
     returner.checkbox.setAttribute("value", topic);
-    returner.checkbox.addEventListener("change", changeInMetainformation);
+    returner.checkbox.addEventListener("change", resetDoc);
     Store.saveTopic(topic);
 }
 
@@ -274,7 +291,7 @@ function newInstructor(id) {
     returner.checkbox.setAttribute("id", "instructor" + id);
     returner.label.setAttribute("for", "instructor" + id);
     returner.label.appendChild(document.createTextNode(id));
-    returner.checkbox.addEventListener("change", changeInMetainformation);
+    returner.checkbox.addEventListener("change", resetDoc);
     returner.nameIn = document.createElement("input");
     returner.nameIn.setAttribute("type", "text");
     
@@ -294,155 +311,24 @@ function newInstructor(id) {
     Store.fetchInstructorName(id);
 }
 
-function readPair(id) {
-    idSpan.firstChild.nodeValue = id;
-    idP.removeAttribute("class");
-    let details = pairs[id], problem = details.xml.querySelector("problem"), solution = details.xml.querySelector("solution"), problemLine = unfixLine(serializer.serializeToString(problem)), solutionLine = unfixLine(serializer.serializeToString(solution));
-    problemLine = problemLine.replace(/<problem><p>|<\/p><\/problem>/g,"");
-    if (solutionLine == "<solution/>") {
-        solutionFull.checked = true;
-        solutionLine = "";
-    } else if (solutionLine.substring(0, 11) == "<solution p") {
-        solutionPartial.checked = true;
-        solutionLine = solutionLine.replace(/<solution partiallyFinished=\"\"><p>|<\/p><\/solution partiallyFinished=\"\">|<solution partiallyFinished=\"\"\/>/g,"");
-    } else if (solutionLine.substring(0, 11) == "<solution n") {
-        solutionNone.checked = true;
-        solutionLine = solutionLine.replace(/<solution notWrittenYet=\"\"><p>|<\/p><\/solution notWrittenYet=\"\">|<solution notWrittenYet=\"\"\/>/g,"");
-    } else {
-        solutionFull.checked = true;
-        solutionLine = solutionLine.replace(/<solution><p>|<\/p><\/solution>/g,"");
-    }
-    texProblem.value = problemLine;
-    texSolution.value = solutionLine;
-    let topicsNode = details.xml.querySelector("topics");
-    if (topicsNode) for (let topic in topics) topics[topic].checkbox.checked = topicsNode.querySelector(topic)? true: false;
-    else for (let topic in topics) topics[topic].checkbox.checked = false;
-    let instructorsNode = details.xml.querySelector("instructors");
-    if (instructorsNode) for (let instructor in instructors) instructors[instructor].checkbox.checked = instructorsNode.querySelector(instructor)? true: false;
-    else for (let instructor in instructors) instructors[instructor].checkbox.checked = false;
-    fixTex();
-}
-
-function fixTex() {
-    if (texProblem.value in pairs) return readPair(texProblem.value);
-    let problem = fixLine(texProblem.value), solution = "<p>"+fixLine(texSolution.value)+"</p>";
-    if (solution == "<p></p>") solution = "";
-    texLiveOut.innerHTML = "<p>Problem:</p><div><div><p>" + problem + "</p></div></div><p>Solution:</p><div><div>" + solution + "</div></div>";
-    texOut.firstChild.nodeValue = "<problem><p>" + problem + "</p></problem><solution" + (solutionPartial.checked? " partiallyFinished=\"\"": solutionNone.checked? " notWrittenYet=\"\"": "") + ">" + solution + "</solution>";
-    let checkedTopics = [];
-    for (let topic in topics) {
-        if (topics[topic].checkbox.checked) checkedTopics.push(topic);
-    }
-    if (checkedTopics.length > 0) {
-        let line = "<topics>";
-        for (let topic of checkedTopics) line += "<" + topic +"/>";
-        line += "</topics>";
-        texOut.firstChild.nodeValue += line;
-    }
-    let haveInstructors = false;
-    for (let instructor in instructors) if (instructors[instructor].checkbox.checked) haveInstructors = true;
-    if (haveInstructors) {
-        let line = "<instructors>";
-        for (let instructor in instructors) if (instructors[instructor].checkbox.checked) line += "<" + instructors[instructor].id + "/>";
-        line += "</instructors>";
-        texOut.firstChild.nodeValue += line;
-    }
-    try {
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub, "texLiveOut"]);
-    } catch (e) {}
-    for (let ta of [texProblem, texSolution, texOut]) fixTextHeight(ta);
-}
-
 function clearTex() {
+    idInput.value = "changeMe";
     texProblem.value = "";
     texSolution.value = "";
-    idP.setAttribute("class", "hide");
     solutionNone.checked = true;
+    questionBad.checked = true;
     for (let topic in topics) topics[topic].checkbox.checked = false;
-    fixTex();
-}
-
-function copyTex() {
-    texOut.focus();
-    texOut.setSelectionRange(0, texOut.value.length);
-    document.execCommand("copy");
-}
-
-function fixLine(line) {
-    line = line.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;").replace(/\\\[/g,"</p><p>\\\[").replace(/\\\]/g,"\\\]</p><p>").replace(/\n/g,"</p><p>").replace(/<p><\/p>/g,"");
-    let opening = false, returner = "";
-    for (let i = 0; i < line.length; ++i) {
-        if (line.charAt(i) == "$") {
-            returner += (opening = !opening)? "\\(": "\\)";
-        } else returner += line.charAt(i);
-    }
-    if (returner.length >= 7) if (returner.substring(0,7) == "</p><p>") returner = returner.substring(7);
-    if (returner.length >= 7) if (returner.substring(returner.length - 7, returner.length) == "</p><p>") returner = returner.substring(0, returner.length - 7);
-    return returner;
-}
-
-function unfixLine(line) {
-    return line.replace(/\\\(|\\\)/g,"$").replace(/<\/p><p>/g,"\n\n").replace(/&apos;/g,"\'").replace(/&quot;/g,"\"").replace(/&gt;/g,">").replace(/&lt;/g,"<").replace(/&amp;/g,"&");
+    resetDoc();
 }
 
 function noJax(line) {
     return line.replace(/&/g, "&amp;").replace(/\\/g, "\\<span\\>");
 }
 
-function goodTagName(line) {
+function nodeNameScreen(line) {
     try {
         document.createElement(line); return true;
     } catch (e) {return false}
-}
-
-var testsBlacklist = {};
-
-function makePracticeTest() {
-    newTestButton.innerHTML = "making test, please hold for ten seconds";
-    window.setTimeout(function() {newTestButton.innerHTML = "New Test"}, 10000);
-    for (let section of [enteringLaTeX, problemsSection, theoremsSection]) section.setAttribute("class", "hide");
-    if(!problemsPlace.hasBeenLoaded) loadFromList("problems", problemsLoader);
-    if (isEmpty(testsBlacklist)) {
-        let req = new XMLHttpRequest();
-        req.open("GET", filePrefix + "qual/testsBlacklist.txt");
-        req.overrideMimeType("text/plain");
-        req.onload = function() {
-            for (let problem of req.responseText.split(" ")) testsBlacklist[problem] = problems[problem];
-            window.setTimeout(makePracticeTest, 10000);
-        }
-        req.send();
-        return;
-    }
-    let ab = [], c = [];
-    for (let problem in problems) if (!(problem in testsBlacklist)) {
-        if ("RiemannSurfaces" in problems[problem].topics) c.push(problems[problem]);
-        else ab.push(problems[problem]);
-    }
-    let chosenAB = [], chosenC = [];
-    for (let i = 0; i < 6; ++i) {
-        let choice;
-        do {
-            choice = ab[Math.floor(ab.length * Math.random())]
-        } while (chosenAB.includes(choice));
-        chosenAB.push(choice);
-    }
-    for (let i = 0; i < 3; ++i) {
-        let choice;
-        do {
-            choice = c[Math.floor(c.length * Math.random())]
-        } while (chosenC.includes(choice));
-        chosenC.push(choice);
-    }
-    while (testDiv.firstChild) testDiv.removeChild(testDiv.firstChild);
-    let chosens = chosenAB.concat(chosenC), problemNum = 0;
-    for (let choice of chosens) {
-        let p = document.createElement("p");
-        testDiv.appendChild(p);
-        let problemNumber = document.createElement("span");
-        p.appendChild(problemNumber);
-        problemNumber.innerHTML = (++problemNum) + ": ";
-        p.appendChild(choice.details.firstChild.firstChild.nextSibling);
-    }
 }
 
 var Store = {};
