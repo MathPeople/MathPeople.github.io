@@ -19,7 +19,7 @@ var qualName = document.getElementById("qualName"),
     saveButton = document.getElementById("save"),
     codeOut = document.getElementById("codeOut");
 
-let pairMode = true, serializer = new XMLSerializer(), doc = xmlImporter.newDocument(), id = "changeMe";
+let pairMode = true, qual = "", serializer = new XMLSerializer(), doc = xmlImporter.newDocument(), id = "changeMe", topics = {}, instructors = [], problems = {};
 
 // set event listeners
 {
@@ -28,6 +28,9 @@ let pairMode = true, serializer = new XMLSerializer(), doc = xmlImporter.newDocu
             element.addEventListener(type, func);
         } catch (e) {}
     }
+    
+    setListener(qualName, "change", loadQual);
+    //qualName.value = "complex";loadQual();
     
     setListener(clearTexButton, "click", clearTex);
     
@@ -45,29 +48,8 @@ let pairMode = true, serializer = new XMLSerializer(), doc = xmlImporter.newDocu
     for (let e of [solutionFull, solutionPartial, solutionNone, questionGreat, questionGood, questionBad]) setListener(e, "change", resetDoc);
     
     //instructorsPlace = document.getElementById("instructors"),
-    //newInstructorButton = document.getElementById("newInstructor"),
+    newInstructorButton.addEventListener("click", newInstructor);
     //topicsPlace = document.getElementById("topics"),
-    //newTopicButton = document.getElementById("newTopicButton"),
-    //newTopicIn = document.getElementById("newTopic"),
-    
-    for (let e of [texProblem, texSolution]) setListener(e, "input", resetDoc);
-    
-    texLiveOut = document.getElementById("texLiveOut"),
-    saveButton = document.getElementById("save"),
-    codeOut = document.getElementById("codeOut");
-    setListener(newTopicButton, "click", function(e) {
-        e.stopPropagation();
-        topicp.blur();
-        topicp.isOnRemove = ! topicp.isOnRemove;
-        if (topicp.isOnRemove) {
-            topicp.firstChild.nodeValue = "Remove topic:";
-            newTopicIn.setAttribute("placeholder", "topic you wish to remove from the list above");
-        } else {
-            topicp.firstChild.nodeValue = "New topic:";
-            newTopicIn.setAttribute("placeholder", "other topic which some problems may or may not include");
-            newTopicIn.value = "";
-        }
-    });
     
     setListener(newTopicIn, "change", function() {
         let line = newTopicIn.value;
@@ -75,7 +57,7 @@ let pairMode = true, serializer = new XMLSerializer(), doc = xmlImporter.newDocu
             if (line == "") return;
             return inputMessage(newTopicIn, "invalid name");
         }
-        if (newTopicButton.hasAttribute("removingTopic")) {
+        if (newTopicButton.checked) {
             try {
                 removeTopic(line);
             } catch (e) {
@@ -90,19 +72,16 @@ let pairMode = true, serializer = new XMLSerializer(), doc = xmlImporter.newDocu
             }
         }
     });
-
-    function fixTextHeight(element) {
-        element.style.height = "5px";
-        element.style.height = (element.scrollHeight)+"px";
-    }
+    
+    for (let e of [texProblem, texSolution]) setListener(e, "input", resetDoc);
 
     for (let textarea of document.getElementsByTagName("textarea")) {
-        setListener(textarea, "input", function() {fixTextHeight(textarea)});
-        setListener(textarea, "change", function() {fixTextHeight(textarea)});
+        setListener(textarea, "input", fixTextHeight);
+        setListener(textarea, "change", fixTextHeight);
     }
-
+    
     saveButton.addEventListener("click", function() {
-        let file = new File([codeOut.value], idInput.value, {type: "text/xml"});
+        let file = new File([codeOut.value], idInput.value+".xml", {type: "text/xml"});
         let url = URL.createObjectURL(file);
         let a = xmlImporter.element("a", document.body, ["href", url, "download", ""]);
         xmlImporter.text("download link", a);
@@ -111,10 +90,49 @@ let pairMode = true, serializer = new XMLSerializer(), doc = xmlImporter.newDocu
     });
 }
 
+function fixTextHeight(event) {
+        event = event.target;
+        while (event.nodeName.toLowerCase() != "textarea") event = event.parentNode;
+        event.style.height = "5px";
+        event.style.height = (event.scrollHeight)+"px";
+    }
+
+function loadQual() {
+    let exchange = refreshMathJax;
+    refreshMathJax = function() {}
+    if (!nodeNameScreen(qualName.value)) return inputMessage(qualName, "invalid name");
+    xmlImporter.openTextFile("../quals/"+qualName.value+"/problemsList.txt", null, function(list) {
+        qual = qualName.value;
+        qualName.value = "working on " + qual;
+        qualName.setAttribute("disabled", "");
+        let lines = list.split(" "), numLines = lines.length;
+        for (let problem of lines) {
+            let p = problem;
+            if (problem in problems) throw Error("duplicate in problems list: " + problem);
+            problems[problem] = undefined;
+            xmlImporter.openXMLFile("../quals/"+qual+"/problems/"+p+".xml", null, function(problemDoc) {
+                problems[p] = xmlImporter.getRoot(problemDoc);
+                doc = problemDoc;
+                outputFromDoc();
+                if (--numLines == 0) clearTex();
+            }, function() {
+                throw Error("cannot find " + p);
+            });
+        }
+    }, function() {
+        inputMessage(qualName, "that qual has not been successfully initiated", 3000);
+    });
+    refreshMathJax = exchange;
+}
+
 function handleIdChange() {
     if (nodeNameScreen(idInput.value)) {
         id = idInput.value;
-        resetDoc();
+        if (id in problems) {
+            while (doc.firstChild) doc.removeChild(doc.firstChild);
+            doc.appendChild(problems[id].cloneNode(true));
+            outputFromDoc();
+        } else resetDoc();
     } else inputMessage(idInput, "invalid nodeName");
 }
 
@@ -125,14 +143,42 @@ function resetDoc() {
         "solutionCompleteness", solutionFull.checked? "full": solutionPartial.checked? "partial": "none",
         "questionViability", questionGreat.checked? "great": questionGood.checked? "good": "bad"
     ]);
+    let instructorsNode = xmlImporter.elementDoc(doc, "instructors", problem);
+    for (let instructor of instructors) if (instructor.checkbox.checked) xmlImporter.elementDoc(doc, instructor.id, instructorsNode);
+    let topicsNode = xmlImporter.elementDoc(doc, "topics", problem);
+    for (let topic in topics) if (topics[topic].checkbox.checked) xmlImporter.elementDoc(doc, topic, topicsNode);
     if (pairMode) xmlImporter.elementDoc(doc, "solution", problem, ["tex", texSolution.value]);
     outputFromDoc();
 }
 resetDoc();
 
 function outputFromDoc() {
-    idInput.value = xmlImporter.getRoot(doc).nodeName;
-    let problem = doc.querySelector("problem");
+    idInput.value = id = xmlImporter.getRoot(doc).nodeName;
+    let problem = doc.querySelector("problem"), solution = doc.querySelector("solution"), instructorsNode = doc.querySelector("instructors"), topicsNode = doc.querySelector("topics");
+    ensureInstructors(instructorsNode);
+    for (let i of instructors) i.checkbox.checked = false;
+    if (instructorsNode) {
+        let i = instructorsNode.firstChild;
+        while (i) {
+            for (let instructor of instructors) if (instructor.id == i.nodeName) instructor.checkbox.checked = true;
+            i = i.nextSibling;
+        }
+    }
+    ensureTopics(topicsNode);
+    for (let topic in topics) topics[topic].checkbox.checked = false;
+    if (topicsNode) {
+        let topic = topicsNode.firstChild;
+        while (topic) {
+            topics[topic.nodeName].checkbox.checked = true;
+            topic = topic.nextSibling;
+        }
+    }
+    texProblem.value = problem.getAttribute("tex");
+    fixTextHeight({target: texProblem});
+    if (pairMode) {
+        texSolution.value = solution.getAttribute("tex");
+        fixTextHeight({target: texSolution});
+    }
     switch (problem.getAttribute("solutionCompleteness")) {
         case "full": solutionFull.checked = true; break;
         case "partial": solutionPartial.checked = true; break;
@@ -143,15 +189,44 @@ function outputFromDoc() {
         case "good": questionGood.checked = true; break;
         default: questionBad.checked = true;
     }
-    if (pairMode) texLiveOut.innerHTML = "<h4>Problem</h4><p>"+fixLineBreaksToP(problem.getAttribute("tex"))+"</p><h4>Solution</h4><p>"+fixLineBreaksToP(doc.querySelector("solution").getAttribute("tex"))+"</p>";
-    else texLiveOut.innerHTML = "<p>"+fixLineBreaksToP(doc.querySelector("problem").getAttribute("tex"))+"</p>";
+    if (pairMode) texLiveOut.innerHTML = "<h4>Problem</h4><p>"+fixLineBreaksToP(problem.getAttribute("tex"))+"</p><h4>Solution</h4><p>"+fixLineBreaksToP(solution.getAttribute("tex"))+"</p>";
+    else texLiveOut.innerHTML = "<p>"+fixLineBreaksToP(problem.getAttribute("tex"))+"</p>";
     codeOut.value = serializer.serializeToString(doc);
     refreshMathJax();
+}
+
+function ensureInstructors(instructorsNode) {
+    if (!instructorsNode) return;
+    let i = instructorsNode.firstChild;
+    while (i) {
+        ensureInstructor(i.nodeName);
+        i = i.nextSibling;
+    }
+}
+
+function ensureInstructor(instructorID) {
+    for (let instructor of instructors) if (instructor.id == instructorID) return;
+    try {while (newInstructor().id != instructorID);} catch (e) {throw Error(instructorID + " is not a working instructor ID")}
+}
+
+function ensureTopics(topicsNode) {
+    if (!topicsNode) return;
+    let t = topicsNode.firstChild;
+    while (t) {
+        ensureTopic(t.nodeName);
+        t = t.nextSibling;
+    }
+}
+
+function ensureTopic(topic) {
+    if (topic in topics) return;
+    newTopic(topic);
 }
 
 function refreshMathJax() {try {MathJax.Hub.Queue(["Typeset", MathJax.Hub])} catch (e) {}}
 
 function fixLineBreaksToP(line) {
+    //line = line.replaceAll(/</g, "&lt;").replaceAll(/>/g, "&gt;").replaceAll(/&/g, "&amp;").replaceAll(/'/g, "&apos;").replaceAll(/"/g, "&quot;");
     let lines = line.split("$");
     line = "";
     let opening = false;
@@ -162,145 +237,57 @@ function fixLineBreaksToP(line) {
     return line.replaceAll(/\n/g, "</p><p>");
 }
 
-function loadFromList(type, alter = function(loadHere, details, id) {loadHere.appendChild(details)}) {
-    let list = document.getElementById(type);
-    let req = new XMLHttpRequest();
-    req.open("GET", filePrefix + "qual/" + type + "List.txt");
-    req.overrideMimeType("text/plain");
-    req.onload = function() {
-        list.hasBeenLoaded = true;
-        let line = req.responseText.split(" ");
-        for (let single of line) {
-            let req2 = new XMLHttpRequest();
-            req2.open("GET", filePrefix + "qual/" + type + "/" + single + ".txt");
-            req2.overrideMimeType("text/plain");
-            req2.onload = function() {
-                alter(list, loadPair(((new DOMParser()).parseFromString("<?xml version=\"1.0\" encoding=\"UTF-8\"?><root>" + single + ": " + req2.responseText + "</root>", "text/xml")), type, single), single);
-            }
-            req2.send();
-        }
-    }
-    req.send();
-}
-
-function loadPair(xml, type, id) {
-    let returner = document.createElement("details");
-    returner.xml = xml;
-    returner.setAttribute("class", type);
-    let summary = document.createElement("summary");
-    returner.appendChild(summary);
-    let sSpan = document.createElement("span");
-    summary.appendChild(sSpan);
-    let sSpanText = document.createTextNode("");
-    sSpan.appendChild(sSpanText);
-    returner.titleSpot = sSpanText;
-    let sDiv = document.createElement("div");
-    summary.appendChild(sDiv);
-    let problem = xml.querySelector("problem");
-    let child = problem.firstChild;
-    while (child) {
-        sDiv.appendChild(child.cloneNode(true));
-        child = child.nextSibling;
-    }
-    let solution = xml.querySelector("solution");
-    child = solution.firstChild;
-    while (child) {
-        returner.appendChild(child.cloneNode(true));
-        child = child.nextSibling;
-    }
-    if (solution.hasAttribute("notWrittenYet")) returner.setAttribute("unfinished", "");
-    if (solution.hasAttribute("partiallyFinished")) returner.setAttribute("unfinished", "partial");
-    try {
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-    } catch (e) {}
-    pairs[id] = returner;
-    returner.topics = [];
-    let topics = xml.querySelector("topics");
-    if (topics) {
-        for (let topicNode of topics.childNodes) {
-            returner.topics.push(topicNode.nodeName);
-            try {newTopic(topicNode.nodeName)} catch (e) {}
-        }
-    } else {
-        //console.log("no topics for " + id);
-    }
-    returner.instructors = {};
-    let instructorsNode = xml.querySelector("instructors");
-    if (instructorsNode) for (let instructorNode of instructorsNode.childNodes) {
-        let instructorID = instructorNode.nodeName;
-        if (!(instructorID in instructors)) {
-            newInstructor(instructorID);
-        }
-    }
-    return returner;
-}
-
-var topics = {}, numTopics = 0;
-
-function inputMessage(input, message) {
+function inputMessage(input, message, time = 1000) {
     let line = input.value, able = !input.hasAttribute("disabled");
     window.setTimeout(function() {input.value = message}, 10); // delay is to let blur happen
     input.setAttribute("disabled", "");
     window.setTimeout(function() {
         input.value = line;
         if (able) input.removeAttribute("disabled");
-    }, 1000);
+    }, time);
 }
 
 function newTopic(topic) {
     if (topic in topics) throw Error("already a topic");
-    let returner = {topic: topic, id: numTopics++};
+    let returner = {topic: topic};
     topics[topic] = returner;
-    returner.div = document.createElement("div");
-    topicsPlace.appendChild(returner.div);
-    returner.div.setAttribute("class", "checkbox");
-    returner.label = document.createElement("label");
-    returner.div.appendChild(returner.label);
-    returner.label.setAttribute("for", "topic" + returner.id);
-    returner.label.appendChild(document.createTextNode(topic));
-    returner.checkbox = document.createElement("input");
-    returner.div.appendChild(returner.checkbox);
-    returner.checkbox.setAttribute("type", "checkbox");
-    returner.checkbox.setAttribute("id", "topic" + returner.id);
-    returner.checkbox.setAttribute("value", topic);
+    returner.div = xmlImporter.element("div", topicsPlace, ["class", "checkbox"]);
+    returner.label = xmlImporter.element("label", returner.div, ["for", "topic"+topic]);
+    xmlImporter.text(topic, returner.label);
+    returner.checkbox = xmlImporter.element("input", returner.div, ["type", "checkbox", "id", "topic"+topic, "value", topic]);
     returner.checkbox.addEventListener("change", resetDoc);
-    Store.saveTopic(topic);
+    return returner;
 }
 
 function removeTopic(topic) {
     if (!(topic in topics)) throw Error("not a topic");
     let e = topics[topic];
-    if (e.checkbox.checked) throw Error("checkbox must not be checked");
+    if (e.checkbox.checked) throw Error(topic + " must not be in use");
     delete topics[topic];
     e.div.parentElement.removeChild(e.div);
-    Store.removeTopic(topic);
 }
 
-var instructors = {};
-
-function newInstructor(id) {
-    let returner = {id: id, name: id};
-    instructors[id] = returner;
-    returner.div = document.createElement("div");
-    instructorsPlace.appendChild(returner.div);
-    returner.label = document.createElement("label");
-    returner.div.appendChild(returner.label);
-    returner.checkbox = document.createElement("input");
-    returner.div.appendChild(returner.checkbox);
-    returner.checkbox.setAttribute("type", "checkbox");
-    returner.checkbox.setAttribute("id", "instructor" + id);
-    returner.label.setAttribute("for", "instructor" + id);
-    returner.label.appendChild(document.createTextNode(id));
+let instructorLetters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+function newInstructor() {
+    if (instructors.length == instructorLetters.length) throw Error("too many instructors");
+    let num = instructors.length, id = instructorLetters.charAt(num);
+    let returner = {id: id};
+    instructors[num] = returner;
+    returner.div = xmlImporter.element("div", instructorsPlace, ["class", "checkbox"]);
+    returner.label = xmlImporter.element("label", returner.div, ["for", "instructor_"+id]);
+    xmlImporter.text(id, returner.label);
+    returner.checkbox = xmlImporter.element("input", returner.div, ["type", "checkbox", "id", "instructor_"+id]);
     returner.checkbox.addEventListener("change", resetDoc);
-    returner.nameIn = document.createElement("input");
-    returner.nameIn.setAttribute("type", "text");
+    returner.nameIn = xmlImporter.element("input", null, ["type", "text"]);
     
     returner.label.addEventListener("click", function(e) {
-        e.stopPropagation();
+        e.preventDefault();
+        e.stopImmediatePropagation();
         returner.div.replaceChild(returner.nameIn, returner.label);
+        if (Store.fetchInstructorName(id)) returner.nameIn.value = Store.fetchInstructorName(id);
     });
     returner.nameIn.addEventListener("change", function() {returner.setRealName(returner.nameIn.value)});
-    returner.nameIn.addEventListener("click", function(e) {e.stopPropagation()});
+    returner.nameIn.addEventListener("blur", function() {if (returner.nameIn.parentElement) returner.div.replaceChild(returner.label, returner.nameIn)});
     returner.setRealName = function setRealName(realName) {
         returner.name = realName;
         returner.label.firstChild.nodeValue = realName;
@@ -309,6 +296,7 @@ function newInstructor(id) {
         if (returner.nameIn.parentElement) returner.div.replaceChild(returner.label, returner.nameIn);
     };
     Store.fetchInstructorName(id);
+    return returner;
 }
 
 function clearTex() {
@@ -317,8 +305,13 @@ function clearTex() {
     texSolution.value = "";
     solutionNone.checked = true;
     questionBad.checked = true;
+    for (let instructor of instructors) instructor.checkbox.checked = false;
     for (let topic in topics) topics[topic].checkbox.checked = false;
-    resetDoc();
+    newTopicButton.checked = false;
+    newTopicIn.value = "";
+    doc = xmlImporter.newDocument();
+    texLiveOut.innerHTML = "";
+    codeOut.value = "";
 }
 
 function noJax(line) {
@@ -329,6 +322,28 @@ function nodeNameScreen(line) {
     try {
         document.createElement(line); return true;
     } catch (e) {return false}
+}
+
+let converter = document.getElementById("converter");
+converter.addEventListener("change", function() {
+    let id = converter.value;
+    xmlImporter.openTextFile("../quals/complex/problems/"+id+".txt", null, function(line) {
+        let newdoc = new DOMParser().parseFromString("<q"+id+">"+line+"</q"+id+">", "text/xml");
+        let problem = newdoc.querySelector("problem"), solution = newdoc.querySelector("solution"), instructors = newdoc.querySelector("instructors"), topics = newdoc.querySelector("topics");
+        doc = xmlImporter.newDocument();
+        let root = xmlImporter.elementDoc(doc, id, doc);
+        let problemNode = xmlImporter.elementDoc(doc, "problem", root, ["tex", fixOldLine(problem.innerHTML.substring(3))]);
+        let solutionNode = xmlImporter.elementDoc(doc, "solution", problemNode, ["tex", fixOldLine(solution.innerHTML.substring(3))]);
+        let instructorsNode = xmlImporter.elementDoc(doc, "instructors", problemNode);
+        if (instructors) for (let child of instructors.childNodes) xmlImporter.elementDoc(doc, child.nodeName, instructorsNode);
+        let topicsNode = xmlImporter.elementDoc(doc, "topics", problemNode);
+        if (topics) for (let child of topics.childNodes) xmlImporter.elementDoc(doc, child.nodeName, topicsNode);
+        outputFromDoc();
+    }, function () {});
+});
+
+function fixOldLine(oldLine) {
+    return oldLine.replaceAll(/(\\\(|\\\))/g, "$").replaceAll(/<p>/g, "\n").replaceAll(/<\/p>/g, "").replaceAll(/&lt;/g, "<").replaceAll(/&gt;/g, ">").replaceAll(/&amp;/g, "&").replaceAll(/&apos;/g, "'").replaceAll(/&quot;/g, "\"");
 }
 
 var Store = {};
@@ -344,7 +359,7 @@ Store.getTopics = function() {if (Store.canStore()) {
 Store.saveTopics = function saveTopics(topics) {if (Store.canStore()) {
     let line = "";
     for (let t of topics) line+= "\n" + t;
-    localStorage.setItem("topics", line.substring(1));
+    //localStorage.setItem("topics", line.substring(1));
 }}
 
 Store.saveTopic = function saveTopic(topic) {if (Store.canStore()) {

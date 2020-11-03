@@ -14,9 +14,11 @@
         <div class="title">
             <h1>Browser \(\TeX\)</h1>
         </div>
-        <p>Use this tool to write LaTeX in the right format for use on this site. Read the <a href="../readmes/tex.md">readme</a> for an introduction.</p>
+        <p>Use this tool to write \(\LaTeX\) in the right format for use on this site. Read the <a href="../readmes/tex.md">readme</a> for an introduction.</p>
+        <p>Bugs: a letter following a &lt; causes issues -- add a space between them.</p>
         <label for="qualName">This is for qual</label>
         <input type="text" id="qualName"/>
+        <input type="text" id="converter" placeholder = "old question"/>
         <div><button type="button" id="clearTex">Clear</button></div>
         <div><button type="button" id="pairSolo">Solo mode</button></div>
         <div id="metainformationTex">
@@ -53,16 +55,20 @@
                         <label for="solutionNone">Bad, this would be a poor test question</label>
                     </div>
                 </div>
-                <div class="radioButtons">
+                <div class="checkboxHolder">
                     <p>Instructors:</p>
                     <div id="instructors"></div>
                     <button type="button" id="newInstructor">New instructor</button>
                 </div>
                 <div class="checkboxHolder">
-                    <p>Which theorems/topics are involved?</p>
+                    <p>Which topics are involved?</p>
                     <div id="topics" class="checkboxes"></div>
-                    <button type="button" id = "newTopicButton">New topic:</button>
-                    <input type="text" id="newTopic" placeholder="other topic which some problems may or may not include">
+                    <div class="checkbox">
+                        <label for="newTopicButton">Remove topic mode</label>
+                        <input type="checkbox" id="newTopicButton"/>
+                    </div>
+                    <input type="text" id="newTopic" placeholder="topic" list="topicsList"/>
+                    <datalist id="topicsList"/>
                 </div>
             </details>
         </div>
