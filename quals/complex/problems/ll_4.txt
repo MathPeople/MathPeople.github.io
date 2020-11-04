@@ -1,1 +1,0 @@
-<problem><p>Let \(h(x,y)=x^2-y^2+x+1\). Show that \(h\) is harmonic and find its harmonic conjugate.</p></problem><solution notWrittenYet=""></solution>

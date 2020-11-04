@@ -30,7 +30,7 @@ let pairMode = true, qual = "", serializer = new XMLSerializer(), doc = xmlImpor
     }
     
     setListener(qualName, "change", loadQual);
-    //qualName.value = "complex";loadQual();
+    qualName.value = "complex";loadQual();
     
     setListener(clearTexButton, "click", clearTex);
     
@@ -160,7 +160,7 @@ function outputFromDoc() {
     if (instructorsNode) {
         let i = instructorsNode.firstChild;
         while (i) {
-            for (let instructor of instructors) if (instructor.id == i.nodeName) instructor.checkbox.checked = true;
+            getBy(instructors, "id", i.nodeName).checkbox.checked = true;
             i = i.nextSibling;
         }
     }
@@ -205,6 +205,7 @@ function ensureInstructors(instructorsNode) {
 }
 
 function ensureInstructor(instructorID) {
+    if (getBy(instructors, "id", instructorID)) return;
     for (let instructor of instructors) if (instructor.id == instructorID) return;
     try {while (newInstructor().id != instructorID);} catch (e) {throw Error(instructorID + " is not a working instructor ID")}
 }
@@ -284,7 +285,7 @@ function newInstructor() {
         e.preventDefault();
         e.stopImmediatePropagation();
         returner.div.replaceChild(returner.nameIn, returner.label);
-        if (Store.fetchInstructorName(id)) returner.nameIn.value = Store.fetchInstructorName(id);
+        returner.nameIn.focus();
     });
     returner.nameIn.addEventListener("change", function() {returner.setRealName(returner.nameIn.value)});
     returner.nameIn.addEventListener("blur", function() {if (returner.nameIn.parentElement) returner.div.replaceChild(returner.label, returner.nameIn)});
@@ -298,6 +299,9 @@ function newInstructor() {
     Store.fetchInstructorName(id);
     return returner;
 }
+
+// metainformation should include where the problem came from / is used
+// number scales for test viability
 
 function clearTex() {
     idInput.value = "changeMe";
@@ -346,51 +350,19 @@ function fixOldLine(oldLine) {
     return oldLine.replaceAll(/(\\\(|\\\))/g, "$").replaceAll(/<p>/g, "\n").replaceAll(/<\/p>/g, "").replaceAll(/&lt;/g, "<").replaceAll(/&gt;/g, ">").replaceAll(/&amp;/g, "&").replaceAll(/&apos;/g, "'").replaceAll(/&quot;/g, "\"");
 }
 
+function getBy(array, prop, value) {
+    for (let element of array) if (element[prop] == value) return element;
+}
+
 var Store = {};
 
 Store.canStore = function() {return typeof (Storage) !== "undefined"}
 
-Store.getTopics = function() {if (Store.canStore()) {
-    let topics = localStorage.topics;
-    if (!topics) topics = "";
-    return topics == ""? []: topics.split("\n");
-} else return []}
-
-Store.saveTopics = function saveTopics(topics) {if (Store.canStore()) {
-    let line = "";
-    for (let t of topics) line+= "\n" + t;
-    //localStorage.setItem("topics", line.substring(1));
-}}
-
-Store.saveTopic = function saveTopic(topic) {if (Store.canStore()) {
-    let topics = Store.getTopics();
-    if (topics.includes(topic)) return;
-    topics.push(topic);
-    Store.saveTopics(topics);
-}}
-
-Store.loadTopics = function loadTopics() {if (Store.canStore()) {
-    let topics = Store.getTopics();
-    for (let topic of topics) try {
-        newTopic(topic);
-    } catch (e) {}
-}}
-
-Store.removeTopic = function removeTopic(topic) {if (Store.canStore()) {
-    let topics = Store.getTopics();
-    topics.splice(topics.indexOf(topic), 1);
-    Store.saveTopics(topics);
-}}
-
 Store.fetchInstructorName = function fetchInstructorName(id) {if (Store.canStore()) {
-    let realName = localStorage["instructor" + id];
-    if (realName) instructors[id].setRealName(realName);
+    let realName = localStorage[qual + " instructor " + id];
+    if (realName) getBy(instructors, "id", id).setRealName(realName);
 }}
 
 Store.saveInstructor = function saveInstructor(id, name) {if (Store.canStore()) {
-    localStorage.setItem("instructor" + id, name);
+    localStorage.setItem(qual + " instructor " + id, name);
 }}
-
-Store.loadTopics();
-
-function isEmpty(object) {for (let anything in object) return false; return true}

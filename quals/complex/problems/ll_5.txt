@@ -1,1 +1,0 @@
-<problem><p>Prove that the function \(u(x,y)=\ln(x^2+y^2)\) is harmonic in the domain \(G=\mathbb{C}\setminus\{0\}\). Does it have a harmonic conjugate in \(G\)?</p></problem><solution notWrittenYet=""></solution>

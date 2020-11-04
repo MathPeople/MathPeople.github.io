@@ -1,1 +1,0 @@
-<problem><p>For what values of \(z\) is</p><p>\[\sum_{n=0}^\infty\left(\frac{z}{1+z}\right)^{\!n}\]</p><p>convergent?</p></problem><solution notWrittenYet=""></solution><topics><SumConvergence/></topics>
