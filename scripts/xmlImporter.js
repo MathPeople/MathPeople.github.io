@@ -69,3 +69,7 @@ xmlImporter.text = function text(line, loadHere) {
 }
 
 xmlImporter.newDocument = function() {return document.implementation.createDocument(null, "")}
+
+xmlImporter.parser = new DOMParser();
+
+xmlImporter.parseDoc = function parseDoc(line) {return xmlImporter.parser.parseFromString(line, "application/xml")}

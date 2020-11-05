@@ -23,7 +23,7 @@
         <div id="metainformationTex">
             <details id="metainformation">
                 <summary>Metainformation</summary>
-                <p id="idP">Problem ID: <input type="text" id="problemID"/></p>
+                <p id="idP">Problem ID: <input type="text" id="problemID" list="idList"/><datalist id="idList"/></p>
                 <div class="radioButtons" pairOnly="">
                     <p>Is the solution complete?</p>
                     <div>
@@ -79,5 +79,6 @@
         <button type="button" id="save">Save</button>
         <div><textarea id="codeOut" spellcheck="false">Formatted code will go here</textarea></div>
         <button type="button" id="saveAll">Save All (.zip)</button>
+        <p id="errorOut"/>
     </body>
 </html>

@@ -2,6 +2,7 @@ var qualName = document.getElementById("qualName"),
     clearTexButton = document.getElementById("clearTex"),
     pairSoloButton = document.getElementById("pairSolo"),
     idInput = document.getElementById("problemID"),
+    idList = document.getElementById("idList"),
     solutionFull = document.getElementById("solutionFull"),
     solutionPartial = document.getElementById("solutionPartial"),
     solutionNone = document.getElementById("solutionNone"),
@@ -18,9 +19,10 @@ var qualName = document.getElementById("qualName"),
     texLiveOut = document.getElementById("texLiveOut"),
     saveButton = document.getElementById("save"),
     codeOut = document.getElementById("codeOut"),
-    saveAllButton = document.getElementById("saveAll");
+    saveAllButton = document.getElementById("saveAll"),
+    errorOutP = document.getElementById("errorOut");
 
-let pairMode = true, qual = "", serializer = new XMLSerializer(), doc = xmlImporter.newDocument(), id = "changeMe", topics = {}, instructors = [], problems = {};
+let pairMode = true, qual = "", serializer = new XMLSerializer(), doc = xmlImporter.newDocument(), id = "changeMe", topics = {}, instructors = [], problems = {}, problemsTags = {};
 
 // set event listeners
 {
@@ -31,7 +33,7 @@ let pairMode = true, qual = "", serializer = new XMLSerializer(), doc = xmlImpor
     }
     
     setListener(qualName, "change", loadQual);
-    qualName.value = "complex";loadQual();
+    //qualName.value = "complex";loadQual();
     
     setListener(clearTexButton, "click", clearTex);
     
@@ -103,34 +105,54 @@ function fixTextHeight(event) {
     }
 
 function loadQual() {
+    if (!nodeNameScreen(qualName.value)) return inputMessage(qualName, "invalid name");
     let exchange = refreshMathJax;
     refreshMathJax = function() {}
-    if (!nodeNameScreen(qualName.value)) return inputMessage(qualName, "invalid name");
     qual = qualName.value;
     qualName.value = "loading " + qual;
     qualName.setAttribute("disabled", "");
-    xmlImporter.openTextFile("../quals/"+qual+"/problemsList.txt", null, function(list) {
-        let lines = list.split(" "), numLines = lines.length;
-        for (let problem of lines) {
-            let p = problem;
-            if (problem in problems) throw Error("duplicate in problems list: " + problem);
-            problems[problem] = undefined;
-            xmlImporter.openXMLFile("../quals/"+qual+"/problems/"+p+".xml", null, function(problemDoc) {
-                problems[p] = problemDoc;
-                doc = problemDoc;
-                outputFromDoc();
-                if (--numLines == 0) {
-                    clearTex();
-                    qualName.value = "working on " + qual;
-                }
-            }, function() {
-                throw Error("cannot find " + p);
-            });
+    if (qual == "local") {
+        let list = Store.fetch("local problems list");
+        if (!list) list = "";
+        let lines = list.split(" ");
+        for (let problem of lines) if (problem != "") {
+            if (problem in problems) errorOut("duplicate in problems list: " + problem);
+            doc = problems[problem] = xmlImporter.parseDoc(Store.fetch("local " + problem));
+            problemsTags[problem] = xmlImporter.element("option", idList, ["value", problem]);
+            outputFromDoc();
         }
-    }, function() {
-        inputMessage(qualName, "that qual has not been successfully initiated", 3000);
-    });
-    refreshMathJax = exchange;
+        clearTex();
+        qualName.value = "working locally";
+        refreshMathJax = exchange;
+        let button = xmlImporter.element("button", null, ["type", "button"]);
+        qualName.parentElement.insertBefore(button, qualName.nextSibling);
+        button.innerHTML = "Erase Local Storage";
+        button.addEventListener("click", clearLocalQual);
+    } else {
+        xmlImporter.openTextFile("../quals/"+qual+"/problemsList.txt", null, function(list) {
+            let lines = list.split(" "), numLines = lines.length;
+            for (let problem of lines) {
+                let p = problem;
+                if (problem in problems) errorOut("duplicate in problems list: " + problem);
+                problems[problem] = undefined;
+                problemsTags[problem] = xmlImporter.element("option", idList, ["value", problem]);
+                xmlImporter.openXMLFile("../quals/"+qual+"/problems/"+p+".xml", null, function(problemDoc) {
+                    doc = problems[p] = problemDoc;
+                    outputFromDoc();
+                    if (--numLines == 0) {
+                        clearTex();
+                        qualName.value = "working on " + qual;
+                        refreshMathJax = exchange;
+                    }
+                }, function() {
+                    errorOut("cannot find " + p);
+                });
+            }
+        }, function() {
+            inputMessage(qualName, "that qual has not been successfully initiated", 3000);
+            refreshMathJax = exchange;
+        });
+    }
 }
 
 function handleIdChange() {
@@ -138,6 +160,11 @@ function handleIdChange() {
         let oldID = id;
         id = idInput.value;
         delete (problems[oldID]);
+        if (problemsTags[oldID]) {
+            problemsTags[oldID].parentElement.removeChild(problemsTags[oldID]);
+            delete problemsTags[oldID];
+        }
+        if (qual == "local") Store.erase("local " + oldID);
         if (id in problems) {
             doc = problems[id];
             outputFromDoc();
@@ -164,6 +191,7 @@ resetDoc();
 function outputFromDoc() {
     idInput.value = id = xmlImporter.getRoot(doc).nodeName;
     problems[id] = doc;
+    if (!(id in problemsTags)) problemsTags[id] = xmlImporter.element("option", idList, ["value", id]);
     let problem = doc.querySelector("problem"), solution = doc.querySelector("solution"), instructorsNode = doc.querySelector("instructors"), topicsNode = doc.querySelector("topics");
     ensureInstructors(instructorsNode);
     for (let i of instructors) i.checkbox.checked = false;
@@ -210,6 +238,16 @@ function outputFromDoc() {
     }
     codeOut.value = serializer.serializeToString(doc);
     refreshMathJax();
+    if (qual == "local") {
+        Store.store("local " + id, codeOut.value);
+        Store.store("local problems list", problemsListString());
+    }
+}
+
+function problemsListString() {
+    let returner = "";
+    for (let problem in problems) returner += " " + problem;
+    return returner.substring(1);
 }
 
 function ensureInstructors(instructorsNode) {
@@ -224,7 +262,7 @@ function ensureInstructors(instructorsNode) {
 function ensureInstructor(instructorID) {
     if (getBy(instructors, "id", instructorID)) return Store.fetchInstructorName(instructorID);
     for (let instructor of instructors) if (instructor.id == instructorID) return;
-    try {while (newInstructor().id != instructorID);} catch (e) {throw Error(instructorID + " is not a working instructor ID")}
+    try {while (newInstructor().id != instructorID);} catch (e) {errorOut(instructorID + " is not a working instructor ID")}
 }
 
 function ensureTopics(topicsNode) {
@@ -266,7 +304,7 @@ function inputMessage(input, message, time = 1000) {
 }
 
 function newTopic(topic) {
-    if (topic in topics) throw Error("already a topic");
+    if (topic in topics) errorOut("already a topic");
     let returner = {topic: topic};
     topics[topic] = returner;
     returner.div = xmlImporter.element("div", topicsPlace, ["class", "checkbox"]);
@@ -278,16 +316,16 @@ function newTopic(topic) {
 }
 
 function removeTopic(topic) {
-    if (!(topic in topics)) throw Error("not a topic");
+    if (!(topic in topics)) errorOut("not a topic");
     let e = topics[topic];
-    if (e.checkbox.checked) throw Error(topic + " must not be in use");
+    if (e.checkbox.checked) errorOut(topic + " must not be in use");
     delete topics[topic];
     e.div.parentElement.removeChild(e.div);
 }
 
 let instructorLetters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 function newInstructor() {
-    if (instructors.length == instructorLetters.length) throw Error("too many instructors");
+    if (instructors.length == instructorLetters.length) errorOut("too many instructors");
     let num = instructors.length, id = instructorLetters.charAt(num);
     let returner = {id: id};
     instructors[num] = returner;
@@ -342,6 +380,11 @@ function getBy(array, prop, value) {
     for (let element of array) if (element[prop] == value) return element;
 }
 
+function errorOut(message) {
+    errorOutP.innerHTML = message;
+    throw Error(message);
+}
+
 let zip;
 function saveAll() {
     if (!zip) return xmlImporter.element("script", document.head, ["src", "https://stuk.github.io/jszip/dist/jszip.js"]).addEventListener("load", function() {
@@ -360,6 +403,12 @@ function saveAll() {
     });
 }
 
+function clearLocalQual() {
+    for (let problem of Store.fetch("local problems list").split(" ")) Store.erase("local " + problem);
+    Store.erase("local problems list");
+    Store.canStore = function() {return false}
+}
+
 var Store = {};
 
 Store.canStore = function() {return typeof (Storage) !== "undefined"}
@@ -372,3 +421,15 @@ Store.fetchInstructorName = function fetchInstructorName(id) {if (Store.canStore
 Store.saveInstructor = function saveInstructor(id, name) {if (Store.canStore()) {
     localStorage.setItem(qual + " instructor " + id, name);
 }}
+
+Store.fetch = function fetch(name) {
+    if (Store.canStore()) return localStorage.getItem(name);
+}
+
+Store.store = function store(name, value) {
+    if (Store.canStore()) localStorage.setItem(name, value);
+}
+
+Store.erase = function erase(name) {
+    if (Store.canStore()) localStorage.removeItem(name);
+}
