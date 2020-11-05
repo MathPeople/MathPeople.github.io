@@ -10,3 +10,7 @@ div.xmlViewer details {
     border-width: thin;
     padding: 5px;
 }
+
+[hide] {
+    display: none !important;
+}

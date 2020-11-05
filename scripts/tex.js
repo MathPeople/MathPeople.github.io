@@ -17,7 +17,8 @@ var qualName = document.getElementById("qualName"),
     texSolution = document.getElementById("texSolution"),
     texLiveOut = document.getElementById("texLiveOut"),
     saveButton = document.getElementById("save"),
-    codeOut = document.getElementById("codeOut");
+    codeOut = document.getElementById("codeOut"),
+    saveAllButton = document.getElementById("saveAll");
 
 let pairMode = true, qual = "", serializer = new XMLSerializer(), doc = xmlImporter.newDocument(), id = "changeMe", topics = {}, instructors = [], problems = {};
 
@@ -37,8 +38,10 @@ let pairMode = true, qual = "", serializer = new XMLSerializer(), doc = xmlImpor
     pairSoloButton = document.getElementById("pairSolo"),
     
     setListener(pairSoloButton, "click", function() {
-        pairSoloButton.firstChild.nodeValue = (pairMode? "Pair": "Solo") + " mode";
+        pairSoloButton.firstChild.nodeValue = "To " + (pairMode? "Pair": "Solo") + " mode";
         pairMode = !pairMode;
+        if (pairMode) for (let hideMe of document.querySelectorAll("[pairOnly]")) hideMe.removeAttribute("hide");
+        else for (let hideMe of document.querySelectorAll("[pairOnly]")) hideMe.setAttribute("hide", "");
         resetDoc();
     })
     
@@ -80,7 +83,7 @@ let pairMode = true, qual = "", serializer = new XMLSerializer(), doc = xmlImpor
         setListener(textarea, "change", fixTextHeight);
     }
     
-    saveButton.addEventListener("click", function() {
+    setListener(saveButton, "click", function() {
         let file = new File([codeOut.value], idInput.value+".xml", {type: "text/xml"});
         let url = URL.createObjectURL(file);
         let a = xmlImporter.element("a", document.body, ["href", url, "download", ""]);
@@ -88,6 +91,8 @@ let pairMode = true, qual = "", serializer = new XMLSerializer(), doc = xmlImpor
         a.click();
         document.body.removeChild(a);
     });
+    
+    setListener(saveAllButton, "click", saveAll);
 }
 
 function fixTextHeight(event) {
@@ -101,20 +106,23 @@ function loadQual() {
     let exchange = refreshMathJax;
     refreshMathJax = function() {}
     if (!nodeNameScreen(qualName.value)) return inputMessage(qualName, "invalid name");
-    xmlImporter.openTextFile("../quals/"+qualName.value+"/problemsList.txt", null, function(list) {
-        qual = qualName.value;
-        qualName.value = "working on " + qual;
-        qualName.setAttribute("disabled", "");
+    qual = qualName.value;
+    qualName.value = "loading " + qual;
+    qualName.setAttribute("disabled", "");
+    xmlImporter.openTextFile("../quals/"+qual+"/problemsList.txt", null, function(list) {
         let lines = list.split(" "), numLines = lines.length;
         for (let problem of lines) {
             let p = problem;
             if (problem in problems) throw Error("duplicate in problems list: " + problem);
             problems[problem] = undefined;
             xmlImporter.openXMLFile("../quals/"+qual+"/problems/"+p+".xml", null, function(problemDoc) {
-                problems[p] = xmlImporter.getRoot(problemDoc);
+                problems[p] = problemDoc;
                 doc = problemDoc;
                 outputFromDoc();
-                if (--numLines == 0) clearTex();
+                if (--numLines == 0) {
+                    clearTex();
+                    qualName.value = "working on " + qual;
+                }
             }, function() {
                 throw Error("cannot find " + p);
             });
@@ -127,10 +135,11 @@ function loadQual() {
 
 function handleIdChange() {
     if (nodeNameScreen(idInput.value)) {
+        let oldID = id;
         id = idInput.value;
+        delete (problems[oldID]);
         if (id in problems) {
-            while (doc.firstChild) doc.removeChild(doc.firstChild);
-            doc.appendChild(problems[id].cloneNode(true));
+            doc = problems[id];
             outputFromDoc();
         } else resetDoc();
     } else inputMessage(idInput, "invalid nodeName");
@@ -138,11 +147,11 @@ function handleIdChange() {
 
 function resetDoc() {
     while (doc.firstChild) doc.removeChild(doc.firstChild);
-    let problem = xmlImporter.elementDoc(doc, "problem", xmlImporter.elementDoc(doc, id, doc), [
-        "tex", texProblem.value,
-        "solutionCompleteness", solutionFull.checked? "full": solutionPartial.checked? "partial": "none",
-        "questionViability", questionGreat.checked? "great": questionGood.checked? "good": "bad"
-    ]);
+    let problem = xmlImporter.elementDoc(doc, "problem", xmlImporter.elementDoc(doc, id, doc), ["tex", texProblem.value]);
+    if (pairMode) {
+        problem.setAttribute("solutionCompleteness", solutionFull.checked? "full": solutionPartial.checked? "partial": "none");
+        problem.setAttribute("questionViability", questionGreat.checked? "great": questionGood.checked? "good": "bad");
+    }
     let instructorsNode = xmlImporter.elementDoc(doc, "instructors", problem);
     for (let instructor of instructors) if (instructor.checkbox.checked) xmlImporter.elementDoc(doc, instructor.id, instructorsNode);
     let topicsNode = xmlImporter.elementDoc(doc, "topics", problem);
@@ -154,6 +163,7 @@ resetDoc();
 
 function outputFromDoc() {
     idInput.value = id = xmlImporter.getRoot(doc).nodeName;
+    problems[id] = doc;
     let problem = doc.querySelector("problem"), solution = doc.querySelector("solution"), instructorsNode = doc.querySelector("instructors"), topicsNode = doc.querySelector("topics");
     ensureInstructors(instructorsNode);
     for (let i of instructors) i.checkbox.checked = false;
@@ -173,24 +183,31 @@ function outputFromDoc() {
             topic = topic.nextSibling;
         }
     }
-    texProblem.value = problem.getAttribute("tex");
+    if (problem) texProblem.value = problem.getAttribute("tex");
+    else texProblem.value = "";
     fixTextHeight({target: texProblem});
     if (pairMode) {
-        texSolution.value = solution.getAttribute("tex");
+        if (solution) texSolution.value = solution.getAttribute("tex");
+        else texSolution.value = "";
         fixTextHeight({target: texSolution});
     }
-    switch (problem.getAttribute("solutionCompleteness")) {
+    if (problem) switch (problem.getAttribute("solutionCompleteness")) {
         case "full": solutionFull.checked = true; break;
         case "partial": solutionPartial.checked = true; break;
         default: solutionNone.checked = true;
-    }
-    switch (problem.getAttribute("questionViability")) {
+    } else solutionNone.checked = true;
+    if (problem) switch (problem.getAttribute("questionViability")) {
         case "great": questionGreat.checked = true; break;
         case "good": questionGood.checked = true; break;
         default: questionBad.checked = true;
+    } else questionBad.checked = true;
+    if (problem) {
+        if (pairMode) texLiveOut.innerHTML = "<h4>Problem</h4><p>"+fixLineBreaksToP(problem.getAttribute("tex"))+"</p><h4>Solution</h4><p>"+fixLineBreaksToP(solution.getAttribute("tex"))+"</p>";
+        else texLiveOut.innerHTML = "<p>"+fixLineBreaksToP(problem.getAttribute("tex"))+"</p>";
+    } else {
+        if (pairMode) texLiveOut.innerHTML = "<h4>Problem</h4><p></p><h4>Solution</h4><p></p>";
+        else texLiveOut.innerHTML = "<h4>Problem</h4><p></p>";
     }
-    if (pairMode) texLiveOut.innerHTML = "<h4>Problem</h4><p>"+fixLineBreaksToP(problem.getAttribute("tex"))+"</p><h4>Solution</h4><p>"+fixLineBreaksToP(solution.getAttribute("tex"))+"</p>";
-    else texLiveOut.innerHTML = "<p>"+fixLineBreaksToP(problem.getAttribute("tex"))+"</p>";
     codeOut.value = serializer.serializeToString(doc);
     refreshMathJax();
 }
@@ -205,7 +222,7 @@ function ensureInstructors(instructorsNode) {
 }
 
 function ensureInstructor(instructorID) {
-    if (getBy(instructors, "id", instructorID)) return;
+    if (getBy(instructors, "id", instructorID)) return Store.fetchInstructorName(instructorID);
     for (let instructor of instructors) if (instructor.id == instructorID) return;
     try {while (newInstructor().id != instructorID);} catch (e) {throw Error(instructorID + " is not a working instructor ID")}
 }
@@ -304,19 +321,12 @@ function newInstructor() {
 // number scales for test viability
 
 function clearTex() {
-    idInput.value = "changeMe";
-    texProblem.value = "";
-    texSolution.value = "";
-    solutionNone.checked = true;
-    questionBad.checked = true;
-    for (let instructor of instructors) instructor.checkbox.checked = false;
-    for (let topic in topics) topics[topic].checkbox.checked = false;
-    newTopicButton.checked = false;
-    newTopicIn.value = "";
     doc = xmlImporter.newDocument();
-    texLiveOut.innerHTML = "";
-    codeOut.value = "";
+    xmlImporter.elementDoc(doc, "changeMe", doc);
+    outputFromDoc();
 }
+
+clearTex();
 
 function noJax(line) {
     return line.replace(/&/g, "&amp;").replace(/\\/g, "\\<span\\>");
@@ -328,30 +338,26 @@ function nodeNameScreen(line) {
     } catch (e) {return false}
 }
 
-let converter = document.getElementById("converter");
-converter.addEventListener("change", function() {
-    let id = converter.value;
-    xmlImporter.openTextFile("../quals/complex/problems/"+id+".txt", null, function(line) {
-        let newdoc = new DOMParser().parseFromString("<q"+id+">"+line+"</q"+id+">", "text/xml");
-        let problem = newdoc.querySelector("problem"), solution = newdoc.querySelector("solution"), instructors = newdoc.querySelector("instructors"), topics = newdoc.querySelector("topics");
-        doc = xmlImporter.newDocument();
-        let root = xmlImporter.elementDoc(doc, id, doc);
-        let problemNode = xmlImporter.elementDoc(doc, "problem", root, ["tex", fixOldLine(problem.innerHTML.substring(3))]);
-        let solutionNode = xmlImporter.elementDoc(doc, "solution", problemNode, ["tex", fixOldLine(solution.innerHTML.substring(3))]);
-        let instructorsNode = xmlImporter.elementDoc(doc, "instructors", problemNode);
-        if (instructors) for (let child of instructors.childNodes) xmlImporter.elementDoc(doc, child.nodeName, instructorsNode);
-        let topicsNode = xmlImporter.elementDoc(doc, "topics", problemNode);
-        if (topics) for (let child of topics.childNodes) xmlImporter.elementDoc(doc, child.nodeName, topicsNode);
-        outputFromDoc();
-    }, function () {});
-});
-
-function fixOldLine(oldLine) {
-    return oldLine.replaceAll(/(\\\(|\\\))/g, "$").replaceAll(/<p>/g, "\n").replaceAll(/<\/p>/g, "").replaceAll(/&lt;/g, "<").replaceAll(/&gt;/g, ">").replaceAll(/&amp;/g, "&").replaceAll(/&apos;/g, "'").replaceAll(/&quot;/g, "\"");
-}
-
 function getBy(array, prop, value) {
     for (let element of array) if (element[prop] == value) return element;
+}
+
+let zip;
+function saveAll() {
+    if (!zip) return xmlImporter.element("script", document.head, ["src", "https://stuk.github.io/jszip/dist/jszip.js"]).addEventListener("load", function() {
+        zip = new JSZip();
+        saveAll();
+    });
+    let folder = zip.folder("problems");
+    for (let problem in problems) folder.file(problem+".xml", serializer.serializeToString(problems[problem]));
+    folder.generateAsync({type:"blob"}).then(function (file) {
+        file = new File([file.slice(0, file.size, "application/zip")], "problems.zip", {type: "application/zip"});
+        let url = URL.createObjectURL(file);
+        let a = xmlImporter.element("a", document.body, ["href", url, "download", ""]);
+        xmlImporter.text("download link", a);
+        a.click();
+        document.body.removeChild(a);
+    });
 }
 
 var Store = {};

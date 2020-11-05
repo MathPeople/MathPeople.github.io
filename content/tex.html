@@ -15,17 +15,16 @@
             <h1>Browser \(\TeX\)</h1>
         </div>
         <p>Use this tool to write \(\LaTeX\) in the right format for use on this site. Read the <a href="../readmes/tex.md">readme</a> for an introduction.</p>
-        <p>Bugs: a letter following a &lt; causes issues -- add a space between them.</p>
+        <p>Notices: A letter immediately folling the &lt; sign causes issues -- put a space between them.</p>
         <label for="qualName">This is for qual</label>
         <input type="text" id="qualName"/>
-        <input type="text" id="converter" placeholder = "old question"/>
-        <div><button type="button" id="clearTex">Clear</button></div>
-        <div><button type="button" id="pairSolo">Solo mode</button></div>
+        <div><button type="button" id="clearTex">Clear / New Problem</button></div>
+        <div><button type="button" id="pairSolo">To Solo mode</button></div>
         <div id="metainformationTex">
             <details id="metainformation">
                 <summary>Metainformation</summary>
                 <p id="idP">Problem ID: <input type="text" id="problemID"/></p>
-                <div class="radioButtons">
+                <div class="radioButtons" pairOnly="">
                     <p>Is the solution complete?</p>
                     <div>
                         <input type="radio" id="solutionFull" name="solution" value="">
@@ -40,7 +39,7 @@
                         <label for="solutionNone">No, this is not an attempt at a solution</label>
                     </div>
                 </div>
-                <div class="radioButtons">
+                <div class="radioButtons" pairOnly="">
                     <p>How is this as a test question?</p>
                     <div>
                         <input type="radio" id="greatQuestion" name="viability" value="">
@@ -72,12 +71,13 @@
                 </div>
             </details>
         </div>
-        <label for="problemIn">Problem:</label>
+        <label for="problemIn" pairOnly="">Problem:</label>
         <div><textarea class="texInput" id="texProblem" spellcheck="false"></textarea></div>
-        <label for="solutionIn">Solution:</label>
-        <div><textarea class="texInput" id="texSolution" spellcheck="false"></textarea></div>
+        <label for="solutionIn" pairOnly="">Solution:</label>
+        <div pairOnly=""><textarea class="texInput" id="texSolution" spellcheck="false"></textarea></div>
         <div id="texLiveOut"><p>Rendered TeX will go here</p></div>
         <button type="button" id="save">Save</button>
         <div><textarea id="codeOut" spellcheck="false">Formatted code will go here</textarea></div>
+        <button type="button" id="saveAll">Save All (.zip)</button>
     </body>
 </html>

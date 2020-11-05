@@ -23,7 +23,7 @@ xmlImporter.trim = function trim(node) {
 xmlImporter.openXMLFile = function openXMLFile(location, pass, finished, failed=function(){console.warn("failed HTTP request " + location)}) {
     let req = new XMLHttpRequest();
     function trimAndFinish() {
-        let response = xmlImporter.getRoot(req.responseXML);
+        let response = req.responseXML;
         xmlImporter.trim(response);
         finished(response, pass);
     }
