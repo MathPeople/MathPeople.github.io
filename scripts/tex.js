@@ -1,3 +1,8 @@
+// to do:
+// metainformation should include where the problem came from / is used
+// number scales for test viability
+
+// DOM elements
 var qualName = document.getElementById("qualName"),
     clearTexButton = document.getElementById("clearTex"),
     pairSoloButton = document.getElementById("pairSolo"),
@@ -21,23 +26,20 @@ var qualName = document.getElementById("qualName"),
     codeOut = document.getElementById("codeOut"),
     saveAllButton = document.getElementById("saveAll"),
     errorOutP = document.getElementById("errorOut");
+// script global variables
+let pairMode = true, qual = "", serializer = new XMLSerializer(), topics = {}, instructors = [], problems = {}, problemsTags = {};
 
-let pairMode = true, qual = "", serializer = new XMLSerializer(), doc = xmlImporter.newDocument(), id = "changeMe", topics = {}, instructors = [], problems = {}, problemsTags = {};
+// these define the active problem
+let doc = xmlImporter.newDocument(), id = "changeMe";
 
 // set event listeners
 {
-    function setListener(element, type, func) {
-        try {
-            element.addEventListener(type, func);
-        } catch (e) {}
-    }
+    // fireblock in case something has an error
+    function setListener(element, type, func) {try {element.addEventListener(type, func)} catch (e) {}}
     
     setListener(qualName, "change", loadQual);
-    //qualName.value = "complex";loadQual();
     
     setListener(clearTexButton, "click", clearTex);
-    
-    pairSoloButton = document.getElementById("pairSolo"),
     
     setListener(pairSoloButton, "click", function() {
         pairSoloButton.firstChild.nodeValue = "To " + (pairMode? "Pair": "Solo") + " mode";
@@ -52,9 +54,7 @@ let pairMode = true, qual = "", serializer = new XMLSerializer(), doc = xmlImpor
     
     for (let e of [solutionFull, solutionPartial, solutionNone, questionGreat, questionGood, questionBad]) setListener(e, "change", resetDoc);
     
-    //instructorsPlace = document.getElementById("instructors"),
     newInstructorButton.addEventListener("click", newInstructor);
-    //topicsPlace = document.getElementById("topics"),
     
     setListener(newTopicIn, "change", function() {
         let line = newTopicIn.value;
@@ -65,16 +65,12 @@ let pairMode = true, qual = "", serializer = new XMLSerializer(), doc = xmlImpor
         if (newTopicButton.checked) {
             try {
                 removeTopic(line);
-            } catch (e) {
-                return inputMessage(newTopicIn, e.message);
-            }
+            } catch (e) {return inputMessage(newTopicIn, e.message)}
         } else {
             try {
                 newTopic(line);
                 newTopicIn.value="";
-            } catch (e) {
-                return inputMessage(newTopicIn, e.message);
-            }
+            } catch (e) {return inputMessage(newTopicIn, e.message)}
         }
     });
     
@@ -85,8 +81,9 @@ let pairMode = true, qual = "", serializer = new XMLSerializer(), doc = xmlImpor
         setListener(textarea, "change", fixTextHeight);
     }
     
+    // take the value of codeOut and offer it as a file, named id.xml, to download
     setListener(saveButton, "click", function() {
-        let file = new File([codeOut.value], idInput.value+".xml", {type: "text/xml"});
+        let file = new File([codeOut.value], id+".xml", {type: "text/xml"});
         let url = URL.createObjectURL(file);
         let a = xmlImporter.element("a", document.body, ["href", url, "download", ""]);
         xmlImporter.text("download link", a);
@@ -97,81 +94,119 @@ let pairMode = true, qual = "", serializer = new XMLSerializer(), doc = xmlImpor
     setListener(saveAllButton, "click", saveAll);
 }
 
+// for auto-resizing textareas
 function fixTextHeight(event) {
-        event = event.target;
-        while (event.nodeName.toLowerCase() != "textarea") event = event.parentNode;
-        event.style.height = "5px";
-        event.style.height = (event.scrollHeight)+"px";
-    }
+    event = event.target;
+    while (event.nodeName.toLowerCase() != "textarea") event = event.parentNode;
+    event.style.height = "5px";
+    event.style.height = (event.scrollHeight)+"px";
+}
 
-function loadQual() {
-    if (!nodeNameScreen(qualName.value)) return inputMessage(qualName, "invalid name");
+// load all problems from a qual repository
+function importRemoteQuestions(nameOfQual, finished = function() {}) {
     let exchange = refreshMathJax;
     refreshMathJax = function() {}
+    xmlImporter.openTextFile("../quals/"+nameOfQual+"/problemsList.txt", null, function(list) {
+        let lines = list.split(" "), numLines = lines.length;
+        for (let problem of lines) if (problem != "changeMe") {
+            let p = problem;
+            if (problem in problems) errorOut("duplicate in problems list: " + problem);
+            problems[problem] = undefined;
+            problemsTags[problem] = xmlImporter.element("option", idList, ["value", problem]);
+            xmlImporter.openXMLFile("../quals/"+nameOfQual+"/problems/"+p+".xml", null, function(problemDoc) {
+                doc = problems[p] = problemDoc;
+                outputFromDoc();
+                if (--numLines == 0) {
+                    clearTex();
+                    refreshMathJax = exchange;
+                    finished();
+                }
+            }, function() {
+                errorOut("cannot find " + p);
+            });
+        }
+    }, function() {
+        inputMessage(qualName, "that qual has not been successfully initiated", 3000);
+        refreshMathJax = exchange;
+        window.setTimeout(function() {qualName.removeAttribute("disabled")}, 3000);
+    });
+}
+
+// load all locally stored problems and set up for local autosaving
+function initializeLocal(onDuplicate = function(problem) {errorOut("duplicate in problems list: " + problem)}) {
+    let exchange = refreshMathJax;
+    refreshMathJax = function() {}
+    let list = Store.fetch("local problems list");
+    if (!list) list = "";
+    let lines = list.split(" ");
+    for (let problem of lines) if (problem != "" && problem != "changeMe") {
+        if (problem in problems) onDuplicate(problem);
+        doc = problems[problem] = xmlImporter.parseDoc(Store.fetch("local " + problem));
+        if (!(problem in problemsTags))problemsTags[problem] = xmlImporter.element("option", idList, ["value", problem]);
+        outputFromDoc();
+    }
+    clearTex();
+    qualName.value = "working locally";
+    refreshMathJax = exchange;
+    let button = xmlImporter.element("button", null, ["type", "button"]);
+    qualName.parentElement.insertBefore(button, qualName.nextSibling);
+    button.innerHTML = "Erase Local Storage";
+    button.addEventListener("click", clearLocalQual);
+}
+
+// 3 successful cases: import qual, initialize local, or do both
+function loadQual() {
+    if (!nodeNameScreen(qualName.value)) {
+        if (qualName.value.substring(0, 6) == "local ") {
+            // import qual then initialize local autosaving
+            qual = "local";
+            let nameOfQual = qualName.value.substring(6);
+            importRemoteQuestions(nameOfQual, function() {
+                initializeLocal(function() {});
+                qualName.value = "working locally on " + nameOfQual;
+                qualName.setAttribute("disabled", "");
+            });
+            return;
+        } else return inputMessage(qualName, "invalid name");
+    }
     qual = qualName.value;
     qualName.value = "loading " + qual;
     qualName.setAttribute("disabled", "");
+    // import qual or initialize local
     if (qual == "local") {
-        let list = Store.fetch("local problems list");
-        if (!list) list = "";
-        let lines = list.split(" ");
-        for (let problem of lines) if (problem != "") {
-            if (problem in problems) errorOut("duplicate in problems list: " + problem);
-            doc = problems[problem] = xmlImporter.parseDoc(Store.fetch("local " + problem));
-            problemsTags[problem] = xmlImporter.element("option", idList, ["value", problem]);
-            outputFromDoc();
-        }
-        clearTex();
-        qualName.value = "working locally";
-        refreshMathJax = exchange;
-        let button = xmlImporter.element("button", null, ["type", "button"]);
-        qualName.parentElement.insertBefore(button, qualName.nextSibling);
-        button.innerHTML = "Erase Local Storage";
-        button.addEventListener("click", clearLocalQual);
+        initializeLocal();
     } else {
-        xmlImporter.openTextFile("../quals/"+qual+"/problemsList.txt", null, function(list) {
-            let lines = list.split(" "), numLines = lines.length;
-            for (let problem of lines) {
-                let p = problem;
-                if (problem in problems) errorOut("duplicate in problems list: " + problem);
-                problems[problem] = undefined;
-                problemsTags[problem] = xmlImporter.element("option", idList, ["value", problem]);
-                xmlImporter.openXMLFile("../quals/"+qual+"/problems/"+p+".xml", null, function(problemDoc) {
-                    doc = problems[p] = problemDoc;
-                    outputFromDoc();
-                    if (--numLines == 0) {
-                        clearTex();
-                        qualName.value = "working on " + qual;
-                        refreshMathJax = exchange;
-                    }
-                }, function() {
-                    errorOut("cannot find " + p);
-                });
-            }
-        }, function() {
-            inputMessage(qualName, "that qual has not been successfully initiated", 3000);
-            refreshMathJax = exchange;
-        });
+        importRemoteQuestions(qual, function() {
+            qualName.value = "working on " + qual;
+        })
     }
 }
 
+/*
+    Two cases here, either opening an existing problem or renaming a problem.
+    Renaming consists of deleting under the old name and rewriting under the new name.
+    Loading consists of saving the old name (which is actually already saved, so just not deleting it) and then opening the existing problem
+*/
 function handleIdChange() {
     if (nodeNameScreen(idInput.value)) {
         let oldID = id;
         id = idInput.value;
-        delete (problems[oldID]);
-        if (problemsTags[oldID]) {
-            problemsTags[oldID].parentElement.removeChild(problemsTags[oldID]);
-            delete problemsTags[oldID];
-        }
-        if (qual == "local") Store.erase("local " + oldID);
         if (id in problems) {
             doc = problems[id];
             outputFromDoc();
-        } else resetDoc();
+        } else {
+            delete (problems[oldID]);
+            if (problemsTags[oldID]) {
+                problemsTags[oldID].parentElement.removeChild(problemsTags[oldID]);
+                delete problemsTags[oldID];
+            }
+            if (qual == "local") Store.erase("local " + oldID);
+            resetDoc();
+        }
     } else inputMessage(idInput, "invalid nodeName");
 }
 
+// update doc to represent what is present in the interface
 function resetDoc() {
     while (doc.firstChild) doc.removeChild(doc.firstChild);
     let problem = xmlImporter.elementDoc(doc, "problem", xmlImporter.elementDoc(doc, id, doc), ["tex", texProblem.value]);
@@ -186,8 +221,10 @@ function resetDoc() {
     if (pairMode) xmlImporter.elementDoc(doc, "solution", problem, ["tex", texSolution.value]);
     outputFromDoc();
 }
+// this initializes doc in a new session
 resetDoc();
 
+// populate values in interface to match what is present in doc
 function outputFromDoc() {
     idInput.value = id = xmlImporter.getRoot(doc).nodeName;
     problems[id] = doc;
@@ -238,15 +275,16 @@ function outputFromDoc() {
     }
     codeOut.value = serializer.serializeToString(doc);
     refreshMathJax();
-    if (qual == "local") {
+    if (qual == "local" && id != "changeMe") {
         Store.store("local " + id, codeOut.value);
         Store.store("local problems list", problemsListString());
     }
 }
 
+// get ids of all loaded problems
 function problemsListString() {
     let returner = "";
-    for (let problem in problems) returner += " " + problem;
+    for (let problem in problems) if (problem != "changeMe") returner += " " + problem;
     return returner.substring(1);
 }
 
@@ -281,8 +319,8 @@ function ensureTopic(topic) {
 
 function refreshMathJax() {try {MathJax.Hub.Queue(["Typeset", MathJax.Hub])} catch (e) {}}
 
+// processing of TeX to make it MathJax-ready
 function fixLineBreaksToP(line) {
-    //line = line.replaceAll(/</g, "&lt;").replaceAll(/>/g, "&gt;").replaceAll(/&/g, "&amp;").replaceAll(/'/g, "&apos;").replaceAll(/"/g, "&quot;");
     let lines = line.split("$");
     line = "";
     let opening = false;
@@ -293,6 +331,7 @@ function fixLineBreaksToP(line) {
     return line.replaceAll(/\n/g, "</p><p>");
 }
 
+// temporary message displayed in an input element
 function inputMessage(input, message, time = 1000) {
     let line = input.value, able = !input.hasAttribute("disabled");
     window.setTimeout(function() {input.value = message}, 10); // delay is to let blur happen
@@ -323,7 +362,9 @@ function removeTopic(topic) {
     e.div.parentElement.removeChild(e.div);
 }
 
+// characters of this string are all available instructor ids
 let instructorLetters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+// get first unused instructor id and make an instructor with that id
 function newInstructor() {
     if (instructors.length == instructorLetters.length) errorOut("too many instructors");
     let num = instructors.length, id = instructorLetters.charAt(num);
@@ -335,7 +376,6 @@ function newInstructor() {
     returner.checkbox = xmlImporter.element("input", returner.div, ["type", "checkbox", "id", "instructor_"+id]);
     returner.checkbox.addEventListener("change", resetDoc);
     returner.nameIn = xmlImporter.element("input", null, ["type", "text"]);
-    
     returner.label.addEventListener("click", function(e) {
         e.preventDefault();
         e.stopImmediatePropagation();
@@ -355,46 +395,53 @@ function newInstructor() {
     return returner;
 }
 
-// metainformation should include where the problem came from / is used
-// number scales for test viability
-
+// This should empty the interface and make doc a new problem document. This should not erase the active problem.
 function clearTex() {
     doc = xmlImporter.newDocument();
-    xmlImporter.elementDoc(doc, "changeMe", doc);
+    xmlImporter.elementDoc(doc, "changeMe", doc); // root node, required for xml files
     outputFromDoc();
 }
 
+// start a session with a blank slate
 clearTex();
 
+// in case you want to show TeX without MathJax rendering it
 function noJax(line) {
     return line.replace(/&/g, "&amp;").replace(/\\/g, "\\<span\\>");
 }
 
+// this defines which strings are valid node names
 function nodeNameScreen(line) {
     try {
         document.createElement(line); return true;
     } catch (e) {return false}
 }
 
+// return the first instance in array of an object which has a value of value in property prop
 function getBy(array, prop, value) {
     for (let element of array) if (element[prop] == value) return element;
 }
 
+// show the error to users even if they don't have the console open
 function errorOut(message) {
     errorOutP.innerHTML = message;
     throw Error(message);
 }
 
+// use JSZip magic to save all loaded problems in one .zip file/folder
 let zip;
 function saveAll() {
+    // this url is where JSZip source code is available
     if (!zip) return xmlImporter.element("script", document.head, ["src", "https://stuk.github.io/jszip/dist/jszip.js"]).addEventListener("load", function() {
         zip = new JSZip();
         saveAll();
     });
     let folder = zip.folder("problems");
-    for (let problem in problems) folder.file(problem+".xml", serializer.serializeToString(problems[problem]));
+    for (let problem in problems) if (problem != "changeMe") folder.file(problem+".xml", serializer.serializeToString(problems[problem]));
     folder.generateAsync({type:"blob"}).then(function (file) {
+        // rename file from some machine name to "problems.zip"
         file = new File([file.slice(0, file.size, "application/zip")], "problems.zip", {type: "application/zip"});
+        // save problems.zip
         let url = URL.createObjectURL(file);
         let a = xmlImporter.element("a", document.body, ["href", url, "download", ""]);
         xmlImporter.text("download link", a);
@@ -403,12 +450,17 @@ function saveAll() {
     });
 }
 
+// remove all locally stored problems
 function clearLocalQual() {
     for (let problem of Store.fetch("local problems list").split(" ")) Store.erase("local " + problem);
     Store.erase("local problems list");
+    // give up on trying to reinitialize a local session, force the user to refresh and start anew
+    // not really necessary but I didn't want to work out a local refresh
     Store.canStore = function() {return false}
+    document.body.innerHTML = "<p>Please refresh page now</p>";
 }
 
+// interact with browser local storage in a fail-safe way
 var Store = {};
 
 Store.canStore = function() {return typeof (Storage) !== "undefined"}
