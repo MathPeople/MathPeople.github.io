@@ -113,8 +113,14 @@ function importRemoteQuestions(nameOfQual, finished = function() {}) {
     let exchange = refreshMathJax;
     refreshMathJax = function() {}
     xmlImporter.openTextFile("../quals/"+nameOfQual+"/problemsList.txt", null, function(list) {
+        list = list.trim();
+        if (list == "") {
+            clearTex();
+            refreshMathJax = exchange;
+            return finished();
+        }
         let lines = list.split(" "), numLines = lines.length;
-        for (let problem of lines) if (problem != "changeMe") {
+        for (let problem of lines) if (problem != "" && problem != "changeMe") {
             let p = problem;
             if (problem in problems) errorOut("duplicate in problems list: " + problem);
             problems[problem] = undefined;
@@ -125,8 +131,8 @@ function importRemoteQuestions(nameOfQual, finished = function() {}) {
                 convertDoc();
                 outputFromDoc();
                 if (--numLines == 0) {
-                    clearTex();
                     refreshMathJax = exchange;
+                    refreshMathJax();
                     finished();
                 }
             }, function() {
@@ -159,6 +165,7 @@ function initializeLocal(onDuplicate = function(problem) {errorOut("duplicate in
     clearTex();
     qualName.value = "working locally";
     refreshMathJax = exchange;
+    refreshMathJax();
     let button = xmlImporter.element("button", null, ["type", "button"]);
     qualName.parentElement.insertBefore(button, qualName.nextSibling);
     button.innerHTML = "Erase Local Storage";
@@ -244,17 +251,15 @@ resetDoc();
 function outputFromDoc() {
     idInput.value = id = xmlImporter.getRoot(doc).nodeName;
     if (id != "changeMe") problems[id] = doc;
-    if (!(id in problemsTags) && !(id == "changeMe")) {
+    if (!(id in problemsTags) && id != "changeMe") {
         problemsTags[id] = {idList: xmlImporter.element("option", idList, ["value", id]), loadedProblems: xmlImporter.element("option", loadedProblems, ["value", id])};
         xmlImporter.text(id, problemsTags[id].loadedProblems);
     }
+    let i = 0;
+    if (id != "changeMe") while (loadedProblems.childNodes[i] != problemsTags[id].loadedProblems) ++i;
+    loadedProblems.selectedIndex = i;
     let problem = doc.querySelector("problem"), solution = doc.querySelector("solution"), instructorsNode = doc.querySelector("instructors"), topicsNode = doc.querySelector("topics");
-    if ((pairMode && !solution) || (!pairMode && solution)) {
-        let exchange = resetDoc;
-        resetDoc = function() {}
-        pairSoloButton.click();
-        resetDoc = exchange;
-    }
+    if ((pairMode && !solution) || (!pairMode && solution)) swapPairMode();
     ensureInstructors(instructorsNode);
     for (let i of instructors) i.checkbox.checked = false;
     if (instructorsNode) {
@@ -434,10 +439,19 @@ function clearTex() {
     doc = xmlImporter.newDocument();
     xmlImporter.elementDoc(doc, "changeMe", doc); // root node, required for xml files
     outputFromDoc();
+    texProblem.value = texSolution.value = "";
+    if (!pairMode) swapPairMode();
 }
 
 // start a session with a blank slate
 clearTex();
+
+function swapPairMode() {
+    let exchange = resetDoc;
+    resetDoc = function() {}
+    pairSoloButton.click();
+    resetDoc = exchange;
+}
 
 // in case you want to show TeX without MathJax rendering it
 function noJax(line) {
@@ -470,9 +484,10 @@ function saveAll() {
         zip = new JSZip();
         saveAll();
     });
-    let folder = zip.folder("problems");
+    let bigFolder = zip.folder(qual), folder = bigFolder.folder("problems");
     for (let problem in problems) if (problem != "changeMe") folder.file(problem+".xml", serializer.serializeToString(problems[problem]));
-    folder.generateAsync({type:"blob"}).then(function (file) {
+    bigFolder.file("problemsList.txt", allProps(problems));
+    bigFolder.generateAsync({type:"blob"}).then(function (file) {
         // rename file from some machine name to "problems.zip"
         file = new File([file.slice(0, file.size, "application/zip")], "problems.zip", {type: "application/zip"});
         // save problems.zip
@@ -493,6 +508,16 @@ function clearLocalQual() {
     Store.canStore = function() {return false}
     document.body.innerHTML = "<p>Please refresh page now</p>";
     window.location.reload(true);
+}
+
+function allProps(object) {
+    let props = [];
+    for (let prop in object) props.push(prop);
+    if (props.length == 0) return "";
+    props.sort();
+    let line = "";
+    for (let prop of props) line += " " + prop;
+    return line.substring(1);
 }
 
 // interact with browser local storage in a fail-safe way
