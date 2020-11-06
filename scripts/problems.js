@@ -1,4 +1,19 @@
-var problemTypes = {};
+let mainDiv = document.getElementById("problems");
+
+
+
+let Store = {};
+
+Store.canStore = function() {return typeof (Storage) !== "undefined"}
+
+Store.fetchInstructorName = function fetchInstructorName(id) {if (Store.canStore()) {
+    let realName = localStorage["instructor " + id];
+    if (realName) instructors[id].setRealName(realName);
+}}
+
+Store.saveInstructor = function saveInstructor(id, name) {if (Store.canStore()) {
+    localStorage.setItem("instructor " + id, name);
+}}
 
 /*var problemsLoaderButton = document.getElementById("problemsLoader"),
     theoremsLoaderButton = document.getElementById("theoremsLoader"),
@@ -112,7 +127,7 @@ var problemTypes = {};
     }
     
     newTestButton.addEventListener("click", makePracticeTest);
-}*/
+}
 
 xmlImporter.openTextFile("../quals/"+qualType+"/problemTypes.txt", null, function(line) {
     for (let type of line.split(" ")) problemTypes[type] = false;
@@ -471,51 +486,4 @@ function makePracticeTest() {
     }
 }
 
-var Store = {};
-
-Store.canStore = function() {return typeof (Storage) !== "undefined"}
-
-Store.getTopics = function() {if (Store.canStore()) {
-    let topics = localStorage.topics;
-    if (!topics) topics = "";
-    return topics == ""? []: topics.split("\n");
-} else return []}
-
-Store.saveTopics = function saveTopics(topics) {if (Store.canStore()) {
-    let line = "";
-    for (let t of topics) line+= "\n" + t;
-    localStorage.setItem("topics", line.substring(1));
-}}
-
-Store.saveTopic = function saveTopic(topic) {if (Store.canStore()) {
-    let topics = Store.getTopics();
-    if (topics.includes(topic)) return;
-    topics.push(topic);
-    Store.saveTopics(topics);
-}}
-
-Store.loadTopics = function loadTopics() {if (Store.canStore()) {
-    let topics = Store.getTopics();
-    for (let topic of topics) try {
-        newTopic(topic);
-    } catch (e) {}
-}}
-
-Store.removeTopic = function removeTopic(topic) {if (Store.canStore()) {
-    let topics = Store.getTopics();
-    topics.splice(topics.indexOf(topic), 1);
-    Store.saveTopics(topics);
-}}
-
-Store.fetchInstructorName = function fetchInstructorName(id) {if (Store.canStore()) {
-    let realName = localStorage["instructor" + id];
-    if (realName) instructors[id].setRealName(realName);
-}}
-
-Store.saveInstructor = function saveInstructor(id, name) {if (Store.canStore()) {
-    localStorage.setItem("instructor" + id, name);
-}}
-
-Store.loadTopics();
-
-function isEmpty(object) {for (let anything in object) return false; return true}
+function isEmpty(object) {for (let anything in object) return false; return true}*/

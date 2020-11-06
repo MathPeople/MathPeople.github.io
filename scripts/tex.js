@@ -3,7 +3,8 @@
 // number scales for test viability
 
 // DOM elements
-var qualName = document.getElementById("qualName"),
+let qualName = document.getElementById("qualName"),
+    loadedProblems = document.getElementById("loadedProblems"),
     clearTexButton = document.getElementById("clearTex"),
     pairSoloButton = document.getElementById("pairSolo"),
     idInput = document.getElementById("problemID"),
@@ -38,6 +39,11 @@ let doc = xmlImporter.newDocument(), id = "changeMe";
     function setListener(element, type, func) {try {element.addEventListener(type, func)} catch (e) {}}
     
     setListener(qualName, "change", loadQual);
+    
+    setListener(loadedProblems, "change", function() {
+        idInput.value = loadedProblems.value;
+        handleIdChange();
+    });
     
     setListener(clearTexButton, "click", clearTex);
     
@@ -112,9 +118,11 @@ function importRemoteQuestions(nameOfQual, finished = function() {}) {
             let p = problem;
             if (problem in problems) errorOut("duplicate in problems list: " + problem);
             problems[problem] = undefined;
-            problemsTags[problem] = xmlImporter.element("option", idList, ["value", problem]);
+            problemsTags[problem] = {idList: xmlImporter.element("option", idList, ["value", problem]), loadedProblems: xmlImporter.element("option", loadedProblems, ["value", problem])};
+            xmlImporter.text(problem, problemsTags[problem].loadedProblems);
             xmlImporter.openXMLFile("../quals/"+nameOfQual+"/problems/"+p+".xml", null, function(problemDoc) {
                 doc = problems[p] = problemDoc;
+                convertDoc();
                 outputFromDoc();
                 if (--numLines == 0) {
                     clearTex();
@@ -142,7 +150,10 @@ function initializeLocal(onDuplicate = function(problem) {errorOut("duplicate in
     for (let problem of lines) if (problem != "" && problem != "changeMe") {
         if (problem in problems) onDuplicate(problem);
         doc = problems[problem] = xmlImporter.parseDoc(Store.fetch("local " + problem));
-        if (!(problem in problemsTags))problemsTags[problem] = xmlImporter.element("option", idList, ["value", problem]);
+        if (!(problem in problemsTags)) {
+            problemsTags[problem] = {idList: xmlImporter.element("option", idList, ["value", problem]), loadedProblems: xmlImporter.element("option", loadedProblems, ["value", problem])};
+            xmlImporter.text(problem, problemsTags[problem].loadedProblems);
+        }
         outputFromDoc();
     }
     clearTex();
@@ -197,7 +208,8 @@ function handleIdChange() {
         } else {
             delete (problems[oldID]);
             if (problemsTags[oldID]) {
-                problemsTags[oldID].parentElement.removeChild(problemsTags[oldID]);
+                problemsTags[oldID].idList.parentElement.removeChild(problemsTags[oldID].idList);
+                problemsTags[oldID].loadedProblems.parentElement.removeChild(problemsTags[oldID].loadedProblems);
                 delete problemsTags[oldID];
             }
             if (qual == "local") Store.erase("local " + oldID);
@@ -211,14 +223,18 @@ function resetDoc() {
     while (doc.firstChild) doc.removeChild(doc.firstChild);
     let problem = xmlImporter.elementDoc(doc, "problem", xmlImporter.elementDoc(doc, id, doc), ["tex", texProblem.value]);
     if (pairMode) {
-        problem.setAttribute("solutionCompleteness", solutionFull.checked? "full": solutionPartial.checked? "partial": "none");
-        problem.setAttribute("questionViability", questionGreat.checked? "great": questionGood.checked? "good": "bad");
+        if (solutionFull.checked) xmlImporter.elementDoc(doc, "full", xmlImporter.elementDoc(doc, "solutionCompleteness", problem));
+        if (solutionPartial.checked) xmlImporter.elementDoc(doc, "partial", xmlImporter.elementDoc(doc, "solutionCompleteness", problem));
+        if (questionGreat.checked) xmlImporter.elementDoc(doc, "great", xmlImporter.elementDoc(doc, "questionViability", problem));
+        if (questionGood.checked) xmlImporter.elementDoc(doc, "good", xmlImporter.elementDoc(doc, "questionViability", problem));
     }
     let instructorsNode = xmlImporter.elementDoc(doc, "instructors", problem);
     for (let instructor of instructors) if (instructor.checkbox.checked) xmlImporter.elementDoc(doc, instructor.id, instructorsNode);
+    if (!instructorsNode.firstChild) problem.removeChild(instructorsNode);
     let topicsNode = xmlImporter.elementDoc(doc, "topics", problem);
     for (let topic in topics) if (topics[topic].checkbox.checked) xmlImporter.elementDoc(doc, topic, topicsNode);
-    if (pairMode) xmlImporter.elementDoc(doc, "solution", problem, ["tex", texSolution.value]);
+    if (!topicsNode.firstChild) problem.removeChild(topicsNode);
+    if (pairMode) xmlImporter.elementDoc(doc, "solution", problem.parentElement, ["tex", texSolution.value]);
     outputFromDoc();
 }
 // this initializes doc in a new session
@@ -227,9 +243,18 @@ resetDoc();
 // populate values in interface to match what is present in doc
 function outputFromDoc() {
     idInput.value = id = xmlImporter.getRoot(doc).nodeName;
-    problems[id] = doc;
-    if (!(id in problemsTags)) problemsTags[id] = xmlImporter.element("option", idList, ["value", id]);
+    if (id != "changeMe") problems[id] = doc;
+    if (!(id in problemsTags) && !(id == "changeMe")) {
+        problemsTags[id] = {idList: xmlImporter.element("option", idList, ["value", id]), loadedProblems: xmlImporter.element("option", loadedProblems, ["value", id])};
+        xmlImporter.text(id, problemsTags[id].loadedProblems);
+    }
     let problem = doc.querySelector("problem"), solution = doc.querySelector("solution"), instructorsNode = doc.querySelector("instructors"), topicsNode = doc.querySelector("topics");
+    if ((pairMode && !solution) || (!pairMode && solution)) {
+        let exchange = resetDoc;
+        resetDoc = function() {}
+        pairSoloButton.click();
+        resetDoc = exchange;
+    }
     ensureInstructors(instructorsNode);
     for (let i of instructors) i.checkbox.checked = false;
     if (instructorsNode) {
@@ -251,34 +276,42 @@ function outputFromDoc() {
     if (problem) texProblem.value = problem.getAttribute("tex");
     else texProblem.value = "";
     fixTextHeight({target: texProblem});
-    if (pairMode) {
-        if (solution) texSolution.value = solution.getAttribute("tex");
-        else texSolution.value = "";
+    if (solution) {
+        texSolution.value = solution.getAttribute("tex");
         fixTextHeight({target: texSolution});
     }
-    if (problem) switch (problem.getAttribute("solutionCompleteness")) {
+    let solutionCompleteness = doc.querySelector("solutionCompleteness");
+    if (solutionCompleteness) switch (solutionCompleteness.firstChild.nodeName) {
         case "full": solutionFull.checked = true; break;
         case "partial": solutionPartial.checked = true; break;
         default: solutionNone.checked = true;
     } else solutionNone.checked = true;
-    if (problem) switch (problem.getAttribute("questionViability")) {
+    let questionViability = doc.querySelector("questionViability");
+    if (questionViability) switch (questionViability.firstChild.nodeName) {
         case "great": questionGreat.checked = true; break;
         case "good": questionGood.checked = true; break;
         default: questionBad.checked = true;
     } else questionBad.checked = true;
     if (problem) {
-        if (pairMode) texLiveOut.innerHTML = "<h4>Problem</h4><p>"+fixLineBreaksToP(problem.getAttribute("tex"))+"</p><h4>Solution</h4><p>"+fixLineBreaksToP(solution.getAttribute("tex"))+"</p>";
+        if (solution) texLiveOut.innerHTML = "<h4>Problem</h4><p>"+fixLineBreaksToP(problem.getAttribute("tex"))+"</p><h4>Solution</h4><p>"+fixLineBreaksToP(solution.getAttribute("tex"))+"</p>";
         else texLiveOut.innerHTML = "<p>"+fixLineBreaksToP(problem.getAttribute("tex"))+"</p>";
     } else {
-        if (pairMode) texLiveOut.innerHTML = "<h4>Problem</h4><p></p><h4>Solution</h4><p></p>";
+        if (solution) texLiveOut.innerHTML = "<h4>Problem</h4><p></p><h4>Solution</h4><p></p>";
         else texLiveOut.innerHTML = "<h4>Problem</h4><p></p>";
     }
     codeOut.value = serializer.serializeToString(doc);
+    fixTextHeight({target: codeOut});
     refreshMathJax();
     if (qual == "local" && id != "changeMe") {
         Store.store("local " + id, codeOut.value);
         Store.store("local problems list", problemsListString());
     }
+}
+
+function convertDoc() {
+    // if you need to convert from a previous format to a new format then do so here
+    // this function is in the load process so it will convert all files as they are loaded
+    // take doc and process it from old format to new format, return nothing because the change is done directly to doc
 }
 
 // get ids of all loaded problems
@@ -321,6 +354,7 @@ function refreshMathJax() {try {MathJax.Hub.Queue(["Typeset", MathJax.Hub])} cat
 
 // processing of TeX to make it MathJax-ready
 function fixLineBreaksToP(line) {
+    if (typeof line != "string") line = "";
     let lines = line.split("$");
     line = "";
     let opening = false;
@@ -452,16 +486,17 @@ function saveAll() {
 
 // remove all locally stored problems
 function clearLocalQual() {
-    for (let problem of Store.fetch("local problems list").split(" ")) Store.erase("local " + problem);
+    for (let problem of (Store.fetch("local problems list") || "").split(" ")) Store.erase("local " + problem);
     Store.erase("local problems list");
-    // give up on trying to reinitialize a local session, force the user to refresh and start anew
+    // give up on trying to reinitialize a local session, force a refresh and start anew
     // not really necessary but I didn't want to work out a local refresh
     Store.canStore = function() {return false}
     document.body.innerHTML = "<p>Please refresh page now</p>";
+    window.location.reload(true);
 }
 
 // interact with browser local storage in a fail-safe way
-var Store = {};
+let Store = {};
 
 Store.canStore = function() {return typeof (Storage) !== "undefined"}
 

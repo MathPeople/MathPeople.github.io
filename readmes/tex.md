@@ -1,8 +1,8 @@
 # Browser TeX Guide
 
-This page allows you to enter a problem/solution pair in LaTeX (ish) and save it in the format required for display on the rest of the site. Problems are saved in xml files and, as long as you use this editor to obtain them, you don't have to worry about the specific file structure or even what xml is. You just enter the TeX, apply the appropriate metadata, and upload the resulting file appropriately. There is another readme about how to upload problems to the repository.
+This page allows you to enter a problem/solution pair in LaTeX (ish) and save it in the format required for display on the rest of the site. Problems are saved in xml files and, as long as you use this editor to obtain them, you don't have to worry about the specific file structure or even what xml is. You just enter the TeX, apply the appropriate metadata, and upload the resulting file appropriately. The whatIsGitHub readme describes how to upload problems to the repository.
 
-LaTeX is completely handled by [MathJax]. MathJax struggles with dollar signs for math mode. This page processes the text so that dollar signs work, but not double dollar signs. Don't use double dollar signs.
+LaTeX is completely handled by MathJax. MathJax struggles with dollar signs for math mode. This page processes the text so that dollar signs work, but not double dollar signs. Don't use double dollar signs.
 
 If you are writing a problem for a specific qual which is supported on this site, be sure to enter which qual before you do any work. This will make sure all the existing metadata corresponding to that qual is loaded and will avoid naming conflicts.
 
@@ -44,5 +44,3 @@ Enter a qual type to the appropriate box and you will see all topics currently u
 # Test Viability
 
 Some problems are important for the theory but don't fit well on a test, some are interesting applications, and some are just excellent test questions even if they don't seem important to the theory. You can flag a question as being a good test question, a potential test question, or an unreasonable test question. This is used by the practice test generator.
-
-[MathJax]: <https://www.mathjax.org/>
