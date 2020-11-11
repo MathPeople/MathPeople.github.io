@@ -1,0 +1,32 @@
+div.boxViewer {
+    position: relative;
+    border-style: solid;
+}
+div.familyMember {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    border-style: solid;
+}
+p[pBoxStyle="title"] {
+    color: green;
+}
+div.familyMember:focus {
+    outline: solid;
+    outline-width: 1px;
+}
+div[familyMember="me"] {
+    background-color: coral;
+}
+div[familyMember="parent"] {
+    background-color: pink;
+}
+div[familyMember="child"] {
+    background-color: yellow;
+}
+div[familyMember="olderSibling"] {
+    background-color: greenyellow;
+}
+div[familyMember="youngerSibling"] {
+    background-color: skyblue;
+}

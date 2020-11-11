@@ -1,0 +1,16 @@
+div.xmlViewer {
+    display: inline-block;
+}
+
+div.xmlViewer details {
+    background: rgb(230, 230, 255);
+    position: relative;
+    left: 20px;
+    border-style: solid;
+    border-width: thin;
+    padding: 5px;
+}
+
+[hide] {
+    display: none !important;
+}

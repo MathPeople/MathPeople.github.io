@@ -1,0 +1,159 @@
+[hide] {
+    display: none;
+}
+
+.missileLaunch {
+    position: relative;
+    display: inline;
+    margin: 10px;
+}
+
+.missileLaunch button.missileLaunchButton {
+    border: 4px outset darkred;
+    display: inline;
+}
+
+@keyframes missileLaunchTrigger {
+    0% {outline: 4px darkred outset;}
+    100% {
+        transform: translateY(-67%) rotateY(10deg) rotateX(120deg);
+        outline: 4px darkred inset;
+    }
+}
+
+.missileLaunch .trigger {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 0, 0, .5);
+    outline: 4px darkred outset;
+}
+
+.missileLaunch .trigger[opening] {
+    animation-name: missileLaunchTrigger;
+    animation-duration: .4s;
+    animation-fill-mode: forwards;
+}
+
+.missileLaunch .trigger[closing] {
+    animation-name: missileLaunchTrigger;
+    animation-duration: .2s;
+    animation-direction: reverse;
+    animation-fill-mode: backwards;
+}
+
+.missileLaunch .trigger[open] {
+    transform: translateY(-67%) rotateY(10deg) rotateX(120deg);
+    outline: 4px darkred inset;
+}
+
+.missileLaunch .trigger[closed] {
+}
+
+@keyframes missileLaunchFlashing {
+    0% {
+        background-color: rgb(245, 245, 245);
+    }
+    
+    80% {
+        background-color: rgb(255, 230, 230);
+    }
+    
+    90% {
+        background-color: rgb(255, 220, 220);
+    }
+    
+    100% {
+        background-color: rgb(245, 245, 245);
+    }
+}
+
+.missileLaunch [flashing] {
+    animation: missileLaunchFlashing;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
+}
+
+.hoverHide:not(:hover):not(:focus) {
+    background-color: rgba(0,0,0,0);
+    border-color: rgba(0,0,0,0);
+    outline-color: rgba(0,0,0,0);
+}
+
+.popup {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    padding: 1%;
+    padding-bottom: 2em;
+    margin: 1%;
+    min-height: 25%;
+    min-width: 25%;
+    background-color: rgb(235, 255, 230);
+    border: 5px double green;
+    border-radius: 7px;
+    z-index: 10000;
+}
+
+.popup .closeButton {
+    position: absolute;
+    bottom: 3%;
+    left: 0;
+    right: 0;
+    margin: auto;
+    width: 50%;
+}
+
+@keyframes highlightFlashing {
+    0% {
+        background-color: rgb(180, 200, 60);
+        border-color: magenta;
+    }
+    
+    50% {
+        background-color: palegoldenrod;
+        border-color: green;
+    }
+    
+    100% {
+        background-color: yellow;
+        border-color: blue;
+    }
+}
+
+.highlight {
+    display: inline-block;
+    border: 3px ridge;
+    border-radius: 5px;
+    animation: highlightFlashing;
+    animation-duration: 2s;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+}
+
+label > input {
+    margin-left: 1em;
+}
+
+.infoInSummary {
+    float: right;
+    text-align: right;
+    background-color: rgba(0,0,0,0);
+    border-color: rgba(0,0,0,0);
+    outline-color: rgba(0,0,0,0);
+}
+
+input.infoInSummary {
+    width: 50%;
+}
+
+.floatRight {
+    float: right;
+}
+
+.quarterBox {
+    width: 25vw;
+    height: 25vh;
+}

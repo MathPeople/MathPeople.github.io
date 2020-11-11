@@ -1,0 +1,70 @@
+p {
+    text-indent: .3em;
+}
+
+textarea {
+    resize: none;
+    overflow: hidden;
+    min-height: 5em;
+    max-height: 80vh;
+    width: 100%;
+}
+
+#texLiveOut {
+    border: 3px outset skyblue;
+    margin: 2em;
+    background-color: rgb(230,230,255);
+}
+
+#texLiveOut div > div {
+    display: inline-block;
+    margin .6em;
+    padding: .1em;
+    background-color: rgb(230,230,230);
+    border: 3px outset skyblue;
+}
+
+#texOut {
+    border: 1px dashed black;
+    background-color: palegoldenrod;
+    display: block;
+}
+
+.radioButtons {
+    margin: .5em;
+    display: inline-block;
+}
+
+.radioButtons > * {
+    margin: .2em;
+    font-size: 60%;
+}
+
+input[type="text"] {
+    width: 54ex;
+}
+
+.checkboxHolder {
+    display: inline-block;
+    font-size: 80%;
+}
+
+.checkbox {
+    display: inline;
+    border: 1px solid lightblue;
+    border-radius: 3px;
+    margin: 2px;
+}
+
+button {
+    margin: .2em;
+}
+
+details {
+    border: 3px outset grey;
+    background: rgb(230, 230, 230);
+}
+
+.hide {
+    display: none;
+}

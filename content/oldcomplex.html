@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8"/>
+        <link rel="stylesheet" type="text/css" href="../css/qualPrep.css"/>
+        <script>
+            // initialization
+            let testStart = 1601481600000; // Wed Sep 30 2020 09:00:00 GMT-0700 (Pacific Daylight Time)
+            let testEnd = 1601492400000; // Wed Sep 30 2020 12:00:00 GMT-0700 (Pacific Daylight Time)
+            let qualType = "complex";
+        </script>
+        <script src="../scripts/pageHider.js" async defer></script>
+        <script src="../scripts/xmlImporter.js"></script>
+        <script src="../scripts/problems.js" async defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML" async=""></script>
+    </head>
+    <body>
+        <div class="title">
+            <h1>Complex Qual Prep 2020</h1>
+        </div>
+        <p>Welcome to the complex qual prep seminar website! Let me know if you encounter any problems with the site.</p>
+        <details class="section">
+            <summary>LaTeX rendering in the browser</summary>
+            <p>This site uses MathJax to render TeX-style writeup in a browser environment. Here is a rendering test:</p>
+            <math><mfrac><mrow><mn>2</mn><msup><mi>x</mi><mn>2</mn></msup><mo>-</mo><mi>x</mi></mrow><mrow><mn>3</mn><msup><mi>x</mi><mn>4</mn></msup><mo>+</mo><mn>1</mn></mrow></mfrac></math>
+            <p>Here is the same thing but internally represented differently:</p>
+            \[\frac{2x^2-x}{3x^4+1}\]
+            <p>MathJax is pretty good at handling TeX and LaTeX. <a href="http://www.onemathematicalcat.org/MathJaxDocumentation/TeXSyntax.htm">Here</a> is a detailed description of what is available to use in MathJax.</p>
+        </details>
+        <details class="section" id="enteringLaTeX">
+            <summary>Entering LaTeX</summary>
+            <p>Use this tool to write LaTeX in the right format for use on this site. All TeX is stored in a problem/solution format, just leave the solution blank if you don't need it.</p>
+            <p>The formatted code is below the live render, the formatted code is what you would have to send me to put your content onto the site. Unless you are using a browser from the future (the feature is technically deprecated) you should be able to copy the string just by clicking on it.</p>
+            <p>Enter the id of a problem or theorem into the question box and it will populate with the TeX of that problem or theorem.</p>
+            <button type="button" id="clearTex" class="clearTex">Clear</button>
+            <label for="problemIn">Problem:</label>
+            <div><textarea class="texInput" id="texProblem" spellcheck="false"></textarea></div>
+            <label for="solutionIn">Solution:</label>
+            <div><textarea class="texInput" id="texSolution" spellcheck="false"></textarea></div>
+            <div id="metainformationTex">
+                <details id="metainformation">
+                    <summary>Metainformation</summary>
+                    <p id="idP" class="hide">Problem ID: <span id="idSpan">will go here</span></p>
+                    <div class="radioButtons">
+                        <p>Is the solution complete?</p>
+                        <div>
+                            <input type="radio" id="solutionFull" name="solution" value="">
+                            <label for="solutionFull">Yes, the solution is complete</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="solutionPartial" name="solution">
+                            <label for="solutionPartial">No but this is a partial solution</label>
+                        </div>
+                        <div>
+                            <input type="radio" id="solutionNone" name="solution" checked>
+                            <label for="solutionNone">No, this is not an attempt at a solution</label>
+                        </div>
+                    </div>
+                    <div class="radioButtons">
+                        <p>Instructor id:</p>
+                        <div id="instructors"></div>
+                    </div>
+                    <div class="checkboxHolder">
+                        <p>Which theorems/topics are involved?</p>
+                        <div id="topics" class="checkboxes"></div>
+                        <button type="button" id = "topicp" class="p">New topic:</button>
+                        <input type="text" id="newTopic" placeholder="other topic which some problems may or may not include">
+                    </div>
+                </details>
+            </div>
+            <details>
+                <summary>Rendering Zone</summary>
+                <div id="texLiveOut"><p>Rendered TeX will go here</p></div>
+                <div><textarea id="texOut" spellcheck="false">Formatted code will go here</textarea></div>
+            </details>
+        </details>
+        <details class="section" id="problemsSection">
+            <summary>Problems</summary>
+            <button id="problemsLoader">Load problems</button>
+            <div id="metainformationProblems"></div>
+            <div id="problems"></div>
+            <div id="problemsHide" class="hide"></div>
+        </details>
+        <details class="section" id="theoremsSection">
+            <summary>Theorems</summary>
+            <button id="theoremsLoader">Load theorems</button>
+            <div id="theorems"></div>
+        </details>
+        <details class="section" id="practiceTestSection">
+            <summary>Practice Tests</summary>
+            <button id="makePracticeTest">New test</button>
+            <div id="practiceTest"></div>
+        </details>
+        <table class="problemOfTheWeek">
+            <thead><tr><th>Problem of the Week</th></tr></thead>
+            <tbody>
+                <tr><td>We know from single variable real calculus that \(\ln|x|\) is not continuous on \((-1,1)\). How smooth is \(x^n\ln|x|\) on \((-1,1)\) for \(n\in\mathbb{N}\)? Is there a (not constantly zero) \(C^\infty\) smooth function \(f\) on the disc such that the product \(f(x)\ln|x|\) is \(C^\infty\) smooth on \((-1,1)\)? Is there a (not constantly zero) analytic function \(g\) on \((-1,1)\) such that the product \(g(x)\ln|x|\) is analytic on \((-1,1)\)?</td></tr>
+                <tr><td>Construct an analytic function on the disc which does not extend analytically beyond any boundary point. Can you do so in such a way that the function is continuous on the closed unit disc? Bonus: Can you find such a function which is smooth on the boundary?</td></tr>
+                <tr><td>Is \(\mathbb{D}\setminus\{0\}\) biholomorphic to \(\big((-1,1)\times(-1,1)\big)\setminus\{0\}\)? What about \(\mathbb{D}\setminus\{a\}\) and \(\big((-1,1)\times(-1,1)\big)\setminus\{b\}\) for any \(a\in\mathbb{D}\) and \(b\in(-1,1)\times(-1,1)\)? Same question but with pairs instead of single points for \(a\) and \(b\), is the disc minus any two points biholomorphic to the square minus any two points?</td></tr>
+                <tr><td><p>Let \(f\) be an entire function. We say \(f\) extends to the sphere if there is a holomorphic function \(F:S^2\to S^2\) such that \(F|_\mathbb{C}=f\). Prove that \(f\) extends to the sphere if and only if</p><p>\[\lim_{|z|\to\infty}\frac{1}{f(z)}\]</p><p>exists. Show that every polynomial extends to the sphere.</p><p>On a to-be-related note, let \(g,h:\mathbb{D}\to\mathbb{C}\) be holomorphic such that \(g(0)=h(0)=0\). Let \(n_g\leq n_h\) be the orders of the roots of \(g,h\) at \(0\). Clearly \(g+h\) has a root at 0, what is its order?</p><p>Use the above two results and the degree argument to prove the fundamental theorem of algebra.</p><p>Let \(f_n\) be a sequence of entire functions, each of which extends to the sphere. Suppose \(f_n\to f\) uniformly on compact sets. Is \(f\) entire? Does \(f\) extend to the sphere? Describe which entire functions extend to the sphere and provide an entire function which does not.</p></td></tr>
+                <tr><td>Prove this statement which can be taken from the proof of theorem 3.7 in Conway: Let \(f:\mathbb{D}\to\mathbb{C}\) be a holomorphic function such that \(f(0)=0\). Then there is an \(n\geq0\) such that \[f(z)=z^ng(z)\] and either \(g\) is constant or there is an \(r>0\) such that \(g:B_r(0)\to g(B_r(0))\) is a biholomorphism. Here \(B_r(0)=\{z:|z|&lt;r\}\) and \(\mathbb{D}=B_1(0)\). Find \(n, g\), and \(r\) for \(f\) chosen from the functions below: \[z, z^2+z, \sin(z), \frac{1}{z+1}-1, \ln(z+1), \cos(\cos(z)-1)-1\] This result (which I call the local mapping theorem, coordinate-free version) essentially proves the uniqueness principle (Conway 3.7), the maximum modulus principle, and the open mapping theorem, and the local mapping theorem which clarifies several statements and proofs in part C.\[\]For extra credit, prove the local mapping theorem: If \(M,N\) are Riemann surfaces, \(f:M\to N\) is holomorphic, and \(x\in M, y\in N\) with \(f(x)=y\), then there are charts centered at \(x\) and \(y\) such that the coordinate version of \(f\) is the function \(z^{d_x}\) for some integer \(d_x\geq0\). Essentially this proof is just playing with charts and applying the statement above.\[\]Further, show that \(d_x\) is well-defined, i.e. \(d_x\) can depend on \(x\) but not on the charts chosen.</td></tr>
+                <tr><td>We all know the Pythagorean identity \(\sin^2(\theta)+\cos^2(\theta)=1\) for \(\theta\in\mathbb{R}\). We construct the unit circle as the set \[\big\{(\sin(\theta),\cos(\theta))\big|\theta\in\mathbb{R}\big\}\] and use the Pythagorean identity to justify that this is in fact the unit circle. Prove the Pythagorean identity holds for complex values as well, i.e. \(\sin^2(z)+\cos^2(z)=1\) for all \(z\in\mathbb{C}\), but show that the pair \((\sin(z),\cos(z))\) has norm 1 <em>only</em> when \(z\) is real. That is, prove \[|\sin(z)|^2+|\cos(z)|^2=1\iff z\in\mathbb{R}\] For extra credit, visualize the surface defined by \[w=|\sin(z)|^2+|\cos(z)|^2\] sitting in \(\mathbb{C}^2\). Is this naturally a Riemann surface?</td></tr>
+            </tbody>
+        </table>
+        <table class="recentChanges">
+            <thead><tr><th>Recent Changes</th></tr></thead>
+            <tbody>
+                <tr><td>Added practice tests</td></tr>
+                <tr><td>shortened C1_6</td></tr>
+                <tr><td>2019 qual</td></tr>
+                <tr><td>Solutions for f19</td></tr>
+                <tr><td>Problem topics to organize problems</td></tr>
+                <tr><td>Added buttons to load problems and theorems instead of loading them by default</td></tr>
+                <tr><td>Redid the site for 2020.</td></tr>
+            </tbody>
+        </table>
+    </body>
+</html>
