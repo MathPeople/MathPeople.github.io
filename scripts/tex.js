@@ -99,7 +99,16 @@ function importRemoteQuestions(nameOfQual, finished = function() {}) {
         let lines = list.split(" "), numLines = lines.length;
         for (let problem of lines) if (problem != "" && problem != "changeMe") {
             let p = problem;
-            if (problem in problems) errorOut("duplicate in problems list: " + problem);
+            if (problem in problems) {
+                if (qual == "local") {
+                    if (--numLines == 0) {
+                        refreshMathJax = exchange;
+                        refreshMathJax();
+                        finished();
+                    }
+                    continue;
+                } else errorOut("duplicate in problems list: " + problem);
+            }
             problems[problem] = undefined;
             problemsTags[problem] = {idList: xmlImporter.element("option", idList, ["value", problem]), loadedProblems: xmlImporter.element("option", loadedProblems, ["value", problem])};
             xmlImporter.text(problem, problemsTags[problem].loadedProblems);
@@ -124,19 +133,15 @@ function importRemoteQuestions(nameOfQual, finished = function() {}) {
 }
 
 // load all locally stored problems and set up for local autosaving
-function initializeLocal(onDuplicate = function(problem) {errorOut("duplicate in problems list: " + problem)}) {
+function initializeLocal() {
     let exchange = refreshMathJax;
     refreshMathJax = function() {}
     let list = Store.fetch("local problems list");
     if (!list) list = "";
     let lines = list.split(" ");
     for (let problem of lines) if (problem != "" && problem != "changeMe") {
-        if (problem in problems) onDuplicate(problem);
+        if (problem in problems) errorOut("duplicate in problems list: " + problem);
         doc = problems[problem] = xmlImporter.parseDoc(Store.fetch("local " + problem));
-        if (!(problem in problemsTags)) {
-            problemsTags[problem] = {idList: xmlImporter.element("option", idList, ["value", problem]), loadedProblems: xmlImporter.element("option", loadedProblems, ["value", problem])};
-            xmlImporter.text(problem, problemsTags[problem].loadedProblems);
-        }
         outputFromDoc();
     }
     clearTex();
@@ -156,8 +161,8 @@ function loadQual() {
             // import qual then initialize local autosaving
             qual = "local";
             let nameOfQual = qualNameIn.value.substring(6);
+            initializeLocal();
             importRemoteQuestions(nameOfQual, function() {
-                initializeLocal(function() {});
                 qualNameIn.value = "working locally on " + nameOfQual;
                 qualNameIn.setAttribute("disabled", "");
             });
