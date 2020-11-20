@@ -45,7 +45,7 @@ This example has no metainformation, just a question about arithmetic:
 </arithmeticQuestion>
 ```
 
-This is the structure used by this site, although the file reader actually isn't too strict about node structure. Forexample, the solution could be listed before the problem, or the problem can even be a child of the solution. There could even be more elements than just `problem` and `solution` and it will still compile. The editor can tell the id because that is the nodeName of the root node. To find the problem it searches for a node with nodeName `problem` and then reads the `tex` attribute for the tex of the problem. The process is similar for the solution. This file would compile just as well:
+This is the structure used by this site, although the file reader actually isn't too strict about node structure. For example, the solution could be listed before the problem, or the problem can even be a child of the solution. There could even be more elements than just `problem` and `solution` and it will still compile. The editor can tell the id because that is the nodeName of the root node. To find the problem it searches for a node with nodeName `problem` and then reads the `tex` attribute for the tex of the problem. The process is similar for the solution. This file would compile just as well:
 
 ```
 <arithmeticQuestion>
