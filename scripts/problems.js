@@ -80,7 +80,6 @@ function eraseProblem(problem) {
 }
 
 function updateMetas() {
-    console.log("updating");
     for (let meta in metas) {
         let bunch = metas[meta];
         if (!bunch.div) {
