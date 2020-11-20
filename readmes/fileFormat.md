@@ -56,7 +56,9 @@ This is the structure used by this site, although the file reader actually isn't
 
 # Metadata
 
-This is where structure plays a role. We use the following convention for metadata: Any direct child of the problem node is a type of metadata. Any child of that node is the value for that piece of metadata. Some metadata allow for multiple values and some do not, both follow the child structure here. This problem file has some metadata in it:
+This is where structure plays a role. We use the following convention for metadata: Any direct child of the problem node is a type of metadata. Any child of that node is the value for that piece of metadata. There is no global list of metadata like the `problemsList.txt` list of all problems. Instead, when a list of problems is loaded each problem is scanned for metadata. The file reader keeps track of all encountered metadata and generates the metadata sections based on what it found. In that sense metadata describes itself.
+
+This problem file has some metadata in it:
 
 ```
 <arithmeticQuestion>
@@ -66,7 +68,7 @@ This is where structure plays a role. We use the following convention for metada
             <naturalNumbers/>
             <definitionOf2/>
         </topics>
-        <solutionCompleteness>
+        <solutionCompleteness radio="none">
             <full/>
         </solutionCompleteness>
     </problem>
@@ -74,10 +76,12 @@ This is where structure plays a role. We use the following convention for metada
 </arithmeticQuestion>
 ```
 
-This file declares that `arithmeticQuestion` has three topics, `addition`, `naturalNumbers`, and `definitionOf2`, and that its `solutionCompleteness` is `full`. Any other metadata which is asked from this file will not be found, so will be treated as having the default (usually blank).
+This file declares that `arithmeticQuestion` has three `topics` (`addition`, `naturalNumbers`, and `definitionOf2`) and that its `solutionCompleteness` is `full`. Any other metadata which is asked from this file will not be found, so will be treated as having the default (usually blank).
 
-# Adding New Metadata
+# Metadata Attributes
 
-Adding new metadata to the files is as easy as just adding it. It will be ignored by things which aren't looking for it. It is almost as easy to use new metadata because the generic problem reader is designed to look for all metadata and offer the options to the user. This is done using the child structure convention described above.
+In the above example, the `solutionCompleteness` tag has an attribute (`radio="none"`). This is because some metadata allows for multiple values and some does not. The default behavior of metadata is to allow multiple values, we call this checkbox metadata (`topics` is checkbox). Values in a checkbox tag are interpreted as selected options for that metadata. Checkbox metadata defaults to empty, so if the tag is not present then that is interpreted as no value is selected.
 
-The hardest part of creating new types of metadata is offering it in the file editor to the author of the problem file. This is not a standard procedure because it depends on what the metadata represents. All the code involved in this process lies in the `/scripts/tex.js` file of this repository. You have to edit that file and add features for interfacing with the new metadata type if you want it to be available in the editor. The primary changes have to be made in `resetDoc()` and `outputFromDoc()` because these are where the xml file interacts with the interface.
+If a type of metadata is supposed to have only one value then we call it radio. We mark a type of metadata as radio by adding the attribute like above. A radio metadata is interpreted as a list of options in a set of radio buttons, meaning one and only one is selected. Radio metadata comes with a default value, so that default value is saved as the value of the `radio` attribute. This doesn't affect the `arithmeticQuestion` problem itself but actually tells the file reader that the `solutionCompleteness` radio metadata has a default value of `none`.
+
+Sometimes it may be useful to interpret metadata as a number instead of a tag. Giving a metadata tag the attribute `scale="n"` means interpret it as a number from 1 to n. This is technically a special case of radio where the possible values are the natural numbers up to n, with 1 being the default option.

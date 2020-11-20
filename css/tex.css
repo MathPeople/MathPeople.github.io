@@ -2,6 +2,14 @@ p {
     text-indent: .3em;
 }
 
+.meta {
+    border: 2px outset rgb(120, 130, 200);
+    border-radius: 1ex;
+    display: inline-block;
+    padding: .3em;
+    margin: .5em;
+}
+
 textarea {
     resize: none;
     overflow: hidden;
@@ -33,11 +41,6 @@ textarea {
 .radioButtons {
     margin: .5em;
     display: inline-block;
-}
-
-.radioButtons > * {
-    margin: .2em;
-    font-size: 60%;
 }
 
 input[type="text"] {

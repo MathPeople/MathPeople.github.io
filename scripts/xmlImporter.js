@@ -73,3 +73,7 @@ xmlImporter.newDocument = function() {return document.implementation.createDocum
 xmlImporter.parser = new DOMParser();
 
 xmlImporter.parseDoc = function parseDoc(line) {return xmlImporter.parser.parseFromString(line, "application/xml")}
+
+xmlImporter.serializer = new XMLSerializer();
+
+xmlImporter.nodeToString = function nodeToString(node) {return xmlImporter.serializer.serializeToString(node)}
