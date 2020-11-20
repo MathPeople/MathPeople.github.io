@@ -12,8 +12,4 @@ Data is stored per browser and is erased when something like clearing the cache 
 
 # What is Stored?
 
-So far there is only one application of browser storage, and that is instructor names. Internally, instructors are referred to using alphabetical id (instructor a for example). You can give that instructor a name and that name will save on your browser. As long as that name is in storage, it will be displayed instead of the id.
-
-# What is Not Stored?
-
-Nothing you type out in TeX is saved. It is designed for you to download the file when ready to your native computer system. That file has to be pushed onto the GitHub repository to be available on the site, and we aren't going to cover how to do that here. Suffice it to say that you cannot automatically add problems to the repositories, the TeX page is only for generating the problem/solution files in the correct format. Updating the site is a manual process.
+The autosave feature saves all the problem files to browser storage every time a change is made. If you don't initialize autosave, nothing gets stored to local storage. Initializing autosave also loads the problems from local storage.
