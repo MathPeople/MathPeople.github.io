@@ -2,11 +2,11 @@
 
 Hello, fellow mathematician! So you are interested in using this site to host a repository of questions? Welcome!
 
-This feature was designed for hosting qual prep seminars, but it could be tweaked to house much more general classes of repositories of questions. We will focus on the intended use, however, because you are reading this to find how to create a spot for your qual seminar on this site. First things first, make sure that you actually have to create a new qual. If your qual has been initialized then you don't have to follow the instructions here and can go straight to working on the problems.
+This feature was designed for hosting qual prep seminars, but it could be tweaked to house much more general classes of repositories of questions. We will focus on the intended use, however, in case you are reading this to find how to create a spot for your qual seminar on this site. First things first, make sure that you actually have to create a new qual. If your qual has been initialized then you don't have to follow the instructions here and can go straight to working on the problems.
 
 # Overview
 
-There are a few places you will have to make modifications. First and foremost you will have to add the repository of questions, that lives in the `/quals` folder. You will also have to make a new HTML file for your site and you will probably want to add a link to it from the main site. We will go over how to do that below. It may be worth your time to check out the whatIsGitHub readme for an overview of how you can navigate and make changes to this site.
+There are a few places you will have to make modifications. First and foremost you will have to add the repository of questions; that lives in the `/quals` folder. You will also have to make a new HTML file for your site and you will probably want to add a link to it from the main site. We will go over how to do that below. It may be worth your time to check out the whatIsGitHub readme for an overview of how you can navigate and make changes to this site.
 
 # Problems Repository
 
