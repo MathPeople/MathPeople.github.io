@@ -210,13 +210,13 @@ function newMetatypeTypeChange() {
         switch (newMetatypeType.selectedIndex) {
             case 1: // checkboxes
                 defaultIn.setAttribute("hide", "");
+                newMetaTypeIn.setAttribute("placeholder", "new metatype name");
             break; case 2: // radio
                 defaultIn.removeAttribute("hide");
                 defaultIn.value = "defaultValue";
-                newMetaTypeIn.setAttribute("placeholder", "enter default value first -->");
+                newMetaTypeIn.setAttribute("placeholder", "new metatype name, enter default value first -->");
             break; case 3: // scale
-                defaultIn.removeAttribute("hide");
-                defaultIn.value = 10;
+                defaultIn.setAttribute("hide", "new metatype name");
         }
     }
 
@@ -284,7 +284,10 @@ function ensureMetatype(metaName, type = "checkbox", defaultValue) {
                 resetDoc();
             });
         break; case "scale":
-            //for (let i = 1; i < defaultValue; ++i) meta.values["n"+i] = undefined;
+            meta.div.setAttribute("scale", "");
+            meta.input = xmlImporter.element("input", meta.div, ["type", "number"]);
+            meta.input.value = 0;
+            meta.input.addEventListener("change", resetDoc);
     }
 }
 
@@ -302,7 +305,7 @@ function resetDoc() {
             break; case "radio":
                 if (!meta.values[meta.defaultValue].input.checked) for (let value in meta.values) if (meta.values[value].input.checked) xmlImporter.elementDoc(doc, value, xmlImporter.elementDoc(doc, metaName, problem, ["radio", meta.defaultValue])); 
             break; case "scale":
-                
+                if (meta.input.value != 0) xmlImporter.elementDoc(doc, metaName, problem, ["scale", meta.input.value]);
             break;
         }
     }
@@ -350,7 +353,7 @@ function outputFromDoc() {
             break; case "radio":
                 editorMetas[meta].values[editorMetas[meta].defaultValue].input.checked = true;
             break; case "scale":
-                
+                editorMetas[meta].input.value = 0;
         }
     }
     // handle metainformation
@@ -364,6 +367,7 @@ function outputFromDoc() {
             }
         } else if (metaNode.hasAttribute("scale")) {
             ensureMetatype(metaNode.nodeName, "scale", metaNode.getAttribute("scale"));
+            editorMetas[metaNode.nodeName].input.value = metaNode.getAttribute("scale");
         } else {
             ensureMetatype(metaNode.nodeName, "checkbox");
             for (let valueNode of metaNode.childNodes) {
@@ -418,89 +422,6 @@ function inputMessage(input, message, time = 1000) {
     }, time);
 }
 
-/*
-function ensureInstructors(instructorsNode) {
-    if (!instructorsNode) return;
-    let i = instructorsNode.firstChild;
-    while (i) {
-        ensureInstructor(i.nodeName);
-        i = i.nextSibling;
-    }
-}
-
-function ensureInstructor(instructorID) {
-    if (getBy(instructors, "id", instructorID)) return Store.fetchInstructorName(instructorID);
-    for (let instructor of instructors) if (instructor.id == instructorID) return;
-    try {while (newInstructor().id != instructorID);} catch (e) {errorOut(instructorID + " is not a working instructor ID")}
-}
-
-function ensureTopics(topicsNode) {
-    if (!topicsNode) return;
-    let t = topicsNode.firstChild;
-    while (t) {
-        ensureTopic(t.nodeName);
-        t = t.nextSibling;
-    }
-}
-
-function ensureTopic(topic) {
-    if (topic in topics) return;
-    newTopic(topic);
-}
-
-function newTopic(topic) {
-    if (topic in topics) errorOut("already a topic");
-    let returner = {topic: topic};
-    topics[topic] = returner;
-    returner.div = xmlImporter.element("div", topicsPlace, ["class", "checkbox"]);
-    returner.label = xmlImporter.element("label", returner.div, ["for", "topic"+topic]);
-    xmlImporter.text(topic, returner.label);
-    returner.checkbox = xmlImporter.element("input", returner.div, ["type", "checkbox", "id", "topic"+topic, "value", topic]);
-    returner.checkbox.addEventListener("change", resetDoc);
-    return returner;
-}
-
-function removeTopic(topic) {
-    if (!(topic in topics)) errorOut("not a topic");
-    let e = topics[topic];
-    if (e.checkbox.checked) errorOut(topic + " must not be in use");
-    delete topics[topic];
-    e.div.parentElement.removeChild(e.div);
-}
-
-// characters of this string are all available instructor ids
-let instructorLetters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
-// get first unused instructor id and make an instructor with that id
-function newInstructor() {
-    if (instructors.length == instructorLetters.length) errorOut("too many instructors");
-    let num = instructors.length, id = instructorLetters.charAt(num);
-    let returner = {id: id};
-    instructors[num] = returner;
-    returner.div = xmlImporter.element("div", instructorsPlace, ["class", "checkbox"]);
-    returner.label = xmlImporter.element("label", returner.div, ["for", "instructor_"+id]);
-    xmlImporter.text(id, returner.label);
-    returner.checkbox = xmlImporter.element("input", returner.div, ["type", "checkbox", "id", "instructor_"+id]);
-    returner.checkbox.addEventListener("change", resetDoc);
-    returner.nameIn = xmlImporter.element("input", null, ["type", "text"]);
-    returner.label.addEventListener("click", function(e) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
-        returner.div.replaceChild(returner.nameIn, returner.label);
-        returner.nameIn.focus();
-    });
-    returner.nameIn.addEventListener("change", function() {returner.setRealName(returner.nameIn.value)});
-    returner.nameIn.addEventListener("blur", function() {if (returner.nameIn.parentElement) returner.div.replaceChild(returner.label, returner.nameIn)});
-    returner.setRealName = function setRealName(realName) {
-        returner.name = realName;
-        returner.label.firstChild.nodeValue = realName;
-        returner.nameIn.value = realName;
-        Store.saveInstructor(id, realName);
-        if (returner.nameIn.parentElement) returner.div.replaceChild(returner.label, returner.nameIn);
-    };
-    Store.fetchInstructorName(id);
-    return returner;
-}
-*/
 // This should empty the interface and make doc a new problem document. This should not erase the active problem.
 function clearTex() {
     doc = xmlImporter.newDocument();

@@ -1,6 +1,6 @@
 # File Format
 
-This readme is for those of you who wish to change something about the problem format, in particular to add a category of metadata to the problem files. First off, the problem file is in xml format. That means it is essentially a tree where nodes have names and attributes. In the file, each node has an opening and closing tag and the nodes between are the children. An example xml file is below, representing a family tree.
+This readme is for those of you who wish to change something about the problem format, in particular to add a category of metainformation to the problem files. First off, the problem file is in xml format. That means it is essentially a tree where nodes have names and attributes. In the file, each node has an opening and closing tag and the nodes between are the children. An example xml file is below, representing a family tree.
 
 ```
 <rootNode>
@@ -32,11 +32,11 @@ The simplest problem file is pretty empty.
 <blankProblem/>
 ```
 
-When the reader opens this file, it will not find any of the nodes it is expecting to find (except the root). The root is the id of the problem, and then all the metadata is interpreted to be the default values and the problem and solution are both interpreted to be blank lines. This is not really a problem someone would study, but it does successfully compile.
+When the reader opens this file, it will not find any of the nodes it is expecting to find (except the root). The root is the id of the problem, and then all the metainformation is interpreted to be the default values and the problem and solution are both interpreted to be blank lines. This is not really a problem someone would study, but it does successfully compile.
 
 # A Pure Question-Answer Problem File
 
-This example has no metadata, just a question about arithmetic:
+This example has no metainformation, just a question about arithmetic:
 
 ```
 <arithmeticQuestion>
@@ -54,11 +54,11 @@ This is the structure used by this site, although the file reader actually isn't
 </arithmeticQuestion>
 ```
 
-# Metadata
+# Metainformation
 
-This is where structure plays a role. We use the following convention for metadata: Any direct child of the problem node is a type of metadata. Any child of that node is the value for that piece of metadata. There is no global list of metadata like the `problemsList.txt` list of all problems. Instead, when a list of problems is loaded each problem is scanned for metadata. The file reader keeps track of all encountered metadata and generates the metadata sections based on what it found. In that sense metadata describes itself.
+This is where structure plays a role. We use the following convention for metainformation: Any direct child of the problem node is a type of metainformation. Any child of that node is the value for that piece of metainformation. There is no global list of metainformation like the `problemsList.txt` list of all problems. Instead, when a list of problems is loaded each problem is scanned for metainformation. The file reader keeps track of all encountered metainformation and generates the metainformation sections based on what it found. In that sense metainformation describes itself.
 
-This problem file has some metadata in it:
+This problem file has some metainformation in it:
 
 ```
 <arithmeticQuestion>
@@ -76,12 +76,28 @@ This problem file has some metadata in it:
 </arithmeticQuestion>
 ```
 
-This file declares that `arithmeticQuestion` has three `topics` (`addition`, `naturalNumbers`, and `definitionOf2`) and that its `solutionCompleteness` is `full`. Any other metadata which is asked from this file will not be found, so will be treated as having the default (usually blank).
+This file declares that `arithmeticQuestion` has three `topics` (`addition`, `naturalNumbers`, and `definitionOf2`) and that its `solutionCompleteness` is `full`. Any other metainformation which is asked from this file will not be found, so will be treated as having the default (usually blank).
 
-# Metadata Attributes
+# Metainformation Attributes
 
-In the above example, the `solutionCompleteness` tag has an attribute (`radio="none"`). This is because some metadata allows for multiple values and some does not. The default behavior of metadata is to allow multiple values, we call this checkbox metadata (`topics` is checkbox). Values in a checkbox tag are interpreted as selected options for that metadata. Checkbox metadata defaults to empty, so if the tag is not present then that is interpreted as no value is selected.
+In the above example, the `solutionCompleteness` tag has an attribute (`radio="none"`). This is because some metainformation allows for multiple values and some does not. The default behavior of metainformation is to allow multiple values, we call this checkbox metainformation (`topics` is checkbox). Values in a checkbox tag are interpreted as selected options for that metainformation. Checkbox metainformation defaults to empty, so if the tag is not present then that is interpreted as no value is selected.
 
-If a type of metadata is supposed to have only one value then we call it radio. We mark a type of metadata as radio by adding the attribute like above. A radio metadata is interpreted as a list of options in a set of radio buttons, meaning one and only one is selected. Radio metadata comes with a default value, so that default value is saved as the value of the `radio` attribute. This doesn't affect the `arithmeticQuestion` problem itself but actually tells the file reader that the `solutionCompleteness` radio metadata has a default value of `none`.
+If a type of metainformation is supposed to have only one value then we call it radio. We mark a type of metainformation as radio by adding the attribute like above. A radio metainformation is interpreted as a list of options in a set of radio buttons, meaning one and only one is selected. Radio metainformation comes with a default value, so that default value is saved as the value of the `radio` attribute. This doesn't affect the `arithmeticQuestion` problem itself but actually tells the file reader that the `solutionCompleteness` radio metainformation has a default value of `none`.
 
-Sometimes it may be useful to interpret metadata as a number instead of a tag. Giving a metadata tag the attribute `scale="n"` means interpret it as a number from 1 to n. This is technically a special case of radio where the possible values are the natural numbers up to n, with 1 being the default option.
+Sometimes it may be useful to interpret metainformation as a number instead of a tag. We do this with the `scale` attribute. An example is below.
+
+```
+<arithmeticQuestion>
+    <problem tex="What is $1+1$?">
+        <topics>
+            <addition/>
+            <naturalNumbers/>
+            <definitionOf2/>
+        </topics>
+        <difficulty scale="3"/>
+    </problem>
+    <solution tex="By definition of 2,&#xA;\[1+1=2.\]"/>
+</arithmeticQuestion>
+```
+
+The `difficulty` metainformation is a number, 3 in this example. No information about the relative weight of this value is stored anywhere in the problem files, instead the weight is inferred by comparing one problem's value to another. If a problem file has no tag corresponding to this scale metainformation then the number is interpreted as 0 by default.
