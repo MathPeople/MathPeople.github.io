@@ -12,7 +12,7 @@ Everything is ultimately saved in XML on this site, so values have to follow xml
 
 # Saving Changes
 
-There are several ways to save a problem after writing it. All problems are kept for the duration of an editor session, but if you do nothing to save the problems you write then they will be erased when you close the site in your browser. The ways of saving problems are covered in the dataStorage readme.
+There are several ways to save a problem after writing it. All problems are kept internally for the duration of an editor session, but if you do nothing to save the problems you write then they will be erased when you close the site in your browser. The ways of saving problems are covered in the dataStorage readme.
 
 # Problem/Solution or Solo Act?
 
