@@ -23,6 +23,7 @@ xmlImporter.trim = function trim(node) {
 xmlImporter.openXMLFile = function openXMLFile(location, pass, finished, failed=function(){console.warn("failed HTTP request " + location)}) {
     let req = new XMLHttpRequest();
     function trimAndFinish() {
+        if (req.status == 404) return failed();
         let response = req.responseXML;
         xmlImporter.trim(response);
         finished(response, pass);
@@ -37,8 +38,11 @@ xmlImporter.openXMLFile = function openXMLFile(location, pass, finished, failed=
 // fetch text file at location and call finished(responseText, pass) when done
 xmlImporter.openTextFile = function openTextFile(location, pass, finished, failed=function(){console.warn("failed HTTP request " + location)}) {
     let req = new XMLHttpRequest();
-    req.onload = function() {finished(req.responseText, pass)}
-    req.onerror = function() {alert("failed")};
+    req.onload = function() {
+        if (req.status == 404) return failed();
+        finished(req.responseText, pass)
+    }
+    req.onerror = failed;
     req.open("GET",location);
     req.overrideMimeType("text/plain");
     req.send();
