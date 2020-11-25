@@ -2,6 +2,9 @@ let mainDiv = document.getElementById("problemsSpot"), metaDiv = xmlImporter.ele
 
 xmlImporter.text("Metainformation", xmlImporter.element("summary", metaDiv));
 
+let renameIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "placeholder", "locally rename an option"]);
+renameIn.addEventListener("change", tryRename);
+
 let andOrButton = xmlImporter.element("select", metaDiv);
 xmlImporter.text("And mode", xmlImporter.element("option", andOrButton));
 xmlImporter.text("Or mode", xmlImporter.element("option", andOrButton));
@@ -97,7 +100,8 @@ function updateMetas() {
                 pair: pair,
                 label: xmlImporter.element("label", pair, ["for", "metadata-"+meta+"-value-"+value]),
                 option: xmlImporter.element("input", pair, ["type", "checkbox", "value", value, "id", "metadata-"+meta+"-value-"+value]),
-                isSelected: bunchCheckboxIsSelected
+                isSelected: bunchCheckboxIsSelected,
+                alternateName: xmlImporter.text(Store.fetch(qualName + " " + meta + " " + value), pair)
             };
             xmlImporter.text(value, bunch.values[value].label);
             bunch.values[value].option.addEventListener("click", updateHides);
@@ -138,6 +142,20 @@ function updateHides() {
             }
         }
     }
+}
+
+function tryRename() {
+    let line = renameIn.value, lines = line.split(" ");
+    let meta = lines[0], tag = lines[1];
+    if (!metas[meta]) return;
+    let bunch = metas[meta];
+    if (!bunch.values || !(tag in bunch.values)) return inputMessage(renameIn, "cannot find " + tag + " in " + meta);
+    let value = line.substring(meta.length + tag.length + 2);
+    // just a little fun
+    if (value == "Dr. Ian Malcolm") value = "Dr. Ian Malcolm, renowned chaos theorist and proponent of fundamental biological understanding";
+    Store.store(qualName + " " + meta + " " + tag, value);
+    bunch.values[tag].alternateName.nodeValue = value;
+    renameIn.value = "";
 }
 
 // interact with browser local storage in a fail-safe way
