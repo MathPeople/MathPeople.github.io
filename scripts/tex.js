@@ -316,6 +316,8 @@ function softRename() {
     let bunch = editorMetas[meta];
     if (!bunch.values || !(tag in bunch.values)) return inputMessage(renameSoftMetainformation, "cannot find " + tag + " in " + meta);
     let value = line.substring(meta.length + tag.length + 2);
+    // just a little fun
+    if (value == "Dr. Ian Malcolm") value = "Dr. Ian Malcolm, renowned chaos theorist and proponent of fundamental biological understanding";
     Store.store(qual + " " + meta + " " + tag, value);
     bunch.values[tag].alternateName.nodeValue = value;
     renameSoftMetainformation.value = "";
