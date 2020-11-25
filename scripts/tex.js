@@ -9,6 +9,8 @@ let qualNameIn = document.getElementById("qualName"),
     newMetaTypeIn = document.getElementById("newMetatype"),
     newMetatypeType = document.getElementById("newMetatypeType"),
     defaultIn = document.getElementById("defaultOption"),
+    renameMetainformation = document.getElementById("renameMetainformation"),
+    renameSoftMetainformation = document.getElementById("renameSoftMetainformation"),
     texProblem = document.getElementById("texProblem"),
     texSolution = document.getElementById("texSolution"),
     texLiveOut = document.getElementById("texLiveOut"),
@@ -57,6 +59,12 @@ let doc = xmlImporter.newDocument(), id = "changeMe";
     setListener(newMetatypeType, "change", newMetatypeTypeChange);
     
     newMetatypeType.selectedIndex = 0;
+    
+    renameMetainformation.value = ""; // reset if cached in browser
+    setListener(renameMetainformation, "change", hardRename);
+    
+    renameSoftMetainformation.value = ""; // reset if cached in browser
+    setListener(renameSoftMetainformation, "change", softRename);
     
     for (let e of [texProblem, texSolution]) setListener(e, "input", resetDoc);
 
@@ -208,22 +216,102 @@ function handleIdChange() {
 }
 
 function newMetatypeTypeChange() {
-        if (newMetaTypeIn.hasAttribute("disabled")) {
-            newMetaTypeIn.removeAttribute("disabled");
-            newMetaTypeIn.value = "";
-        }
-        switch (newMetatypeType.selectedIndex) {
-            case 1: // checkboxes
-                defaultIn.setAttribute("hide", "");
-                newMetaTypeIn.setAttribute("placeholder", "new metatype name");
-            break; case 2: // radio
-                defaultIn.removeAttribute("hide");
-                defaultIn.value = "defaultValue";
-                newMetaTypeIn.setAttribute("placeholder", "new metatype name, enter default value first -->");
-            break; case 3: // scale
-                defaultIn.setAttribute("hide", "new metatype name");
-        }
+    if (newMetaTypeIn.hasAttribute("disabled")) {
+        newMetaTypeIn.removeAttribute("disabled");
+        newMetaTypeIn.value = "";
     }
+    switch (newMetatypeType.selectedIndex) {
+        case 1: // checkboxes
+            defaultIn.setAttribute("hide", "");
+            newMetaTypeIn.setAttribute("placeholder", "new metatype name");
+        break; case 2: // radio
+            defaultIn.removeAttribute("hide");
+            defaultIn.value = "defaultValue";
+            newMetaTypeIn.setAttribute("placeholder", "new metatype name, enter default value first -->");
+        break; case 3: // scale
+            defaultIn.setAttribute("hide", "new metatype name");
+    }
+}
+
+function hardRename() {
+    try {
+        let line = renameMetainformation.value, lines = line.split(" ");
+        switch (lines.length) {
+            case 2:
+                // rename meta itself
+                let oldMeta = lines[0], newMeta = lines[1];
+                if (!(oldMeta in editorMetas)) return inputMessage(renameMetainformation, "cannot find " + oldMeta);
+                if (newMeta in editorMetas) return inputMessage(renameMetainformation, "naming conflict");
+                // rename meta in problem files
+                for (let problem in problems) {
+                    let doc = problems[problem], oldMetaNode = doc.querySelector(oldMeta);
+                    if (oldMetaNode) {
+                        let newMetanode = xmlImporter.elementDoc(doc, newMeta);
+                        for (let child of oldMetaNode.childNodes) newMetanode.appendChild(child.cloneNode(true));
+                        for (let att of oldMetaNode.attributes) newMetanode.setAttribute(att.name, att.value);
+                        oldMetaNode.parentElement.replaceChild(newMetanode, oldMetaNode);
+                    }
+                }
+                // rename in editorMetas
+                editorMetas[newMeta] = editorMetas[oldMeta];
+                delete editorMetas[oldMeta];
+                editorMetas[newMeta].nameText.nodeValue = newMeta;
+                resetDoc();
+                renameMetainformation.value = "";
+                inputMessage(renameMetainformation, "successfully renamed " + oldMeta + " to " + newMeta);
+            break; case 3:
+                // rename tag
+                let meta = lines[0], oldTag = lines[1], newTag = lines[2];
+                if (!(meta in editorMetas)) return inputMessage("cannot find " + meta);
+                if (editorMetas[meta].metaType == "scale") return inputMessage("scale metainformation has no tags to rename");
+                let metaBunch = editorMetas[meta];
+                if (!(oldTag in metaBunch.values)) return inputMessage("cannot find " + oldTag + " in " + meta);
+                let oldBunch = metaBunch.values[oldTag];
+                if (newTag in metaBunch.values) return inputMessage("naming conflict");
+                let newDefault = oldTag == metaBunch.defaultValue? newTag: metaBunch.defaultValue;
+                // rename tag in problem files
+                for (let problem in problems) {
+                    let doc = problems[problem], metaNode = doc.querySelector(meta);
+                    if (metaNode) {
+                        if (metaBunch.metaType == "radio") metaNode.setAttribute("radio", newDefault);
+                        let oldTagNode = doc.querySelector(meta + " " + oldTag);
+                        if (oldTagNode) {
+                            let newTagNode = xmlImporter.elementDoc(doc, newTag);
+                            for (let att of oldTagNode.attributes) newTagNode.setAttribute(att.name, att.value);
+                            for (let child of oldTagNode.childNodes) newTagNode.appendChild(child.cloneNode(true));
+                            oldTagNode.parentElement.replaceChild(newTagNode, oldTagNode);
+                        }
+                    }
+                }
+                // rename in editorMetas
+                let newBunch;
+                switch (metaBunch.metaType) {
+                    case "checkbox":
+                        newBunch = newCheckbox(meta, newTag);
+                        oldBunch.div.parentElement.replaceChild(newBunch.div, oldBunch.div);
+                        newBunch.input.checked = oldBunch.input.checked;
+                        delete metaBunch.values[oldTag];
+                    break; case "radio":
+                        newBunch = newRadio(meta, newTag);
+                        oldBunch.div.parentElement.replaceChild(newBunch.div, oldBunch.div);
+                        newBunch.input.checked = oldBunch.input.checked;
+                    break; default: errorOut("unsupported name change");
+                }
+                delete metaBunch.values[oldTag];
+                resetDoc();
+                renameMetainformation.value = "";
+                inputMessage(renameMetainformation, "successfully renamed " + oldTag + " in " + meta + " to " + newTag);
+            break; default: inputMessage("cannot find that metainformation");
+        }
+    } catch (e) {
+        console.log(e);
+        inputMessage(renameMetainformation, "cannot do that");
+    }
+}
+
+function softRename() {
+    console.log("soft rename");
+}
 
 function tryNewMetatypeIn() {
     let meta = newMetaTypeIn.value;
@@ -241,6 +329,7 @@ function newCheckbox(metaName, value) {
     xmlImporter.text(value, xmlImporter.element("label", bunch.div, ["for", "metainformation"+meta+"value"+value]));
     bunch.input = xmlImporter.element("input", bunch.div, ["type", "checkbox"]);
     bunch.input.addEventListener("change", resetDoc);
+    return bunch;
 }
 
 function newRadio(metaName, value) {
@@ -253,6 +342,7 @@ function newRadio(metaName, value) {
     xmlImporter.text(value, xmlImporter.element("label", bunch.div, ["for", "metainformation"+meta+"value"+value]));
     bunch.input = xmlImporter.element("input", bunch.div, ["type", "radio", "name", "metainformation"+metaName, "id", "metainformation"+meta+"value"+value]);
     bunch.input.addEventListener("change", resetDoc);
+    return bunch;
 }
 
 // only populates editor's metainformation gui
@@ -260,7 +350,7 @@ function ensureMetatype(metaName, type = "checkbox", defaultValue) {
     type = type.toLowerCase();
     if (editorMetas[metaName]) return;
     let meta = editorMetas[metaName] = {values: {}, metaType: type, div: xmlImporter.element("div", putMetasHere, ["class", "meta"])};
-    xmlImporter.text(metaName, xmlImporter.element("h5", meta.div));
+    meta.nameText = xmlImporter.text(metaName, xmlImporter.element("h5", meta.div));
     switch (type) {
         case "checkbox":
             meta.div.setAttribute("checkbox", "");
