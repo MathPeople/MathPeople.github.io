@@ -145,17 +145,11 @@ var Store = {};
 
 Store.canStore = function() {return typeof (Storage) !== "undefined"}
 
-Store.fetchInstructorName = function fetchInstructorName(id) {if (Store.canStore()) {
-    let realName = localStorage[qual + " instructor " + id];
-    if (realName) getBy(instructors, "id", id).setRealName(realName);
-}}
-
-Store.saveInstructor = function saveInstructor(id, name) {if (Store.canStore()) {
-    localStorage.setItem(qual + " instructor " + id, name);
-}}
-
+// returns empty string if not saved
 Store.fetch = function fetch(name) {
-    if (Store.canStore()) return localStorage.getItem(name);
+    if (!Store.canStore()) return "";
+    let value = localStorage.getItem(name);
+    if (typeof value == "string") return value; else return "";
 }
 
 Store.store = function store(name, value) {

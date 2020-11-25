@@ -301,7 +301,7 @@ function hardRename() {
                 resetDoc();
                 renameMetainformation.value = "";
                 inputMessage(renameMetainformation, "successfully renamed " + oldTag + " in " + meta + " to " + newTag);
-            break; default: inputMessage("cannot find that metainformation");
+            break; default: inputMessage("invalid syntax");
         }
     } catch (e) {
         console.log(e);
@@ -310,7 +310,16 @@ function hardRename() {
 }
 
 function softRename() {
-    console.log("soft rename");
+    let line = renameSoftMetainformation.value, lines = line.split(" ");
+    let meta = lines[0], tag = lines[1];
+    if (!editorMetas[meta]) return inputMessage(renameSoftMetainformation, "cannot find metainformation " + meta);
+    let bunch = editorMetas[meta];
+    if (!bunch.values || !(tag in bunch.values)) return inputMessage(renameSoftMetainformation, "cannot find " + tag + " in " + meta);
+    let value = line.substring(meta.length + tag.length + 2);
+    Store.store(qual + " " + meta + " " + tag, value);
+    bunch.values[tag].alternateName.nodeValue = value;
+    renameSoftMetainformation.value = "";
+    inputMessage(renameSoftMetainformation, "successfully soft renamed " + qual + " " + meta + " " + tag + " to " + value);
 }
 
 function tryNewMetatypeIn() {
@@ -329,6 +338,7 @@ function newCheckbox(metaName, value) {
     xmlImporter.text(value, xmlImporter.element("label", bunch.div, ["for", "metainformation"+meta+"value"+value]));
     bunch.input = xmlImporter.element("input", bunch.div, ["type", "checkbox"]);
     bunch.input.addEventListener("change", resetDoc);
+    bunch.alternateName = xmlImporter.text(Store.fetch(qual + " " + metaName + " " + value), xmlImporter.element("span", bunch.div));
     return bunch;
 }
 
@@ -342,6 +352,7 @@ function newRadio(metaName, value) {
     xmlImporter.text(value, xmlImporter.element("label", bunch.div, ["for", "metainformation"+meta+"value"+value]));
     bunch.input = xmlImporter.element("input", bunch.div, ["type", "radio", "name", "metainformation"+metaName, "id", "metainformation"+meta+"value"+value]);
     bunch.input.addEventListener("change", resetDoc);
+    bunch.alternateName = xmlImporter.text(Store.fetch(qual + " " + metaName + " " + value), xmlImporter.element("span", bunch.div));
     return bunch;
 }
 
