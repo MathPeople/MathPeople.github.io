@@ -38,7 +38,7 @@ xmlImporter.openXMLFile = function openXMLFile(location, pass, finished, failed=
 xmlImporter.openTextFile = function openTextFile(location, pass, finished, failed=function(){console.warn("failed HTTP request " + location)}) {
     let req = new XMLHttpRequest();
     req.onload = function() {finished(req.responseText, pass)}
-    req.onerror = failed;
+    req.onerror = function() {alert("failed")};
     req.open("GET",location);
     req.overrideMimeType("text/plain");
     req.send();
