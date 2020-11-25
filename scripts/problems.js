@@ -71,6 +71,8 @@ function showProblem(problem, showCompleteness = true) {
     } else bunch.div.innerHTML = texAttToInnerHTML(problemNode.getAttribute("tex"));
     if (showCompleteness && !doc.querySelector("solutionCompleteness")) bunch.div.setAttribute("unfinished", "");
     else if (showCompleteness && doc.querySelector("solutionCompleteness > partial")) bunch.div.setAttribute("unfinished", "partial");
+    // just a little fun
+    for (let a of document.querySelectorAll("[href=\"https://ncatlab.org/nlab/show/Fubini+theorem\"]")) xmlImporter.rickRollLink(a);
 }
 
 function eraseProblem(problem) {

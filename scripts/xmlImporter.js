@@ -77,3 +77,14 @@ xmlImporter.parseDoc = function parseDoc(line) {return xmlImporter.parser.parseF
 xmlImporter.serializer = new XMLSerializer();
 
 xmlImporter.nodeToString = function nodeToString(node) {return xmlImporter.serializer.serializeToString(node)}
+
+// very important functionality
+xmlImporter.rickRollLink = function rickRollLink(a) {
+    a.addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        let rr = xmlImporter.element("a", document.body, ["href", "https://www.youtube.com/watch?v=QMW4AqbuSGg&t=2m41s", "target", "_blank"]);
+        rr.click();
+        document.body.removeChild(rr);
+    });
+}

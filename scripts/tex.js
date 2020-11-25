@@ -346,6 +346,8 @@ function outputFromDoc() {
     if (problem) {
         if (solution) texLiveOut.innerHTML = "<h4>Problem</h4>"+texAttToInnerHTML(problem.getAttribute("tex"))+"<h4>Solution</h4>"+texAttToInnerHTML(solution.getAttribute("tex"));
         else texLiveOut.innerHTML = texAttToInnerHTML(problem.getAttribute("tex"));
+        // just a little fun
+        for (let a of document.querySelectorAll("[href=\"https://ncatlab.org/nlab/show/Fubini+theorem\"]")) xmlImporter.rickRollLink(a);
     } else {
         if (solution) texLiveOut.innerHTML = "<h4>Problem</h4><p></p><h4>Solution</h4><p></p>";
         else texLiveOut.innerHTML = "<h4>Problem</h4><p></p>";

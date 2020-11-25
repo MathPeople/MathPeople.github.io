@@ -2,9 +2,13 @@
 
 This page allows you to enter a problem/solution pair in LaTeX (ish) and save it in the format required for display on the rest of the site. Problems are saved in xml files and, as long as you use this editor to obtain them, you don't have to worry about the specific file structure or even what xml is. You just enter the TeX, apply the appropriate metainformation, and upload the resulting file appropriately. The whatIsGitHub readme describes how to interact with the repository and what role GitHub plays in this project.
 
-LaTeX is completely handled by MathJax. MathJax struggles with dollar signs for math mode. This page processes the text so that dollar signs work, but not double dollar signs. Don't use double dollar signs.
+If you are writing a problem for a specific qual which is supported on this site, be sure to enter which qual before you do any work. This will make sure all the problems corresponding to that qual are loaded, all the existing metainformation is set up, and it will help with avoiding naming conflicts.
 
-If you are writing a problem for a specific qual which is supported on this site, be sure to enter which qual before you do any work. This will make sure all the problems corresponding to that qual are loaded, all the existing metainformation is set up, and it will help avoid naming conflicts.
+# MathJax
+
+LaTeX is completely handled by MathJax, which sacrifices some functionality in order to make TeX work on a website. Check out their site (http://docs.mathjax.org/en/latest/input/tex/differences.html) to see what you can and cannot use in your TeX. MathJax' approach is HTML first, TeX second, and it is worth knowing that you are technically writing HTML when you enter TeX. Specifically, the text you enter into the TeX input boxes is displayed by directly adding it to the innerHTML properties of certain DOM elements. It is possible for you to add HTML content in the TeX itself, for example `... gives us $a+b$, which by <a href="https://ncatlab.org/nlab/show/Fubini+theorem">Fubini's Theorem</a> equals $b+a$, ...`, and it will function.
+
+This also means that newline characters wouldn't have an effect because they are ignored in HTML. In order for new lines to appear, the text you enter is preprocessed to replace every newline character `"\n"` with the `<br />` (line break) HTML element.
 
 # xmlNodeName Format
 
