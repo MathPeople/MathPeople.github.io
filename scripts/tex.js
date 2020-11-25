@@ -27,6 +27,7 @@ let doc = xmlImporter.newDocument(), id = "changeMe";
     // fireblock in case something has an error
     function setListener(element, type, func) {try {element.addEventListener(type, func)} catch (e) {}}
     
+    qualNameIn.value = ""; // reset if cached in browser
     setListener(qualNameIn, "change", loadQual);
     //qualNameIn.value = "template";
     //window.setTimeout(loadQual, 100);
@@ -144,7 +145,6 @@ function initializeLocal() {
         doc = problems[problem] = xmlImporter.parseDoc(Store.fetch("local " + problem));
         outputFromDoc();
     }
-    clearTex();
     qualNameIn.value = "working locally";
     refreshMathJax = exchange;
     refreshMathJax();
@@ -290,7 +290,7 @@ function ensureMetatype(metaName, type = "checkbox", defaultValue) {
             });
         break; case "scale":
             meta.div.setAttribute("scale", "");
-            meta.input = xmlImporter.element("input", meta.div, ["type", "number"]);
+            meta.input = xmlImporter.element("input", meta.div, ["type", "number", "step", "any"]);
             meta.input.value = 0;
             meta.input.addEventListener("change", resetDoc);
     }
@@ -429,7 +429,7 @@ function inputMessage(input, message, time = 1000) {
     }, time);
 }
 
-// This should empty the interface and make doc a new problem document. This should not erase the active problem.
+// This empties the interface and make doc a new problem document. This does not erase the active problem.
 function clearTex() {
     doc = xmlImporter.newDocument();
     xmlImporter.elementDoc(doc, "changeMe", doc); // root node, required for xml files
