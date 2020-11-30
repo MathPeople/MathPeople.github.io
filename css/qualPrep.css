@@ -39,6 +39,19 @@ th, td {
     display: inline-block;
 }
 
+.metaOption {
+    font-size: small;
+}
+
+.alternateName {
+    color: rgb(185, 100, 100);
+    margin: 0 1em;
+}
+
+label {
+    margin: 0 1ex;
+}
+
 input[type="text"] {
     width: 54ex;
 }

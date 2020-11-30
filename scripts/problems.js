@@ -2,18 +2,24 @@ let mainDiv = document.getElementById("problemsSpot"), metaDiv = xmlImporter.ele
 
 xmlImporter.text("Metainformation", xmlImporter.element("summary", metaDiv));
 
-let renameIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "placeholder", "locally rename an option"]);
+let renameIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "id", "renameIn", "placeholder", "metaName optionName renamed value"]), selectorIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "id", "selectorIn", "placeholder", "//metaName/optionName | //problem[not(radioMetaName)]"]);
+selectorIn.value = "*";
+
+let label = xmlImporter.element("label", null, ["for", "renameIn"]);
+renameIn.parentElement.insertBefore(label, renameIn);
+xmlImporter.text("Locally Rename an Option:", label);
 renameIn.addEventListener("change", tryRename);
 
-let andOrButton = xmlImporter.element("select", metaDiv);
-xmlImporter.text("And mode", xmlImporter.element("option", andOrButton));
-xmlImporter.text("Or mode", xmlImporter.element("option", andOrButton));
-andOrButton.addEventListener("change", updateHides);
+label = xmlImporter.element("label", null, ["for", "selectorIn"]);
+selectorIn.parentElement.insertBefore(label, selectorIn);
+xmlImporter.text("CSS Selector to Show/Hide Problems:", label);
+selectorIn.addEventListener("change", updateHides);
 
 var problems = {}, metas = {};
 
+// ensure metas has a spot for this meta and its values
 function handleMetaNode(node) {
-    if (!(node.nodeName in metas)) metas[node.nodeName] = {values: {}, metaType: "checkboxes"};
+    if (!(node.nodeName in metas)) metas[node.nodeName] = {values: {}, metaType: "checkboxes"}; // default to checkboxes, change later if needed
     let value = node.firstChild;
     while (value) {
         metas[node.nodeName].values[value.nodeName] = undefined;
@@ -26,7 +32,6 @@ function handleMetaNode(node) {
     }
     if (node.hasAttribute("scale")) {
         metas[node.nodeName].metaType = "scale";
-        for (let i = 0; i <= node.getAttribute("scale"); ++i) metas[node.nodeName].values["n"+i] = undefined;
         metas[node.nodeName].defaultValue = "n1";
     }
 }
@@ -84,27 +89,25 @@ function eraseProblem(problem) {
     delete problems[problem];
 }
 
+// ensure each meta and option has an element in GUI
 function updateMetas() {
     for (let meta in metas) {
         let bunch = metas[meta];
         if (!bunch.div) {
-            bunch.div = xmlImporter.element("div", metaDiv, ["class", "metaBunch"]);
-            bunch.title = xmlImporter.element("p", bunch.div, ["class", "metaTitle"]);
+            bunch.div = xmlImporter.element("div", metaDiv, ["class", "metaBunch", "metaType", bunch.metaType]);
+            bunch.title = xmlImporter.element("h5", bunch.div, ["class", "metaTitle"]);
             bunch.titleText = xmlImporter.text(meta, bunch.title);
         }
-        if (!bunch.checkboxes) bunch.checkboxes = xmlImporter.element("div", bunch.div, ["class", "checkboxes"]);
-        for (let value in bunch.values) if (!bunch.values[value]) {
-            let pair = xmlImporter.element("div", bunch.checkboxes, ["class", "checkbox"]);
-            bunch.values[value] = {
-                value: value,
-                pair: pair,
-                label: xmlImporter.element("label", pair, ["for", "metadata-"+meta+"-value-"+value]),
-                option: xmlImporter.element("input", pair, ["type", "checkbox", "value", value, "id", "metadata-"+meta+"-value-"+value]),
-                isSelected: bunchCheckboxIsSelected,
-                alternateName: xmlImporter.text(Store.fetch(qualName + " " + meta + " " + value), pair)
-            };
-            xmlImporter.text(value, bunch.values[value].label);
-            bunch.values[value].option.addEventListener("click", updateHides);
+        switch (bunch.metaType) {
+            case "checkboxes": case "radio":
+                for (let value in bunch.values) if (!bunch.values[value]) {
+                    let b = bunch.values[value] = {};
+                    b.pair = xmlImporter.element("div", bunch.div, ["class", "metaOption"]);
+                    b.name = xmlImporter.text(value, xmlImporter.element("span", b.pair));
+                    b.alternateName = xmlImporter.text(Store.fetch(qualName + " " + meta + " " + value), xmlImporter.element("span", b.pair, ["class", "alternateName"]));
+                }
+            break; case "scale":
+                
         }
     }
 }
@@ -118,29 +121,20 @@ function show() {
     updateHides();
 }
 
+function getProblemsFromSelector() {
+    let selector = selectorIn.value, returner = {};
+    for (let id in problems) {
+        try {if (problems[id].doc.evaluate(selector, problems[id].doc, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue) returner[id] = undefined} catch (e) {}
+    }
+    return returner;
+}
+
+// search problems for any node which matches the selector, show if one is found else hide
 function updateHides() {
-    let orMode = andOrButton.selectedIndex == 1, logic = orMode? function(b1, b2) {return b1 || b2}: function(b1, b2) {return b1 && b2};
-    for (let problem in problems) if (orMode) problems[problem].div.setAttribute("hide", ""); else problems[problem].div.removeAttribute("hide");
-    for (let meta in metas) for (let value in metas[meta].values) if (metas[meta].values[value].isSelected()) for (let problem in problems) {
-        // if already shown in or mode or already hidden in and mode then skip
-        if (problems[problem].div.hasAttribute("hide") != orMode) continue;
-        let doc = problems[problem].doc;
-        let metanode = doc.querySelector("problem " + meta);
-        if (metanode) {
-            let valueNode = doc.querySelector("problem " + meta + " " + value);
-            if (valueNode) {
-                if (orMode) problems[problem].div.removeAttribute("hide");
-            } else {
-                if (!orMode) problems[problem].div.setAttribute("hide", "");
-            }
-        } else {
-            // metanode is missing so check if we are looking for the default value
-            if (("defaultValue" in metas[meta]) && value == metas[meta].defaultValue) {
-                if (orMode) problems[problem].div.removeAttribute("hide");
-            } else {
-                if (!orMode) problems[problem].div.setAttribute("hide", "");
-            }
-        }
+    let shows = getProblemsFromSelector();
+    for (let id in problems) {
+        if (id in shows) problems[id].div.removeAttribute("hide");
+        else problems[id].div.setAttribute("hide", "");
     }
 }
 
