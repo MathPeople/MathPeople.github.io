@@ -1,23 +1,31 @@
-# What is GitHub?
-
-There are endless resources online for learning Git and GitHub. This readme is just to give you the overview -- if you want to actually learn Git you should read about it from somewhere else. Git is the program which does all the work we are about to discuss and GitHub is a service which hosts Git repositories publicly online. GitHub Pages is a further service which builds a repository into a website and gives it a url, making it accessible to the world wide web. This website is hosted on GitHub Pages.
-
-You can consider GitHub to be a remote location which houses files. Through your online GitHub account you can make changes to the files held there, and GitHub even has some simple editing capacity for direct online editing of the files, though the more powerful approach is to use Git to download/upload the files between your computer and the GitHub repositories.
+This readme is for qual prep seminar leaders who want to use this site in their course (or a student in this course interested in adding/changing some problems) and who are not familiar with / have no experience with Git and GitHub.
 
 # What is Git?
 
-Git is a way to share a folder between devices and to keep track of changes. The main folder is called the repository, you can see the contents of this folder at the GitHub repository `https://github.com/MathPeople/MathPeople.github.io`. The data there are what get built into the website `https://mathpeople.github.io/`.
+Git is a powerful component of modern computing. As such, it has many abilities and many devoted followers. It is also a fairly complex system to get the hang of. Git was designed to be a version control system which decentralizes the control of the files, so much of the features are related to sharing control. We don't necessarily care about this. In fact, you can do everything you need to do to create and maintain a site and list of problems here without ever knowing anything about Git. For the sake of simplicity, we adopt this approach.
 
-There is a lot that Git does/can do which we don't need to describe here. If you are just hoping to make a change to the website (like adding new content), these are the steps you need to do:
+# What is GitHub?
 
-1 - Create a GitHub account. They are free and easy to set up.
+You can consider GitHub to be a remote location which houses files. Through your online GitHub account you can make changes to the files held there, and GitHub even has some simple editing capacity for direct online editing of the files. The more powerful approach is to use Git to download/upload the files between your computer and the GitHub repositories.
 
-2 - Create a branch for your changes. You can name this branch after yourself or after the intended changes, it's up to you. You can think of a branch as a sandbox because changes you make in your branch will not affect the website, which itself is housed in the branch called `master`.
+Once you have set up Git and gotten used to using it, you realize that it is an excellent way to share files. However, setup is difficult and the tutorials found online, though abundant, are also opaque. GitHub has nice interface tools so the rest of this readme will walk you through how to do what you need to do purely through GitHub.
 
-3 - Pull your branch. This step has a bit of a Git learning curve. After doing this, you will have a copy of the repository on your computer. This process is well-documented elsewhere. Fun fact: once you have the repository on your computer you will not need an internet connection until you are ready to push your changes to the GitHub (remote) version of your branch.
+# Editing From GitHub
 
-4 - Make your changes. Add your content, alter the files you need to alter, etc. If you are only using the editor, this step involves merely replacing the old problems folder with the new problems folder which the editor gives you. If you are making any changes which go beyond simply adding/modifying problems, like if you are customizing your page or adding some new features in the javascript files, those changes occur in this step and they are made to the files on your own computer which you downloaded in the pull step.
+First and foremost, you need a GitHub account. These are free and easy to make. Log in to GitHub and navigate to the repository for this project, `https://github.com/MathPeople/MathPeople.github.io`. There you can see all the files which make up this site.
 
-5 - Push your changes. This is where the Git learning curve is steepest. You have to tell Git which files to look at, then make a commit (which bundles all of your changes into one Git-magic snapshot), then push that commit to GitHub (so that your branch on GitHub is updated to reflect your changes). The process may be difficult but there are tons of tutorials online. Pushing to your branch does not affect the website, but it does update your GitHub branch with your changes. This makes your changes public, it just doesn't affect the site yet. Branches and commits are major components of Git's version control power.
+All the files here are ultimately text files, so reading them doesn't take any special programs. You can read the files directly from the repository just by clicking on them. There are also options for display modes through the buttons in the top right corner.
 
-6 - Merge your changes. When you are ready to actually change the site, you will want to merge your branch into the master branch. This also has plenty of tutorials online. You should keep in mind that anyone in the world can do any of the above steps, but only a person with the designated permissions (the MathPeople account and any delegated accounts) can approve the merge in this step. After merging your branch to master, your changes are part of the site. It takes a couple minutes to percolate through GitHub pages' site building stuff and then you can see your changes on the live site.
+One of these buttons is a pencil. Click it and you can edit the file directly in the browser. This is how you will make small changes to files without learning how Git works. There is a button at the bottom called "Commit changes" which is how you save your edits. Above it is a spot for a name and message; these are part of Git's way of keeping track of changes. Fill them out with short, descriptive information so that someone skimming a long list of changes knows what each change was for, then click the commit button to save.
+
+Now you know how to edit files, let's see how to upload files. First you have to navigate to the folder you want to add the file to. It is important you get this right because moving a file from one folder to another is not a focus of the GitHub interface. Once you are in the correct folder, click the "Add file" button. You will have the option to add a blank file or upload a file.
+
+You can also add a folder, though there is no button for this. New folders are added during the file addition process. If you haev a folder `A` and you want to create a folder `B` and put file `c.txt` into folder `B`, then first navigate to folder `A`. Click new file and name it `B/c.txt`. You will find that, upon typing `/` in `B/`, folder `B` will be created in folder `A` and you will be now adding to folder `B`. Finish typing the name, which will now appear as `c.txt`, and your task is complete. Folder `B` is created inside folder `A` and file `c.txt` is placed in `B`.
+
+If you want to update a file which already exists using the upload instead of the direct editor, you do not do this from the GitHub page for the file itself. Go to the folder housing it and add the new version of the file to the folder. GitHub will simply overwrite the old version of the file with what you just uploaded.
+
+In some cases you have to copy a file. To do this the simplest way through GitHub just open the file, copy its contents, and paste them as the contents of the new file.
+
+# What is GitHub Pages?
+
+GitHub itself is a repository for files. Its primary interaction with the internet is to make the repository available to view/download/edit using the interface, not to host an actual website online. In general hosting a website is a little involved, what with setting up a server and dealing with domain names. GitHub has generously decided to deal with all of that stuff on their end through GitHub pages. They even deal with the steps for building website files out of the files in the repository. All we have to do is keep the HTML/CSS/JS/etc files consistent in our repository and GitHub pages turns it into a website which is accessible through the appropriate URL (`mathpeople.github.io`). We don't need to know any of the details, we only mention it here so you know who to attribute thanks to for making it so easy and free to host a website.
