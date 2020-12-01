@@ -1,1 +1,0 @@
-<problem><p>Compute the de Rham cohomology groups of an oriented compact \(2\)-manifold.</p></problem><solution><p>Read Simon and Donaldsons book on Riemann Surfaces, sections 5.2.1-5.2.2 for this result.</p></solution><topics><PointSetTopology/><RiemannSurfaces/><DifferentialForms/></topics><instructors><a/></instructors>

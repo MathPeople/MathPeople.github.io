@@ -1,1 +1,0 @@
-C2_5 bergman1 bergman2 bergman3 bergman4 bergman5 singularities sphereFromDisc customCharts automorphismGroups fatouTheorem openImpliesLiouville

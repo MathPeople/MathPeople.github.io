@@ -1,1 +1,0 @@
-<problem><p>Prove that a complex torus is covered holomorphically by \(\mathbb{C}\) i.e. this complex torus = \(\mathbb{C}/\Lambda\), where \(\Lambda\) is a lattice.</p></problem><solution><p>Donaldson gives a rigorous proof of this result in 6.1 (pg 84-86).</p></solution><topics><PointSetTopology/><RiemannSurfaces/></topics><instructors><a/></instructors>

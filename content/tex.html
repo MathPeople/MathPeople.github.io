@@ -5,79 +5,57 @@
         <title>Browser TeX</title>
         <link rel="stylesheet" type="text/css" href="../css/tex.css"/>
         <script src="../scripts/xmlImporter.js"></script>
+        <script src="../scripts/jax.js"></script>
         <link rel="stylesheet" type="text/css" href="../css/xmlViewer.css"/>
         <script src="../scripts/xmlViewer.js"></script>
+        <script src="../scripts/problems.js"></script>
         <script src="../scripts/tex.js" async defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML" async=""></script>
     </head>
     <body>
         <div class="title">
             <h1>Browser \(\TeX\)</h1>
         </div>
         <p>Use this tool to write \(\LaTeX\) in the right format for use on this site. Read the <a href="../readmes/tex.md">readme</a> for an introduction.</p>
-        <p>Bugs: a letter following a &lt; causes issues -- add a space between them.</p>
         <label for="qualName">This is for qual</label>
         <input type="text" id="qualName"/>
-        <input type="text" id="converter" placeholder = "old question"/>
-        <div><button type="button" id="clearTex">Clear</button></div>
-        <div><button type="button" id="pairSolo">Solo mode</button></div>
+        <label for="loadedProblems">Loaded problems:</label>
+        <select id="loadedProblems"></select>
+        <div><button type="button" id="clearTex">Clear / New Problem</button></div>
+        <div><button type="button" id="pairSolo">To Solo mode</button></div>
         <div id="metainformationTex">
             <details id="metainformation">
                 <summary>Metainformation</summary>
-                <p id="idP">Problem ID: <input type="text" id="problemID"/></p>
-                <div class="radioButtons">
-                    <p>Is the solution complete?</p>
-                    <div>
-                        <input type="radio" id="solutionFull" name="solution" value="">
-                        <label for="solutionFull">Yes, the solution is complete</label>
-                    </div>
-                    <div>
-                        <input type="radio" id="solutionPartial" name="solution">
-                        <label for="solutionPartial">No but this is a partial solution</label>
-                    </div>
-                    <div>
-                        <input type="radio" id="solutionNone" name="solution" checked>
-                        <label for="solutionNone">No, this is not an attempt at a solution</label>
-                    </div>
+                <p id="idP">Problem ID: <input type="text" id="problemID" list="idList"/><datalist id="idList"/></p>
+                <div>
+                    <label for="newMetatype">New Metatype:</label><input id="newMetatype" type="text"/>
+                    <select id="newMetatypeType">
+                        <option disabled="">Select Type</option>
+                        <option>Checkbox</option>
+                        <option>Radio</option>
+                        <option>Scale</option>
+                    </select>
+                    <input id = "defaultOption" type="text" hide=""/>
                 </div>
-                <div class="radioButtons">
-                    <p>How is this as a test question?</p>
-                    <div>
-                        <input type="radio" id="greatQuestion" name="viability" value="">
-                        <label for="solutionFull">Great, this is repeatedly a test question</label>
-                    </div>
-                    <div>
-                        <input type="radio" id="goodQuestion" name="viability">
-                        <label for="solutionPartial">Good, this is a viable test question</label>
-                    </div>
-                    <div>
-                        <input type="radio" id="badQuestion" name="viability" checked>
-                        <label for="solutionNone">Bad, this would be a poor test question</label>
-                    </div>
-                </div>
-                <div class="checkboxHolder">
-                    <p>Instructors:</p>
-                    <div id="instructors"></div>
-                    <button type="button" id="newInstructor">New instructor</button>
-                </div>
-                <div class="checkboxHolder">
-                    <p>Which topics are involved?</p>
-                    <div id="topics" class="checkboxes"></div>
-                    <div class="checkbox">
-                        <label for="newTopicButton">Remove topic mode</label>
-                        <input type="checkbox" id="newTopicButton"/>
-                    </div>
-                    <input type="text" id="newTopic" placeholder="topic" list="topicsList"/>
-                    <datalist id="topicsList"/>
-                </div>
+                <div id="putMetasHere"></div>
+                <div><label>
+                    Rename metainformation (hard)
+                    <input id="renameMetainformation" type="text" placeholder="actually rename metainformation"/>
+                    </label></div>
+                <div><label>
+                    Rename metainformation (display)
+                    <input id="renameSoftMetainformation" type="text" placeholder="locally rename some tag"/>
+                    </label></div>
             </details>
         </div>
-        <label for="problemIn">Problem:</label>
+        <label for="texProblem" pairOnly="">Problem:</label>
         <div><textarea class="texInput" id="texProblem" spellcheck="false"></textarea></div>
-        <label for="solutionIn">Solution:</label>
-        <div><textarea class="texInput" id="texSolution" spellcheck="false"></textarea></div>
+        <label for="texSolution" pairOnly="">Solution:</label>
+        <div pairOnly=""><textarea class="texInput" id="texSolution" spellcheck="false"></textarea></div>
         <div id="texLiveOut"><p>Rendered TeX will go here</p></div>
         <button type="button" id="save">Save</button>
         <div><textarea id="codeOut" spellcheck="false">Formatted code will go here</textarea></div>
+        <button type="button" id="saveAll">Save All (.zip)</button>
+        <p id="errorOut"/>
+        <div id="problemsSpot"/>
     </body>
 </html>

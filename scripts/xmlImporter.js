@@ -23,7 +23,8 @@ xmlImporter.trim = function trim(node) {
 xmlImporter.openXMLFile = function openXMLFile(location, pass, finished, failed=function(){console.warn("failed HTTP request " + location)}) {
     let req = new XMLHttpRequest();
     function trimAndFinish() {
-        let response = xmlImporter.getRoot(req.responseXML);
+        if (req.status == 404) return failed();
+        let response = req.responseXML;
         xmlImporter.trim(response);
         finished(response, pass);
     }
@@ -37,7 +38,10 @@ xmlImporter.openXMLFile = function openXMLFile(location, pass, finished, failed=
 // fetch text file at location and call finished(responseText, pass) when done
 xmlImporter.openTextFile = function openTextFile(location, pass, finished, failed=function(){console.warn("failed HTTP request " + location)}) {
     let req = new XMLHttpRequest();
-    req.onload = function() {finished(req.responseText, pass)}
+    req.onload = function() {
+        if (req.status == 404) return failed();
+        finished(req.responseText, pass)
+    }
     req.onerror = failed;
     req.open("GET",location);
     req.overrideMimeType("text/plain");
@@ -69,3 +73,22 @@ xmlImporter.text = function text(line, loadHere) {
 }
 
 xmlImporter.newDocument = function() {return document.implementation.createDocument(null, "")}
+
+xmlImporter.parser = new DOMParser();
+
+xmlImporter.parseDoc = function parseDoc(line) {return xmlImporter.parser.parseFromString(line, "application/xml")}
+
+xmlImporter.serializer = new XMLSerializer();
+
+xmlImporter.nodeToString = function nodeToString(node) {return xmlImporter.serializer.serializeToString(node)}
+
+// very important functionality
+xmlImporter.rickRollLink = function rickRollLink(a) {
+    a.addEventListener("click", function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        let rr = xmlImporter.element("a", document.body, ["href", "https://www.youtube.com/watch?v=QMW4AqbuSGg&t=2m41s", "target", "_blank"]);
+        rr.click();
+        document.body.removeChild(rr);
+    });
+}
