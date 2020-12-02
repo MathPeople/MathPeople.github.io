@@ -9,3 +9,4 @@ Check out the readmes folder for some information.
 - newQual: How to create a spot for a new qual, giving a list of problems and a web page
 - tex: How to use the TeX editor
 - whatIsGitHub: How this site gets shared and put online
+- xpath: How searching and test generation configuration work
