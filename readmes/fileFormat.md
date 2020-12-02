@@ -1,19 +1,19 @@
 # File Format
 
-This readme is for those of you who wish to understand or change something about the problem file format. First off, the problem file is in xml format. That means it is essentially a tree where nodes have names and attributes. In the file, each node has an opening and closing tag and the nodes between are the children. An example xml file is below, representing a family tree.
+This readme is for those of you who wish to understand or change something about the problem file format. First off, the problem file is in xml format. That means it is essentially a tree of nodes which have names and attributes. In the file, each node has an opening and closing tag. The nodes between these are the descendants. An example xml file is below, representing a family tree.
 
 ```
 <rootNode>
     <grandparent>
         <aunt>
-            <cousin/>
-            <cousin/>
+            <cousin1/>
+            <cousin2/>
         </aunt>
         <parent>
             <olderSibling/>
             <me>
                 <child/>
-            </me
+            </me>
             <youngerSibling>
                 <nephew/>
             </youngerSibling>
@@ -45,7 +45,7 @@ This example has no metainformation, just a question about arithmetic:
 </arithmeticQuestion>
 ```
 
-This is the structure used by this site, although the file reader actually isn't too strict about node structure. For example, the solution could be listed before the problem, or the problem can even be a child of the solution. There could even be more elements than just `problem` and `solution` and it will still compile. The editor can tell the id because that is the nodeName of the root node. To find the problem it searches for a node with nodeName `problem` and then reads the `tex` attribute for the tex of the problem. The process is similar for the solution. This file would compile just as well:
+This is the structure used by this site, although at this point the file reader actually isn't too strict about node structure. The editor can tell the problem's id because that is the nodeName of the root node. To find the problem it searches for a node with nodeName `problem` and then reads the `tex` attribute for the tex of the problem. The process is similar for the solution. This file would compile just as well:
 
 ```
 <arithmeticQuestion>
@@ -54,9 +54,13 @@ This is the structure used by this site, although the file reader actually isn't
 </arithmeticQuestion>
 ```
 
+Note that, because of this searching process, you shouldn't name a problem `problem` or `solution`. That would cause interference with the expected structure and will cause unexpected behavior.
+
 # Metainformation
 
-This is where structure plays a role. We use the following convention for metainformation: Any direct child of the problem node is a type of metainformation. Any child of that node is a value for that piece of metainformation. There is no global list of metainformation like the `problemsList.txt` list of all problems. Instead, when a list of problems is loaded each problem is scanned for metainformation. The file reader keeps track of all encountered metainformation and generates the metainformation sections based on what it found. In that sense metainformation describes itself.
+Metainformation is stored by location, so the structure is more rigid than that of the problem and solution. We use the following convention for metainformation: Any direct child of the problem node is a type of metainformation. Any child of that node is a value for that piece of metainformation.
+
+There is no global list of metainformation like the `problemsList.txt` list of all problems. Instead, when a list of problems is loaded each problem is scanned for metainformation. The file reader keeps track of all encountered metainformation and generates the metainformation sections based on what it found. In that sense metainformation describes itself.
 
 This problem file has some metainformation in it:
 
@@ -71,33 +75,18 @@ This problem file has some metainformation in it:
         <solutionCompleteness radio="none">
             <full/>
         </solutionCompleteness>
+        <difficulty scale="1"/>
     </problem>
     <solution tex="By definition of 2,&#xA;\[1+1=2.\]"/>
 </arithmeticQuestion>
 ```
 
-This file declares that `arithmeticQuestion` has three `topics` (`addition`, `naturalNumbers`, and `definitionOf2`) and that its `solutionCompleteness` is `full`. Any other metainformation which is asked from this file will not be found, so will be treated as having the default. For example, if we search this file for the metainformation `instructors`, we will consider that by default no instructors were selected.
+This file declares that `arithmeticQuestion` has three `topics` (`addition`, `naturalNumbers`, and `definitionOf2`), that its `solutionCompleteness` is `full`, and that it has a `difficulty` of 1. Any other metainformation which is asked from this file will not be found, so will be treated as having the default. For example, if we search this file for the metainformation `instructors`, we will consider that by default no instructors were selected.
 
-# Metainformation Attributes
+# Types of Metainformation
 
-In the above example, the `solutionCompleteness` tag has an attribute (`radio="none"`). This is because some metainformation allows for multiple values and some does not. The default behavior of metainformation is to allow multiple values, we call this checkbox metainformation (`topics` is checkbox). Values in a checkbox tag are interpreted as selected options for that metainformation. Checkbox metainformation defaults to empty, so if the tag is not present then that is interpreted as no value is selected.
+There are three types of metainformation: checkbox, radio, and scale. The above example has one of each. The simplest type is the checkbox, `topcis` above. A checkbox metainformation has a list of values (given as child nodes). If the appropriate node (the one named `topics` above) is not found then the problem is interpreted as not having any values applied for that metainformation.
 
-If a type of metainformation is supposed to have one and only one value then we call it radio. We mark a type of metainformation as radio by adding the attribute as above. A radio metainformation is interpreted as a list of options in a set of radio buttons, meaning one and only one is selected. Radio metainformation comes with a default value, and that default value is stored as the value of the `radio` attribute. This actually doesn't affect the `arithmeticQuestion` problem itself but tells the file reader that the `solutionCompleteness` radio metainformation has a default value of `none`.
+The radio type is closely related to the checkbox type. Radio is essentially checkbox subject to the requirement that one and only one value be given. For backwards compatibility, radio metainformation must declare a default value to be used if the tag is not found. This is what the attribute `radio="defaultValue"` is for on the metainformation tag. Above, the metainformation `solutionCompleteness` is radio type with default value `none`.
 
-Sometimes it may be useful to interpret metainformation as a number instead of a tag. We do this with the `scale` attribute. An example is below.
-
-```
-<arithmeticQuestion>
-    <problem tex="What is $1+1$?">
-        <topics>
-            <addition/>
-            <naturalNumbers/>
-            <definitionOf2/>
-        </topics>
-        <difficulty scale="3"/>
-    </problem>
-    <solution tex="By definition of 2,&#xA;\[1+1=2.\]"/>
-</arithmeticQuestion>
-```
-
-The `difficulty` metainformation is a number, 3 in this example. No information about the relative weight of this value is stored anywhere in the problem files, instead the weight is inferred by comparing one problem's value to another. If a problem file has no tag corresponding to this scale metainformation then the number is interpreted as 0 by default.
+The third type of metainformation is scale, `difficulty` above, for storing numbers. Scale metainformation has no child nodes, only the attribute `scale`. Its value is the value assigned. There is no context given in the files for these numbers and the default value is 0. The numbers only have meaning if they have been consistently applied to the whole batch of problems.
