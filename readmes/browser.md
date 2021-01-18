@@ -1,19 +1,11 @@
-# Browser
+# What is this site?
 
-This is a static site. That means the only way for you to affect the site is to go to the host and make a change there. The site is hosted by GitHub Pages, you can see the site on GitHub (https://github.com/MathPeople/MathPeople.github.io). You cannot break the site from your end because the site can only be changed on GitHub.
+This site is essentially an HTML (and CSS/JS/etc) application. It runs on any (modern enough) browser, so you don't have to download any programs to use it. The end user is the student in the seminar course, who only has to navigate to the site in order to use it. You the seminar host have to do a little more to use this site, and the extra stuf you do is all related to HTML/etc files which make up a website. You don't have to be an expert in HTML/etc to do this, though, if these readmes are in any way useful. See the newQual readme for an overview of all the HTML/etc interaction required of you to make a new qual page and the dataStorage readme for an overview of how to add/modify the problems of your qual.
 
-It is completely possible, and not too difficult, to use this site offline because it is a static site. One way to do this would be to clone the GitHub repository onto your device and then open the html files in a browser. Note that you may have to change some settings in your browser to do this because by default most browsers don't allow locally hosted sites -- they will display the homepage but they won't load any of the scripts needed. This is a general security precaution which you would have to modify to use this site offline.
+# Browser and Internet
 
-# Browser Storage
+This is a static website. The most intended way to use it is to navigate to the url in a browser with an internet connection. However, it is completely possible, and not too difficult, to use this site offline because it is a static site (this is a key feature of static sites and the rest of this paragraph talks about this). If you are interested in making changes to the site, you should learn how to do this because this is how you test your changes. One way to get the site in offline mode would be to clone the GitHub repository onto your device and then open the html files in a browser. Note that you may have to change some settings in your browser to do this because by default most browsers don't allow locally hosted sites -- they will display the homepage but they won't load all of the scripts/external files needed. This is a general security precaution, involving cross origin resource sharing (CORS), which you probably have to address in some setting somewhere to use this site offline.
 
-Dispite this being a static site, there are some ways for you to make persistent (but not permanent) changes. This is done using browser storage. You probably have the option in your browser to allow or block storage (it's like cookies but more persistent). You have to allow this site to store data, which should be the default but still might cause issues if the setting is not correct, in order for these storage features to work.
+The other key feature of static sites is that they have no way of communicating information to the server. This means that you cannot actually change the website, neither damage nor improve it, from the site itself. You have to go to the server (GitHub and GitHub pages) to change the site. If you somehow do something non-Git-related which totally messes up the site then just clearing the browser's localStorage memory and refreshing the page is all it takes to reset it.
 
-Data is stored per browser and is erased when something like clearing the cache happens. If you visit this site in private mode the data will erase when you leave. The data is browser-local, so switching devices will mean a new data environment, i.e. no sharing of whatever was saved on the other device.
-
-# What is Stored?
-
-So far there is only one application of browser storage, and that is instructor names. Internally, instructors are referred to using alphabetical id (instructor a for example). You can give that instructor a name and that name will save on your browser. As long as that name is in storage, it will be displayed instead of the id.
-
-# What is Not Stored?
-
-Nothing you type out in TeX is saved. It is designed for you to download the file when ready to your native computer system. That file has to be pushed onto the GitHub repository to be available on the site, and we aren't going to cover how to do that here. Suffice it to say that you cannot automatically add problems to the repositories, the TeX page is only for generating the problem/solution files in the correct format. Updating the site is a manual process.
+If you downloaded the repository and are running the site locally and offline then you can change the site itself by changing the associated files on your computer, but this only changes your local version and not the global online version. If you are trying to author problems and/or a new qual page then you should check out the dataStorage readme for an overview of the different levels of where changes are saved.

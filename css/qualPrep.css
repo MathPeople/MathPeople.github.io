@@ -5,137 +5,65 @@ details {
     margin: 9px;
 }
 
-.section {
-    border-style: inset;
-    border-width: 5px;
-    border-color: rgb(190, 160, 40);
-    margin: 9px;
-}
-
-.section > summary {
-    font-size: 1.5em;
-    font-weight: bolder;
-    color: yellow;
-    background-color: rgb(60, 100, 0);
-    padding: 5px;
-    border-style: inset;
-    border-width: 3px;
-    border-color: rgb(190, 160, 40);
-}
-
-.section > :not(summary) {
-    padding: .2em;
-}
-
-p {
-    text-indent: .3em;
-}
-
 th, td {
     border: 1px solid black;
     padding: .4em;
 }
 
-details.problems {
+.problem {
     border-style: solid;
     border-width: 2px;
     border-color: green;
-    margin: 9px;
+    margin: .6em;
     background-color: azure;
+    padding: .4em;
 }
 
-details.problems[unfinished] {
+.problem[unfinished] {
     border-color: red;
 }
 
-details.problems[unfinished="partial"] {
+.problem[unfinished="partial"] {
     border-color: yellow;
 }
 
-details.theorems {
-    border-style: solid;
-    border-width: 3px;
-    border-color: blue;
-    margin: 9px;
-    background-color: rgb(255, 255, 180);
+.problem[open] > summary {
+    border-bottom: 1px solid grey;
+    border-radius: .5em;
 }
 
-textarea {
-    resize: none;
-    overflow: hidden;
-    min-height: 5em;
-    max-height: 80vh;
-    width: 100%;
-}
-
-#texLiveOut {
-    border: 3px outset skyblue;
-    margin: 2em;
-    background-color: rgb(230,230,255);
-}
-
-#texLiveOut div > div {
-    display: inline-block;
-    margin .6em;
-    padding: .1em;
-    background-color: rgb(230,230,230);
-    border: 3px outset skyblue;
-}
-
-#texOut {
-    border: 1px dashed black;
-    background-color: palegoldenrod;
-    display: block;
-}
-
-.problemOfTheWeek {
-    width: 59%;
-    margin: 2em auto;
-}
-
-.problemOfTheWeek thead {
-    background-color: rgb(130,100,255);
-}
-
-.recentChanges {
-    width: 82%;
-    margin: 1em auto;
-}
-
-.radioButtons {
-    margin: .5em;
+.metaBunch {
+    border: 3px outset rgb(130, 200, 140);
+    margin: .3em;
+    padding: .2em;
     display: inline-block;
 }
 
-.radioButtons > * {
-    margin: .2em;
-    font-size: 60%;
+.metaOption {
+    font-size: small;
+}
+
+.alternateName {
+    color: rgb(185, 100, 100);
+    margin: 0 1em;
+}
+
+label {
+    margin: 0 1ex;
 }
 
 input[type="text"] {
     width: 54ex;
 }
 
-summary p {
-    display: block;
-}
-
-.checkboxHolder {
-    display: inline-block;
-    font-size: 80%;
-}
-
-.checkbox {
+.checkbox{
     display: inline;
     border: 1px solid lightblue;
     border-radius: 3px;
     margin: 2px;
+    font-size: 80%;
 }
 
-.clearTex {
-    display: block;
-}
-
-.hide {
-    display: none;
+[hide] {
+    display: none !important;
 }
