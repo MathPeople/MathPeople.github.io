@@ -32,6 +32,10 @@ th, td {
     border-radius: .5em;
 }
 
+.id {
+    display: inline;
+}
+
 .metaBunch {
     border: 3px outset rgb(130, 200, 140);
     margin: .3em;

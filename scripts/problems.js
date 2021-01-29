@@ -12,7 +12,7 @@ renameIn.addEventListener("change", tryRename);
 
 label = xmlImporter.element("label", null, ["for", "selectorIn"]);
 selectorIn.parentElement.insertBefore(label, selectorIn);
-xmlImporter.text("CSS Selector to Show/Hide Problems:", label);
+xmlImporter.text("XPath to Show/Hide Problems:", label);
 selectorIn.addEventListener("change", updateHides);
 
 var problems = {}, metas = {};
@@ -73,7 +73,7 @@ function showProblem(problem, showCompleteness = true) {
     if (solutionNode) {
         if (showCompleteness) {
             bunch.summary = xmlImporter.element("summary", bunch.div);
-            bunch.summary.innerHTML = "<span>"+problem+"</span>"+texAttToInnerHTML(problemNode.getAttribute("tex"));
+            bunch.summary.innerHTML = "<h5 class=\"id\">"+problem+"</h5><br />"+texAttToInnerHTML(problemNode.getAttribute("tex"));
         }
         bunch.div.innerHTML += texAttToInnerHTML(solutionNode.getAttribute("tex"));
     } else bunch.div.innerHTML = texAttToInnerHTML(problemNode.getAttribute("tex"));
