@@ -57,4 +57,4 @@ Note an annoyance: The complex problems aren't actually given parts A/B/C metain
 </sampleTest>
 ```
 
-We are certainly not done, however. The test generator will avoid explicit duplicates but so far we have not provided a means of avoiding vary similar problems from being selected. It is good enough to be useful now, though, because a student can just regenerate the test if it is too repetitive and keep regenerating until a sufficiently diverse test is made.
+We are certainly not done, however. The test generator will avoid explicit duplicates but so far we have not provided a means of avoiding vary similar problems from being selected. It is good enough to be useful now, though, because a student can just regenerate the test if it is too repetitive and keep regenerating until a sufficiently diverse test is made. changed?
