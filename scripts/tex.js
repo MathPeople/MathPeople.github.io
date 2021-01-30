@@ -97,20 +97,20 @@ function fixTextHeight(event) {
 // load all problems from a qual repository
 function importRemoteQuestions(nameOfQual, finished = function() {}) {
     let exchange = refreshMathJax;
-    refreshMathJax = function() {}
+    refreshMathJax = function() {};
     xmlImporter.openTextFile("../quals/"+nameOfQual+"/problemsList.txt", null, function(list) {
         list = list.trim();
-        if (list == "") {
+        if (list === "") {
             clearTex();
             refreshMathJax = exchange;
             return finished();
         }
         let lines = list.split(" "), numLines = lines.length;
-        for (let problem of lines) if (problem != "" && problem != "changeMe") {
+        for (let problem of lines) if (problem !== "" && problem != "changeMe") {
             let p = problem;
             if (problem in problems) {
                 if (qual == "local") {
-                    if (--numLines == 0) {
+                    if (--numLines === 0) {
                         refreshMathJax = exchange;
                         refreshMathJax();
                         finished();
@@ -119,20 +119,28 @@ function importRemoteQuestions(nameOfQual, finished = function() {}) {
                 } else errorOut("duplicate in problems list: " + problem);
             }
             problems[problem] = undefined;
-            problemsTags[problem] = {idList: xmlImporter.element("option", idList, ["value", problem]), loadedProblems: xmlImporter.element("option", loadedProblems, ["value", problem])};
+            problemsTags[problem] = {
+                idList: xmlImporter.element("option", idList, ["value", problem]),
+                loadedProblems: xmlImporter.element("option", loadedProblems, ["value", problem])
+            };
             xmlImporter.text(problem, problemsTags[problem].loadedProblems);
-            xmlImporter.openXMLFile("../quals/"+nameOfQual+"/problems/"+p+".xml", null, function(problemDoc) {
-                doc = problems[p] = problemDoc;
-                convertDoc();
-                outputFromDoc();
-                if (--numLines == 0) {
-                    refreshMathJax = exchange;
-                    refreshMathJax();
-                    finished();
+            xmlImporter.openXMLFile(
+                "../quals/"+nameOfQual+"/problems/"+p+".xml",
+                null,
+                function(problemDoc) {
+                    doc = problems[p] = problemDoc;
+                    convertDoc();
+                    outputFromDoc();
+                    if (--numLines === 0) {
+                        refreshMathJax = exchange;
+                        refreshMathJax();
+                        finished();
+                    }
+                }, 
+                function() {
+                        errorOut("cannot find " + p);
                 }
-            }, function() {
-                errorOut("cannot find " + p);
-            });
+            );
         }
     }, function() {
         inputMessage(qualNameIn, "that qual has not been successfully initiated", 3000);
@@ -144,11 +152,11 @@ function importRemoteQuestions(nameOfQual, finished = function() {}) {
 // load all locally stored problems and set up for local autosaving
 function initializeLocal() {
     let exchange = refreshMathJax;
-    refreshMathJax = function() {}
+    refreshMathJax = function() {};
     let list = Store.fetch("local problems list");
     if (!list) list = "";
     let lines = list.split(" ");
-    for (let problem of lines) if (problem != "" && problem != "changeMe") {
+    for (let problem of lines) if (problem !== "" && problem !== "changeMe") {
         if (problem in problems) errorOut("duplicate in problems list: " + problem);
         doc = problems[problem] = xmlImporter.parseDoc(Store.fetch("local " + problem));
         outputFromDoc();
@@ -186,7 +194,7 @@ function loadQual() {
     } else {
         importRemoteQuestions(qual, function() {
             qualNameIn.value = "working on " + qual;
-        })
+        });
     }
 }
 

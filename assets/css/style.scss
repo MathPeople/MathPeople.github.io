@@ -1,0 +1,15 @@
+---
+# Filler comment
+---
+
+
+@import "{{ site.theme }}";
+
+// Change Content Width
+.inner{
+  max-width: 64rem;
+}
+
+
+// Problem coloring
+@import "../../css/qualPrep.css"

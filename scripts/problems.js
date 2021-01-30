@@ -1,8 +1,12 @@
-let mainDiv = document.getElementById("problemsSpot"), metaDiv = xmlImporter.element("details", mainDiv, ["class", "metainformation"]), problemsDiv = xmlImporter.element("div", mainDiv, ["class", "problems"]);
+let mainDiv = document.getElementById("problemsSpot"), 
+    metaDiv = xmlImporter.element("details", mainDiv, ["class", "metainformation"]), 
+    problemsDiv = xmlImporter.element("div", mainDiv, ["class", "problems"]);
 
 xmlImporter.text("Metainformation", xmlImporter.element("summary", metaDiv));
 
-let renameIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "id", "renameIn", "placeholder", "metaName optionName renamed value"]), selectorIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "id", "selectorIn", "placeholder", "//metaName/optionName | //problem[not(radioMetaName)]"]);
+let renameIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "id", "renameIn", "placeholder", "metaName optionName renamed value"]), 
+    selectorIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "id", "selectorIn", "placeholder", "//metaName/optionName | //problem[not(radioMetaName)]"]);
+
 selectorIn.value = "*";
 
 let label = xmlImporter.element("label", null, ["for", "renameIn"]);
@@ -100,11 +104,14 @@ function updateMetas() {
         }
         switch (bunch.metaType) {
             case "checkboxes": case "radio":
+                let b = bunch.values[value] = {};
                 for (let value in bunch.values) if (!bunch.values[value]) {
-                    let b = bunch.values[value] = {};
                     b.pair = xmlImporter.element("div", bunch.div, ["class", "metaOption"]);
                     b.name = xmlImporter.text(value, xmlImporter.element("span", b.pair));
-                    b.alternateName = xmlImporter.text(Store.fetch(qualName + " " + meta + " " + value), xmlImporter.element("span", b.pair, ["class", "alternateName"]));
+                    b.alternateName = xmlImporter.text(
+                        Store.fetch(qualName + " " + meta + " " + value), 
+                        xmlImporter.element("span", b.pair, ["class", "alternateName"])
+                    );
                 }
             break; case "scale":
                 
