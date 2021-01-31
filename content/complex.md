@@ -20,7 +20,7 @@ layout: default
    
 # Complex Qual Prep Seminar Site 
 
-If the problems do not display correctly, try this button: <button onClick="refreshMathJax()">Refresh MathJax</button>
+MathJax will refresh after one second. If the problems do not display correctly, refresh manually with this button: <button onClick="refreshMathJax()">Refresh MathJax</button>
 
 <div id="problemsSpot"/>
 

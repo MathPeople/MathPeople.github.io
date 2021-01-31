@@ -31,18 +31,32 @@ let selectorIn = xmlImporter.element(
 // Initialize the array for problems and for something about metainformation for problems (?)
 var problems = {}, metas = {};
 
+// Used for interacting with local storage
+var Store = {};
+
+//----------------------------------------------------------------------------------------------------------------
+
 
 //----------------------------------------------------------------------------------------------------------------
 // Main Code
 //----------------------------------------------------------------------------------------------------------------
 
-setUpMetainformation();
+setupLocalStorage();
+setupMetainformation();
 
 // if the page was initialized with qualName then this will set up for that qual
 try {
-    importQual(qualName);
-    //refreshMathJax();
+    importAndDisplayQualProblems(qualName);
 } catch (e) {}
+
+// Delayed MathJax Refresh
+setTimeout(
+    function (){
+        refreshMathJax();
+        //alert("Delayed MathJax refresh");
+    }, 
+    1000 // 1000ms, or 1 second
+)
 
 
 
@@ -52,7 +66,7 @@ try {
 
 //----------------------------------------------------------------------------------------------------------------
 // This function creates the input boxes for renaming options and filtering problems with XPath
-function setUpMetainformation() {
+function setupMetainformation() {
     xmlImporter.text("Metainformation", xmlImporter.element("summary", metaDiv));
     
     let label = xmlImporter.element("label", null, ["for", "renameIn"]);
@@ -105,12 +119,14 @@ function loadProblem(doc) {
 
 //----------------------------------------------------------------------------------------------------------------
 // This is the main function which imports and displays the problems.
-function importQual(qualName) {
+function importAndDisplayQualProblems(qualName) {
     xmlImporter.openTextFile(
-        "../quals/"+qualName+"/problemsList.txt",
-        null,
-        function(list) {
-            if (list === "") {
+        "../quals/"+qualName+"/problemsList.txt",               // File to open-- the problem list for a given qual
+
+        null,                                                   // Parameters to pass to the function below; here no additional
+
+        function(list) {                                        // Function to be run after fetching text, if the request is successful
+            if (list === "") {                                  //      "list" will be the problems retreived
                 mainDiv.innerHTML = "could not find any problems";
                 return mainDiv.innerHTML;
             }
@@ -122,11 +138,12 @@ function importQual(qualName) {
                     null,
                     function(doc) {
                         loadProblem(doc);
-                        if (--toGo === 0) show();
+                        if (--toGo === 0) {
+                            showAllProblems();
+                        } 
                     }
                 );
             }
-            //refreshMathJax();
         }
     );
 }
@@ -196,7 +213,7 @@ function bunchCheckboxIsSelected() {return this.option.checked}
 
 //----------------------------------------------------------------------------------------------------------------
 // all problem docs are loaded and all metas are declared, make corresponding DOM elements
-function show() {
+function showAllProblems() {
     for (let problem in problems) showProblem(problem);
     updateMetas();
     updateHides();
@@ -243,25 +260,26 @@ function tryRename() {
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
-// interact with browser local storage in a fail-safe way
-var Store = {};
+// Sets up a browser local storage object used elsewhere to interact with browser local storage in a fail-safe way
+function setupLocalStorage() {
 
-Store.canStore = function() {return typeof (Storage) !== "undefined"};
+    Store.canStore = function() {return typeof (Storage) !== "undefined"};
 
-// returns empty string if not saved
-Store.fetch = function fetch(name) {
-    if (!Store.canStore()) return "";
-    let value = localStorage.getItem(name);
-    if (typeof value == "string") return value; else return "";
-};
+    // returns empty string if not saved
+    Store.fetch = function fetch(name) {
+        if (!Store.canStore()) return "";
+        let value = localStorage.getItem(name);
+        if (typeof value == "string") return value; else return "";
+    };
 
-Store.store = function store(name, value) {
-    if (Store.canStore()) localStorage.setItem(name, value);
-};
+    Store.store = function store(name, value) {
+        if (Store.canStore()) localStorage.setItem(name, value);
+    };
 
-Store.erase = function erase(name) {
-    if (Store.canStore()) localStorage.removeItem(name);
-};
+    Store.erase = function erase(name) {
+        if (Store.canStore()) localStorage.removeItem(name);
+    };
+}
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
