@@ -1,27 +1,56 @@
 
-// These appear to be global script variables.
+//----------------------------------------------------------------------------------------------------------------
+// Global script variables.
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
+// Initialize where in the documents problems will load, creating div tags for "metainformation" and "problems"
+//      Locate this spot using the <div id="problemsSpot"/> tag
 let mainDiv = document.getElementById("problemsSpot"), 
     metaDiv = xmlImporter.element("details", mainDiv, ["class", "metainformation"]), 
     problemsDiv = xmlImporter.element("div", mainDiv, ["class", "problems"]);
 
+//----------------------------------------------------------------------------------------------------------------
+// User input for the renaming functionality of the "metainformation" bar
 let renameIn = xmlImporter.element(
         "input",
         xmlImporter.element("div", metaDiv),
         ["type", "text", "id", "renameIn", "placeholder", "metaName optionName renamed value"]
     );
 
+//----------------------------------------------------------------------------------------------------------------
+// User input for the problem filtering part of the "metainformation" bar
 let selectorIn = xmlImporter.element(
         "input",
         xmlImporter.element("div", metaDiv),
         ["type", "text", "id", "selectorIn", "placeholder", "//metaName/optionName | //problem[not(radioMetaName)]"]
     );
 
-//selectorIn.value = "*";
+//selectorIn.value = "*"; //Uncomment to replace the background text "//metaName/options ..." with a single "*"
+
+// Initialize the array for problems and for something about metainformation for problems (?)
+var problems = {}, metas = {};
+
+
+//----------------------------------------------------------------------------------------------------------------
+// Main Code
+//----------------------------------------------------------------------------------------------------------------
 
 setUpMetainformation();
 
+// if the page was initialized with qualName then this will set up for that qual
+try {
+    importQual(qualName);
+    //refreshMathJax();
+} catch (e) {}
 
+
+
+//----------------------------------------------------------------------------------------------------------------
+// Script Functions
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
 // This function creates the input boxes for renaming options and filtering problems with XPath
 function setUpMetainformation() {
     xmlImporter.text("Metainformation", xmlImporter.element("summary", metaDiv));
@@ -36,10 +65,9 @@ function setUpMetainformation() {
     xmlImporter.text("XPath to Show/Hide Problems:", label);
     selectorIn.addEventListener("change", updateHides);
 }
+//----------------------------------------------------------------------------------------------------------------
 
-
-var problems = {}, metas = {};
-
+//----------------------------------------------------------------------------------------------------------------
 // ensure metas has a spot for this meta and its values
 function handleMetaNode(node) {
     if (!(node.nodeName in metas)) metas[node.nodeName] = {values: {}, metaType: "checkboxes"}; // default to checkboxes, change later if needed
@@ -58,7 +86,10 @@ function handleMetaNode(node) {
         metas[node.nodeName].defaultValue = "n1";
     }
 }
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
+// 
 function loadProblem(doc) {
     let problem = xmlImporter.getRoot(doc).nodeName;
     problems[problem] = {doc: doc};
@@ -72,7 +103,7 @@ function loadProblem(doc) {
     }
 }
 
-
+//----------------------------------------------------------------------------------------------------------------
 // This is the main function which imports and displays the problems.
 function importQual(qualName) {
     xmlImporter.openTextFile(
@@ -95,19 +126,14 @@ function importQual(qualName) {
                     }
                 );
             }
-            refreshMathJax();
-            //alert("Refresh");
+            //refreshMathJax();
         }
     );
 }
+//----------------------------------------------------------------------------------------------------------------
 
-// if the page was initialized with qualName then this will set up for that qual
-try {
-    importQual(qualName);
-    //refreshMathJax();
-} catch (e) {}
-
-
+//----------------------------------------------------------------------------------------------------------------
+//
 function showProblem(problem, showCompleteness = true) {
     let bunch = problems[problem];
     let doc = bunch.doc, problemNode = doc.querySelector("problem"), solutionNode = doc.querySelector("solution");
@@ -124,13 +150,18 @@ function showProblem(problem, showCompleteness = true) {
     // just a little fun
     for (let a of document.querySelectorAll("[href=\"https://ncatlab.org/nlab/show/Fubini+theorem\"]")) xmlImporter.rickRollLink(a);
 }
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
+//
 function eraseProblem(problem) {
     let bunch = problems[problem];
     if (bunch.div) bunch.div.parentElement.removeChild(bunch.div);
     delete problems[problem];
 }
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
 // ensure each meta and option has an element in GUI
 function updateMetas() {
     for (let meta in metas) {
@@ -156,17 +187,24 @@ function updateMetas() {
         }
     }
 }
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
+// 
 function bunchCheckboxIsSelected() {return this.option.checked}
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
 // all problem docs are loaded and all metas are declared, make corresponding DOM elements
 function show() {
     for (let problem in problems) showProblem(problem);
     updateMetas();
     updateHides();
-    alert("Show has executed.");
 }
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
+//
 function getProblemsFromSelector() {
     let selector = selectorIn.value, returner = {};
     for (let id in problems) {
@@ -174,7 +212,9 @@ function getProblemsFromSelector() {
     }
     return returner;
 }
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
 // search problems for any node which matches the selector, show if one is found else hide
 function updateHides() {
     let shows = getProblemsFromSelector();
@@ -183,7 +223,10 @@ function updateHides() {
         else problems[id].div.setAttribute("hide", "");
     }
 }
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
+//
 function tryRename() {
     let line = renameIn.value, lines = line.split(" ");
     let meta = lines[0], tag = lines[1];
@@ -197,7 +240,9 @@ function tryRename() {
     bunch.values[tag].alternateName.nodeValue = value;
     renameIn.value = "";
 }
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
 // interact with browser local storage in a fail-safe way
 var Store = {};
 
@@ -217,7 +262,9 @@ Store.store = function store(name, value) {
 Store.erase = function erase(name) {
     if (Store.canStore()) localStorage.removeItem(name);
 };
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
 // Refreshes MathJax script which typesets LaTeX
 function refreshMathJax() {
     try {
@@ -225,3 +272,4 @@ function refreshMathJax() {
     } 
     catch (e) {}
 }
+//----------------------------------------------------------------------------------------------------------------
