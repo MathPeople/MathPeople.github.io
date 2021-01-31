@@ -1,23 +1,42 @@
+
+// These appear to be global script variables.
+
 let mainDiv = document.getElementById("problemsSpot"), 
     metaDiv = xmlImporter.element("details", mainDiv, ["class", "metainformation"]), 
     problemsDiv = xmlImporter.element("div", mainDiv, ["class", "problems"]);
 
-xmlImporter.text("Metainformation", xmlImporter.element("summary", metaDiv));
+let renameIn = xmlImporter.element(
+        "input",
+        xmlImporter.element("div", metaDiv),
+        ["type", "text", "id", "renameIn", "placeholder", "metaName optionName renamed value"]
+    );
 
-let renameIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "id", "renameIn", "placeholder", "metaName optionName renamed value"]), 
-    selectorIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "id", "selectorIn", "placeholder", "//metaName/optionName | //problem[not(radioMetaName)]"]);
+let selectorIn = xmlImporter.element(
+        "input",
+        xmlImporter.element("div", metaDiv),
+        ["type", "text", "id", "selectorIn", "placeholder", "//metaName/optionName | //problem[not(radioMetaName)]"]
+    );
 
-selectorIn.value = "*";
+//selectorIn.value = "*";
 
-let label = xmlImporter.element("label", null, ["for", "renameIn"]);
-renameIn.parentElement.insertBefore(label, renameIn);
-xmlImporter.text("Locally Rename an Option:", label);
-renameIn.addEventListener("change", tryRename);
+setUpMetainformation();
 
-label = xmlImporter.element("label", null, ["for", "selectorIn"]);
-selectorIn.parentElement.insertBefore(label, selectorIn);
-xmlImporter.text("XPath to Show/Hide Problems:", label);
-selectorIn.addEventListener("change", updateHides);
+
+// This function creates the input boxes for renaming options and filtering problems with XPath
+function setUpMetainformation() {
+    xmlImporter.text("Metainformation", xmlImporter.element("summary", metaDiv));
+    
+    let label = xmlImporter.element("label", null, ["for", "renameIn"]);
+    renameIn.parentElement.insertBefore(label, renameIn);
+    xmlImporter.text("Locally Rename an Option:", label);
+    renameIn.addEventListener("change", tryRename);
+    
+    label = xmlImporter.element("label", null, ["for", "selectorIn"]);
+    selectorIn.parentElement.insertBefore(label, selectorIn);
+    xmlImporter.text("XPath to Show/Hide Problems:", label);
+    selectorIn.addEventListener("change", updateHides);
+}
+
 
 var problems = {}, metas = {};
 
@@ -53,22 +72,41 @@ function loadProblem(doc) {
     }
 }
 
+
+// This is the main function which imports and displays the problems.
 function importQual(qualName) {
-    xmlImporter.openTextFile("../quals/"+qualName+"/problemsList.txt", null, function(list) {
-        if (list == "") return mainDiv.innerHTML = "could not find any problems";
-        list = list.split(" ");
-        let toGo = list.length;
-        for (let problem of list) {
-            xmlImporter.openXMLFile("../quals/"+qualName+"/problems/"+problem+".xml", null, function(doc) {
-                loadProblem(doc);
-                if (--toGo == 0) show();
-            });
+    xmlImporter.openTextFile(
+        "../quals/"+qualName+"/problemsList.txt",
+        null,
+        function(list) {
+            if (list === "") {
+                mainDiv.innerHTML = "could not find any problems";
+                return mainDiv.innerHTML;
+            }
+            list = list.split(" ");
+            let toGo = list.length;
+            for (let problem of list) {
+                xmlImporter.openXMLFile(
+                    "../quals/"+qualName+"/problems/"+problem+".xml",
+                    null,
+                    function(doc) {
+                        loadProblem(doc);
+                        if (--toGo === 0) show();
+                    }
+                );
+            }
+            refreshMathJax();
+            //alert("Refresh");
         }
-    });
+    );
 }
 
 // if the page was initialized with qualName then this will set up for that qual
-try {importQual(qualName)} catch (e) {}
+try {
+    importQual(qualName);
+    //refreshMathJax();
+} catch (e) {}
+
 
 function showProblem(problem, showCompleteness = true) {
     let bunch = problems[problem];
@@ -126,6 +164,7 @@ function show() {
     for (let problem in problems) showProblem(problem);
     updateMetas();
     updateHides();
+    alert("Show has executed.");
 }
 
 function getProblemsFromSelector() {
@@ -162,19 +201,27 @@ function tryRename() {
 // interact with browser local storage in a fail-safe way
 var Store = {};
 
-Store.canStore = function() {return typeof (Storage) !== "undefined"}
+Store.canStore = function() {return typeof (Storage) !== "undefined"};
 
 // returns empty string if not saved
 Store.fetch = function fetch(name) {
     if (!Store.canStore()) return "";
     let value = localStorage.getItem(name);
     if (typeof value == "string") return value; else return "";
-}
+};
 
 Store.store = function store(name, value) {
     if (Store.canStore()) localStorage.setItem(name, value);
-}
+};
 
 Store.erase = function erase(name) {
     if (Store.canStore()) localStorage.removeItem(name);
+};
+
+// Refreshes MathJax script which typesets LaTeX
+function refreshMathJax() {
+    try {
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+    } 
+    catch (e) {}
 }

@@ -20,13 +20,13 @@ textarea {
 
 #texLiveOut {
     border: 3px outset skyblue;
-    margin: 2em;
+    margin: 0;
     background-color: rgb(230,230,255);
 }
 
 #texLiveOut div > div {
     display: inline-block;
-    margin .6em;
+    margin: .6em;
     padding: .1em;
     background-color: rgb(230,230,230);
     border: 3px outset skyblue;

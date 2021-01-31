@@ -13,7 +13,8 @@ layout: default
     <script src="../scripts/pageHider.js" async defer></script>
     <script src="../scripts/xmlImporter.js"></script>
     <script src="../scripts/jax.js"></script>
-    <script src="../scripts/problems.js" async defer></script>
+    <script src="../scripts/problems.js" defer></script>
+    <script src="../scripts/refreshMathJax.js" defer></script>
 </head>
 
    
@@ -23,10 +24,12 @@ If the problems do not display correctly, try this button: <button onClick="refr
 
 <div id="problemsSpot"/>
 
+<!--
 <script>
+    window.onload=refreshMathJax();
     function refreshMathJax() {
         try {MathJax.Hub.Queue(["Typeset", MathJax.Hub])} 
         catch (e) {}
     }
-</script>
+</script>-->
 
