@@ -48,7 +48,7 @@ setupMetainformation();
 // if the page was initialized with qualName then this will set up for that qual
 try {
     importAndDisplayQualProblems(qualName);
-} catch (e) { alert("A problem occured while trying to show problems.")}
+} catch (e) {}
 
 // Delayed MathJax Refresh
 setTimeout(
