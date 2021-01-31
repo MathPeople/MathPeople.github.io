@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="utf-8"/>
@@ -15,7 +14,7 @@
         <div class="title">
             <h1>Browser \(\TeX\)</h1>
         </div>
-        <p>Use this tool to write \(\LaTeX\) in the right format for use on this site. Read the <a href="../readmes/tex.md">readme</a> for an introduction.</p>
+        <p>Use this tool to write \(\LaTeX\) in the right format for use on this site. Read the <a href="../readmes/tex.html">readme</a> for an introduction.</p>
         <label for="qualName">This is for qual</label>
         <input type="text" id="qualName"/>
         <label for="loadedProblems">Loaded problems:</label>

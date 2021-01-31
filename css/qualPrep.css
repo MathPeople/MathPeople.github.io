@@ -1,20 +1,23 @@
 details {
+    max-width: 64rem;
     border-style: ridge;
     border-width: 2px;
     border-color: rgb(50, 60, 40);
-    margin: 9px;
+    margin: .6em auto;
+    padding: .4em;
 }
 
 th, td {
     border: 1px solid black;
-    padding: .4em;
+    padding: .6em;
 }
 
 .problem {
+    max-width: 64rem;
     border-style: solid;
     border-width: 2px;
     border-color: green;
-    margin: .6em;
+    margin: .6em auto;
     background-color: azure;
     padding: .4em;
 }
