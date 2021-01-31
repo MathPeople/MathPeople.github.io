@@ -2,7 +2,9 @@ let mainDiv = document.getElementById("problemsSpot"), metaDiv = xmlImporter.ele
 
 xmlImporter.text("Metainformation", xmlImporter.element("summary", metaDiv));
 
-let renameIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "id", "renameIn", "placeholder", "metaName optionName renamed value"]), selectorIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "id", "selectorIn", "placeholder", "//metaName/optionName | //problem[not(radioMetaName)]"]);
+let renameIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "id", "renameIn", "placeholder", "metaName optionName renamed value"]),
+    selectorIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "id", "selectorIn", "placeholder", "//metaName/optionName | //problem[not(radioMetaName)]"]),
+    practiceTestIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "id", "practiceTestIn", "placeholder", "configuration file name"]);
 selectorIn.value = "*";
 
 let label = xmlImporter.element("label", null, ["for", "renameIn"]);
@@ -14,6 +16,11 @@ label = xmlImporter.element("label", null, ["for", "selectorIn"]);
 selectorIn.parentElement.insertBefore(label, selectorIn);
 xmlImporter.text("XPath to Show/Hide Problems:", label);
 selectorIn.addEventListener("change", updateHides);
+
+label = xmlImporter.element("label", null, ["for", "practiceTestIn"]);
+practiceTestIn.parentElement.insertBefore(label, practiceTestIn);
+xmlImporter.text("Practice test:", label);
+practiceTestIn.addEventListener("change", makePracticeTest);
 
 var problems = {}, metas = {};
 
@@ -116,22 +123,28 @@ function bunchCheckboxIsSelected() {return this.option.checked}
 
 // all problem docs are loaded and all metas are declared, make corresponding DOM elements
 function show() {
-    for (let problem in problems) showProblem(problem);
-    updateMetas();
-    updateHides();
+    if (document.getElementById("practiceTest")) {
+        makePracticeTest(document.getElementById("practiceTest").getAttribute("configuration"));
+    } else {
+        for (let problem in problems) showProblem(problem);
+        updateMetas();
+        updateHides();
+    }
 }
 
-function getProblemsFromSelector() {
-    let selector = selectorIn.value, returner = {};
+function getProblemsFromSelector(selector) {
+    let returner = {};
     for (let id in problems) {
-        try {if (problems[id].doc.evaluate(selector, problems[id].doc, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue) returner[id] = undefined} catch (e) {}
+        try {
+            if (problems[id].doc.evaluate(selector, problems[id].doc, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue) returner[id] = undefined
+        } catch (e) {}
     }
     return returner;
 }
 
 // search problems for any node which matches the selector, show if one is found else hide
 function updateHides() {
-    let shows = getProblemsFromSelector();
+    let shows = getProblemsFromSelector(selectorIn.value);
     for (let id in problems) {
         if (id in shows) problems[id].div.removeAttribute("hide");
         else problems[id].div.setAttribute("hide", "");
@@ -150,6 +163,18 @@ function tryRename() {
     Store.store(qualName + " " + meta + " " + tag, value);
     bunch.values[tag].alternateName.nodeValue = value;
     renameIn.value = "";
+}
+
+function makePracticeTest(eventOrString) {
+    let name = (typeof eventOrString == "string")? eventOrString: eventOrString.target.value;
+    console.log("making practice test " + name);
+    mainDiv.setAttribute("hide", "");
+    xmlImporter.openXMLFile("../quals/"+qualName+"/"+name+".xml", null, makePracticeTestFromFile);
+}
+
+function makePracticeTestFromFile(file) {
+    console.log("making practice test from file");
+    console.log(file);
 }
 
 // interact with browser local storage in a fail-safe way
