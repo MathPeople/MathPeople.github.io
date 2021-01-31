@@ -1,29 +1,87 @@
-let mainDiv = document.getElementById("problemsSpot"), metaDiv = xmlImporter.element("details", mainDiv, ["class", "metainformation"]), problemsDiv = xmlImporter.element("div", mainDiv, ["class", "problems"]);
 
-xmlImporter.text("Metainformation", xmlImporter.element("summary", metaDiv));
+//----------------------------------------------------------------------------------------------------------------
+// Global script variables.
+//----------------------------------------------------------------------------------------------------------------
 
-let renameIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "id", "renameIn", "placeholder", "metaName optionName renamed value"]),
-    selectorIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "id", "selectorIn", "placeholder", "//metaName/optionName | //problem[not(radioMetaName)]"]),
-    practiceTestIn = xmlImporter.element("input", xmlImporter.element("div", metaDiv), ["type", "text", "id", "practiceTestIn", "placeholder", "configuration file name"]);
-selectorIn.value = "*";
+//----------------------------------------------------------------------------------------------------------------
+// Initialize where in the documents problems will load, creating div tags for "metainformation" and "problems"
+//      Locate this spot using the <div id="problemsSpot"/> tag
+let mainDiv = document.getElementById("problemsSpot"), 
+    metaDiv = xmlImporter.element("details", mainDiv, ["class", "metainformation"]), 
+    problemsDiv = xmlImporter.element("div", mainDiv, ["class", "problems"]);
 
-let label = xmlImporter.element("label", null, ["for", "renameIn"]);
-renameIn.parentElement.insertBefore(label, renameIn);
-xmlImporter.text("Locally Rename an Option:", label);
-renameIn.addEventListener("change", tryRename);
+//----------------------------------------------------------------------------------------------------------------
+// User input for the renaming functionality of the "metainformation" bar
+let renameIn = xmlImporter.element(
+        "input",
+        xmlImporter.element("div", metaDiv),
+        ["type", "text", "id", "renameIn", "placeholder", "metaName optionName renamed value"]
+    );
 
-label = xmlImporter.element("label", null, ["for", "selectorIn"]);
-selectorIn.parentElement.insertBefore(label, selectorIn);
-xmlImporter.text("XPath to Show/Hide Problems:", label);
-selectorIn.addEventListener("change", updateHides);
+//----------------------------------------------------------------------------------------------------------------
+// User input for the problem filtering part of the "metainformation" bar
+let selectorIn = xmlImporter.element(
+        "input",
+        xmlImporter.element("div", metaDiv),
+        ["type", "text", "id", "selectorIn", "placeholder", "//metaName/optionName | //problem[not(radioMetaName)]"]
+    );
 
-label = xmlImporter.element("label", null, ["for", "practiceTestIn"]);
-practiceTestIn.parentElement.insertBefore(label, practiceTestIn);
-xmlImporter.text("Practice test:", label);
-practiceTestIn.addEventListener("change", makePracticeTest);
+//selectorIn.value = "*"; //Uncomment to replace the background text "//metaName/options ..." with a single "*"
 
+// Initialize the array for problems and for something about metainformation for problems (?)
 var problems = {}, metas = {};
 
+// Used for interacting with local storage
+var Store = {};
+
+//----------------------------------------------------------------------------------------------------------------
+
+
+//----------------------------------------------------------------------------------------------------------------
+// Main Code
+//----------------------------------------------------------------------------------------------------------------
+
+setupLocalStorage();
+setupMetainformation();
+
+// if the page was initialized with qualName then this will set up for that qual
+try {
+    importAndDisplayQualProblems(qualName);
+} catch (e) {}
+
+// Delayed MathJax Refresh
+setTimeout(
+    function (){
+        refreshMathJax();
+        //alert("Delayed MathJax refresh");
+    }, 
+    1000 // 1000ms, or 1 second
+)
+
+
+
+//----------------------------------------------------------------------------------------------------------------
+// Script Functions
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
+// This function creates the input boxes for renaming options and filtering problems with XPath
+function setupMetainformation() {
+    xmlImporter.text("Metainformation", xmlImporter.element("summary", metaDiv));
+    
+    let label = xmlImporter.element("label", null, ["for", "renameIn"]);
+    renameIn.parentElement.insertBefore(label, renameIn);
+    xmlImporter.text("Locally Rename an Option:", label);
+    renameIn.addEventListener("change", tryRename);
+    
+    label = xmlImporter.element("label", null, ["for", "selectorIn"]);
+    selectorIn.parentElement.insertBefore(label, selectorIn);
+    xmlImporter.text("XPath to Show/Hide Problems:", label);
+    selectorIn.addEventListener("change", updateHides);
+}
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
 // ensure metas has a spot for this meta and its values
 function handleMetaNode(node) {
     if (!(node.nodeName in metas)) metas[node.nodeName] = {values: {}, metaType: "checkboxes"}; // default to checkboxes, change later if needed
@@ -42,7 +100,10 @@ function handleMetaNode(node) {
         metas[node.nodeName].defaultValue = "n1";
     }
 }
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
+// 
 function loadProblem(doc) {
     let problem = xmlImporter.getRoot(doc).nodeName;
     problems[problem] = {doc: doc};
@@ -56,23 +117,40 @@ function loadProblem(doc) {
     }
 }
 
-function importQual(qualName) {
-    xmlImporter.openTextFile("../quals/"+qualName+"/problemsList.txt", null, function(list) {
-        if (list == "") return mainDiv.innerHTML = "could not find any problems";
-        list = list.split(" ");
-        let toGo = list.length;
-        for (let problem of list) {
-            xmlImporter.openXMLFile("../quals/"+qualName+"/problems/"+problem+".xml", null, function(doc) {
-                loadProblem(doc);
-                if (--toGo == 0) show();
-            });
+//----------------------------------------------------------------------------------------------------------------
+// This is the main function which imports and displays the problems.
+function importAndDisplayQualProblems(qualName) {
+    xmlImporter.openTextFile(
+        "../quals/"+qualName+"/problemsList.txt",               // File to open-- the problem list for a given qual
+
+        null,                                                   // Parameters to pass to the function below; here no additional
+
+        function(list) {                                        // Function to be run after fetching text, if the request is successful
+            if (list === "") {                                  //      "list" will be the problems retreived
+                mainDiv.innerHTML = "could not find any problems";
+                return mainDiv.innerHTML;
+            }
+            list = list.split(" ");
+            let toGo = list.length;
+            for (let problem of list) {
+                xmlImporter.openXMLFile(
+                    "../quals/"+qualName+"/problems/"+problem+".xml",
+                    null,
+                    function(doc) {
+                        loadProblem(doc);
+                        if (--toGo === 0) {
+                            showAllProblems();
+                        } 
+                    }
+                );
+            }
         }
-    });
+    );
 }
+//----------------------------------------------------------------------------------------------------------------
 
-// if the page was initialized with qualName then this will set up for that qual
-try {importQual(qualName)} catch (e) {}
-
+//----------------------------------------------------------------------------------------------------------------
+//
 function showProblem(problem, showCompleteness = true) {
     let bunch = problems[problem];
     let doc = bunch.doc, problemNode = doc.querySelector("problem"), solutionNode = doc.querySelector("solution");
@@ -89,13 +167,18 @@ function showProblem(problem, showCompleteness = true) {
     // just a little fun
     for (let a of document.querySelectorAll("[href=\"https://ncatlab.org/nlab/show/Fubini+theorem\"]")) xmlImporter.rickRollLink(a);
 }
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
+//
 function eraseProblem(problem) {
     let bunch = problems[problem];
     if (bunch.div) bunch.div.parentElement.removeChild(bunch.div);
     delete problems[problem];
 }
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
 // ensure each meta and option has an element in GUI
 function updateMetas() {
     for (let meta in metas) {
@@ -107,50 +190,60 @@ function updateMetas() {
         }
         switch (bunch.metaType) {
             case "checkboxes": case "radio":
+                let b = bunch.values[value] = {};
                 for (let value in bunch.values) if (!bunch.values[value]) {
-                    let b = bunch.values[value] = {};
                     b.pair = xmlImporter.element("div", bunch.div, ["class", "metaOption"]);
                     b.name = xmlImporter.text(value, xmlImporter.element("span", b.pair));
-                    b.alternateName = xmlImporter.text(Store.fetch(qualName + " " + meta + " " + value), xmlImporter.element("span", b.pair, ["class", "alternateName"]));
+                    b.alternateName = xmlImporter.text(
+                        Store.fetch(qualName + " " + meta + " " + value), 
+                        xmlImporter.element("span", b.pair, ["class", "alternateName"])
+                    );
                 }
             break; case "scale":
                 
         }
     }
 }
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
+// 
 function bunchCheckboxIsSelected() {return this.option.checked}
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
 // all problem docs are loaded and all metas are declared, make corresponding DOM elements
-function show() {
-    if (document.getElementById("practiceTest")) {
-        makePracticeTest(document.getElementById("practiceTest").getAttribute("configuration"));
-    } else {
-        for (let problem in problems) showProblem(problem);
-        updateMetas();
-        updateHides();
-    }
+function showAllProblems() {
+    for (let problem in problems) showProblem(problem);
+    updateMetas();
+    updateHides();
 }
+//----------------------------------------------------------------------------------------------------------------
 
-function getProblemsFromSelector(selector) {
-    let returner = {};
+//----------------------------------------------------------------------------------------------------------------
+//
+function getProblemsFromSelector() {
+    let selector = selectorIn.value, returner = {};
     for (let id in problems) {
-        try {
-            if (problems[id].doc.evaluate(selector, problems[id].doc, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue) returner[id] = undefined
-        } catch (e) {}
+        try {if (problems[id].doc.evaluate(selector, problems[id].doc, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue) returner[id] = undefined} catch (e) {}
     }
     return returner;
 }
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
 // search problems for any node which matches the selector, show if one is found else hide
 function updateHides() {
-    let shows = getProblemsFromSelector(selectorIn.value);
+    let shows = getProblemsFromSelector();
     for (let id in problems) {
         if (id in shows) problems[id].div.removeAttribute("hide");
         else problems[id].div.setAttribute("hide", "");
     }
 }
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
+//
 function tryRename() {
     let line = renameIn.value, lines = line.split(" ");
     let meta = lines[0], tag = lines[1];
@@ -164,35 +257,37 @@ function tryRename() {
     bunch.values[tag].alternateName.nodeValue = value;
     renameIn.value = "";
 }
+//----------------------------------------------------------------------------------------------------------------
 
-function makePracticeTest(eventOrString) {
-    let name = (typeof eventOrString == "string")? eventOrString: eventOrString.target.value;
-    console.log("making practice test " + name);
-    mainDiv.setAttribute("hide", "");
-    xmlImporter.openXMLFile("../quals/"+qualName+"/"+name+".xml", null, makePracticeTestFromFile);
+//----------------------------------------------------------------------------------------------------------------
+// Sets up a browser local storage object used elsewhere to interact with browser local storage in a fail-safe way
+function setupLocalStorage() {
+
+    Store.canStore = function() {return typeof (Storage) !== "undefined"};
+
+    // returns empty string if not saved
+    Store.fetch = function fetch(name) {
+        if (!Store.canStore()) return "";
+        let value = localStorage.getItem(name);
+        if (typeof value == "string") return value; else return "";
+    };
+
+    Store.store = function store(name, value) {
+        if (Store.canStore()) localStorage.setItem(name, value);
+    };
+
+    Store.erase = function erase(name) {
+        if (Store.canStore()) localStorage.removeItem(name);
+    };
 }
+//----------------------------------------------------------------------------------------------------------------
 
-function makePracticeTestFromFile(file) {
-    console.log("making practice test from file");
-    console.log(file);
+//----------------------------------------------------------------------------------------------------------------
+// Refreshes MathJax script which typesets LaTeX
+function refreshMathJax() {
+    try {
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+    } 
+    catch (e) {}
 }
-
-// interact with browser local storage in a fail-safe way
-var Store = {};
-
-Store.canStore = function() {return typeof (Storage) !== "undefined"}
-
-// returns empty string if not saved
-Store.fetch = function fetch(name) {
-    if (!Store.canStore()) return "";
-    let value = localStorage.getItem(name);
-    if (typeof value == "string") return value; else return "";
-}
-
-Store.store = function store(name, value) {
-    if (Store.canStore()) localStorage.setItem(name, value);
-}
-
-Store.erase = function erase(name) {
-    if (Store.canStore()) localStorage.removeItem(name);
-}
+//----------------------------------------------------------------------------------------------------------------
