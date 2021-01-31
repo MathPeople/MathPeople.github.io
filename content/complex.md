@@ -22,6 +22,7 @@ layout: default
 
 MathJax will refresh after one second. If the problems do not display correctly, refresh manually with this button: <button onClick="refreshMathJax()">Refresh MathJax</button>
 
+Use the metainformation box below to filter which problems are shown. For example, replacing the asterisk by `//topics/RiemannSurfaces` and hitting enter will cause only problems about Riemann surfaces to appear. Use an asterisk, `*` in the second bar to display all problems.
 <div id="problemsSpot"/>
 
 <!--
