@@ -26,7 +26,8 @@ let selectorIn = xmlImporter.element(
         ["type", "text", "id", "selectorIn", "placeholder", "//metaName/optionName | //problem[not(radioMetaName)]"]
     );
 
-//selectorIn.value = "*"; //Uncomment to replace the background text "//metaName/options ..." with a single "*"
+// Ensures that all problems will display initially.
+selectorIn.value = "*"; 
 
 // Initialize the array for problems and for something about metainformation for problems (?)
 var problems = {}, metas = {};
@@ -59,10 +60,47 @@ setTimeout(
 )
 
 
-
 //----------------------------------------------------------------------------------------------------------------
 // Script Functions
 //----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
+// Work in progress; intended to create html selection tags for meta options
+// function createSelectionBoxes(){
+//     // let metaObject;
+//     // let outputString = "";
+//     // for (let meta in metas){ // For each different metainformation option...
+//     //     alert(meta);
+//     //     metaObject = metas[meta];
+//     //     for(let option in metaObject.values){
+            
+//     //     }
+//     // }
+
+//     // for (let meta in metas) {
+//     //     let bunch = metas[meta];
+//     //     if (!bunch.div) {
+//     //         bunch.div = xmlImporter.element("div", metaDiv, ["class", "metaBunch", "metaType", bunch.metaType]);
+//     //         bunch.title = xmlImporter.element("h5", bunch.div, ["class", "metaTitle"]);
+//     //         bunch.titleText = xmlImporter.text(meta, bunch.title);
+//     //     }
+//     //     switch (bunch.metaType) {
+//     //         case "checkboxes": // Remark: This case will also run the checkboxes, as there is no break statement. I do not know if this is intentional
+//     //         case "radio":
+//     //             let b = bunch.values[value] = {};
+//     //             for (let value in bunch.values) if (!bunch.values[value]) {
+//     //                 b.pair = xmlImporter.element("div", bunch.div, ["class", "metaOption"]);
+//     //                 b.name = xmlImporter.text(value, xmlImporter.element("span", b.pair));
+//     //                 b.alternateName = xmlImporter.text(
+//     //                     Store.fetch(qualName + " " + meta + " " + value), 
+//     //                     xmlImporter.element("span", b.pair, ["class", "alternateName"])
+//     //                 );
+//     //             }
+//     //             break; 
+//     //         case "scale":
+//     //     }
+//     // }
+// }
 
 //----------------------------------------------------------------------------------------------------------------
 // This function creates the input boxes for renaming options and filtering problems with XPath
@@ -116,6 +154,7 @@ function loadProblem(doc) {
         }
     }
 }
+//----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
 // This is the main function which imports and displays the problems.
@@ -189,9 +228,10 @@ function updateMetas() {
             bunch.titleText = xmlImporter.text(meta, bunch.title);
         }
         switch (bunch.metaType) {
-            case "checkboxes": case "radio":
-                let b = bunch.values[value] = {};
+            case "checkboxes": // Remark: This case will also run the checkboxes, as there is no break statement. I do not know if this is intentional
+            case "radio":
                 for (let value in bunch.values) if (!bunch.values[value]) {
+                    b = bunch.values[value] ={};
                     b.pair = xmlImporter.element("div", bunch.div, ["class", "metaOption"]);
                     b.name = xmlImporter.text(value, xmlImporter.element("span", b.pair));
                     b.alternateName = xmlImporter.text(
@@ -199,8 +239,8 @@ function updateMetas() {
                         xmlImporter.element("span", b.pair, ["class", "alternateName"])
                     );
                 }
-            break; case "scale":
-                
+                break; 
+            case "scale":
         }
     }
 }
@@ -225,7 +265,10 @@ function showAllProblems() {
 function getProblemsFromSelector() {
     let selector = selectorIn.value, returner = {};
     for (let id in problems) {
-        try {if (problems[id].doc.evaluate(selector, problems[id].doc, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue) returner[id] = undefined} catch (e) {}
+        try {
+            if (problems[id].doc.evaluate(selector, problems[id].doc, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue) 
+                returner[id] = undefined;
+        } catch (e) {}
     }
     return returner;
 }
