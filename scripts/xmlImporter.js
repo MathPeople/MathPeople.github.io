@@ -1,11 +1,10 @@
 /*
-xmlImporter handles the various parts of interpreting a raw xml file into a form ready for the rest of the managers
-it also has some of the xml managing abilities
+xmlImporter handles the various parts of interacting with raw xml files
 */
 
 var xmlImporter = {};
 
-// remove empty text nodes
+// trim text node values and remove empty text nodes
 xmlImporter.trim = function trim(node) {
     let child = node.firstChild;
     while (child) {
@@ -63,24 +62,27 @@ xmlImporter.elementDoc = function elementDoc(doc, type, loadHere, atts = []) {
     return returner;
 }
 
-// create a new node in current document
+// create a new node in window document
 xmlImporter.element = function element(type, loadHere, atts) {return xmlImporter.elementDoc(document, type, loadHere, atts)}
 
+// create and insert a text node
 xmlImporter.text = function text(line, loadHere) {
     let returner = document.createTextNode(line);
     if (loadHere) loadHere.appendChild(returner);
     return returner;
 }
 
+// create a blank XML document
 xmlImporter.newDocument = function() {return document.implementation.createDocument(null, "")}
+
+// parse a string into an XML document
+xmlImporter.parseDoc = function parseDoc(line) {return xmlImporter.parser.parseFromString(line, "application/xml")}
 
 xmlImporter.parser = new DOMParser();
 
-xmlImporter.parseDoc = function parseDoc(line) {return xmlImporter.parser.parseFromString(line, "application/xml")}
-
 xmlImporter.serializer = new XMLSerializer();
 
-// this could be done with an XMLSerializer but that doesn't seem to add indentation, so we do it manually here
+// serialize an XML document. this could be done with an XMLSerializer but that doesn't seem to add indentation, so we do it manually here
 xmlImporter.nodeToString = function nodeToString(node, indent = "", tab = "  ", newLine = "\r\n") {
     if (node.nodeType == 3) return node.nodeValue;
     if (node.nodeType == 9) return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + xmlImporter.nodeToString(node.firstChild, indent, tab, newLine);
@@ -98,7 +100,7 @@ xmlImporter.nodeToString = function nodeToString(node, indent = "", tab = "  ", 
     return line;
 }
 
-// use the serializer to get the attributes all right
+// use the serializer to get the attributes all formatted right
 xmlImporter.nodeToStringOpeningTagInsides = function nodeToStringOpeningTagInsides(node) {
     let clone = node.cloneNode(true);
     while (clone.firstChild) clone.removeChild(clone.firstChild);
