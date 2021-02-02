@@ -1,4 +1,8 @@
-// DOM elements
+/*
+    First read the wiki for using this editor, in particular the parts about how problem focus works. The active problem is the problem with current focus and is the only one which can be changed through interaction with the GUI. The editor works by letting the user focus on a problem and interact with the GUI to make changes to it. The problem exists as an XML DOM. Any change directed to the problem first changes that problem's DOM and then repopulates the document HTML DOM with information from the problem XML DOM. Saving consists of saving these problem XML DOMs.
+*/
+
+// editor DOM elements
 let qualNameIn = document.getElementById("qualName"),
     loadedProblems = document.getElementById("loadedProblems"),
     clearTexButton = document.getElementById("clearTex"),
@@ -24,15 +28,13 @@ let pairMode = true, qual = "", problemsTags = {}, editorMetas = {};
 // these define the active problem
 let doc = xmlImporter.newDocument(), id = "changeMe";
 
-// set event listeners
+// set event listeners. Read the comments for the event handlers if you want to see what they do, this section just links event handlers to the GUI elements
 {
     // fireblock in case something has an error
     function setListener(element, type, func) {try {element.addEventListener(type, func)} catch (e) {}}
     
-    qualNameIn.value = ""; // reset if cached in browser
+    qualNameIn.value = ""; // reset in case the value is cached by the browser
     setListener(qualNameIn, "change", loadQual);
-    //qualNameIn.value = "template";
-    //window.setTimeout(loadQual, 100);
     
     setListener(loadedProblems, "change", function() {
         idInput.value = loadedProblems.value;
@@ -60,10 +62,10 @@ let doc = xmlImporter.newDocument(), id = "changeMe";
     
     newMetatypeType.selectedIndex = 0;
     
-    renameMetainformation.value = ""; // reset if cached in browser
+    renameMetainformation.value = ""; // reset in case the value is cached by the browser
     setListener(renameMetainformation, "change", hardRename);
     
-    renameSoftMetainformation.value = ""; // reset if cached in browser
+    renameSoftMetainformation.value = ""; // reset in case the value is cached by the browser
     setListener(renameSoftMetainformation, "change", softRename);
     
     for (let e of [texProblem, texSolution]) setListener(e, "input", resetDoc);
@@ -73,15 +75,7 @@ let doc = xmlImporter.newDocument(), id = "changeMe";
         setListener(textarea, "change", fixTextHeight);
     }
     
-    // take the value of codeOut and offer it as a file, named id.xml, to download
-    setListener(saveButton, "click", function() {
-        let file = new File([codeOut.value], id+".xml", {type: "text/xml"});
-        let url = URL.createObjectURL(file);
-        let a = xmlImporter.element("a", document.body, ["href", url, "download", ""]);
-        xmlImporter.text("download link", a);
-        a.click();
-        document.body.removeChild(a);
-    });
+    setListener(saveButton, "click", saveActiveProblem);
     
     setListener(saveAllButton, "click", saveAll);
 }
@@ -580,6 +574,18 @@ function getBy(array, prop, value) {
 function errorOut(message) {
     errorOutP.innerHTML = message;
     throw Error(message);
+}
+
+// offer the currently active problem as an XML file for the user to download, named id.xml
+function saveActiveProblem() {
+    // codeOut already has the contents of the intended XML file so just copy it into a file
+    let file = new File([codeOut.value], id+".xml", {type: "text/xml"});
+    // make and click an appropriate download link
+    let url = URL.createObjectURL(file);
+    let a = xmlImporter.element("a", document.body, ["href", url, "download", ""]);
+    xmlImporter.text("download link", a);
+    a.click();
+    document.body.removeChild(a);
 }
 
 // use JSZip magic to save all loaded problems in one .zip file/folder

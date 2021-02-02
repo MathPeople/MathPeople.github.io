@@ -63,7 +63,7 @@ xmlImporter.elementDoc = function elementDoc(doc, type, loadHere, atts = []) {
     return returner;
 }
 
-// create a new node in current DOM
+// create a new node in current document
 xmlImporter.element = function element(type, loadHere, atts) {return xmlImporter.elementDoc(document, type, loadHere, atts)}
 
 xmlImporter.text = function text(line, loadHere) {
@@ -80,7 +80,32 @@ xmlImporter.parseDoc = function parseDoc(line) {return xmlImporter.parser.parseF
 
 xmlImporter.serializer = new XMLSerializer();
 
-xmlImporter.nodeToString = function nodeToString(node) {return xmlImporter.serializer.serializeToString(node)}
+// this could be done with an XMLSerializer but that doesn't seem to add indentation, so we do it manually here
+xmlImporter.nodeToString = function nodeToString(node, indent = "", tab = "  ", newLine = "\r\n") {
+    if (node.nodeType == 3) return node.nodeValue;
+    if (node.nodeType == 9) return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + xmlImporter.nodeToString(node.firstChild, indent, tab, newLine);
+    let line = newLine+indent+"<"+xmlImporter.nodeToStringOpeningTagInsides(node);
+    line += node.childNodes.length == 0? "/>": ">";
+    if (node.childNodes.length > 0) {
+        let isText = node.childNodes.length == 1;
+        if (isText) isText = node.firstChild.nodeType == 3;
+        if (isText) line += node.firstChild.nodeValue + "</"+node.nodeName+">";
+        else {
+            for (child of node.childNodes) line += nodeToString(child, indent + tab, tab, newLine);
+            line += newLine+indent+"</"+node.nodeName+">";
+        }
+    }
+    return line;
+}
+
+// use the serializer to get the attributes all right
+xmlImporter.nodeToStringOpeningTagInsides = function nodeToStringOpeningTagInsides(node) {
+    let clone = node.cloneNode(true);
+    while (clone.firstChild) clone.removeChild(clone.firstChild);
+    xmlImporter.text("d", clone);
+    let line = xmlImporter.serializer.serializeToString(clone);
+    return line.substring(1, line.length - (clone.nodeName.length + 5));
+}
 
 // very important functionality
 xmlImporter.rickRollLink = function rickRollLink(a) {

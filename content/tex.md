@@ -6,7 +6,6 @@
         <script src="../scripts/xmlImporter.js"></script>
         <script src="../scripts/jax.js"></script>
         <link rel="stylesheet" type="text/css" href="../css/xmlViewer.css"/>
-        <script src="../scripts/xmlViewer.js"></script>
         <script src="../scripts/problems.js"></script>
         <script src="../scripts/tex.js" async defer></script>
     </head>
@@ -23,7 +22,7 @@
         <div><button type="button" id="pairSolo">To Solo mode</button></div>
         <div id="metainformationTex">
             <details id="metainformation">
-                <summary>Metainformation</summary>
+                <summary>Set the Metainformation</summary>
                 <p id="idP">Problem ID: <input type="text" id="problemID" list="idList"/><datalist id="idList"/></p>
                 <div>
                     <label for="newMetatype">New Metatype:</label><input id="newMetatype" type="text"/>
@@ -37,11 +36,11 @@
                 </div>
                 <div id="putMetasHere"></div>
                 <div><label>
-                    Rename metainformation (hard)
+                    Rename metainformation
                     <input id="renameMetainformation" type="text" placeholder="actually rename metainformation"/>
                     </label></div>
                 <div><label>
-                    Rename metainformation (display)
+                    Alternate name metainformation
                     <input id="renameSoftMetainformation" type="text" placeholder="locally rename some tag"/>
                     </label></div>
             </details>
