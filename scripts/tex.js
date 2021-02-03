@@ -607,12 +607,12 @@ function convertDoc() {
     
     // Here is an example of a conversion. This removes any childless checkbox metainformations
     
-    
+    /*
     let problemNode = doc.querySelector("problem");
     let removeThese = [];
     for (let child of problemNode.childNodes) if (!child.hasAttribute("scale") && !child.hasChildNodes()) removeThese.push(child);
     for (let child of removeThese) problemNode.removeChild(child);
-    
+    */
 }
 
 // get ids of all loaded problems
