@@ -29,7 +29,7 @@ let selectorIn = xmlImporter.element(
 // Ensures that all problems will display initially.
 selectorIn.value = "*"; 
 
-// Initialize the array for problems and for something about metainformation for problems (?)
+// Initialize the holding object for problems and for metainformation types
 var problems = {}, metas = {};
 
 // Used for interacting with local storage
@@ -49,15 +49,6 @@ setupMetainformation();
 try {
     importAndDisplayQualProblems(qualName);
 } catch (e) {}
-
-// Delayed MathJax Refresh
-setTimeout(
-    function (){
-        refreshMathJax();
-        //alert("Delayed MathJax refresh");
-    }, 
-    1000 // 1000ms, or 1 second
-)
 
 
 //----------------------------------------------------------------------------------------------------------------
@@ -159,6 +150,7 @@ function loadProblem(doc) {
 //----------------------------------------------------------------------------------------------------------------
 // This is the main function which imports and displays the problems.
 function importAndDisplayQualProblems(qualName) {
+    holdJax = true;
     xmlImporter.openTextFile(
         "../quals/"+qualName+"/problemsList.txt",               // File to open-- the problem list for a given qual
 
@@ -205,6 +197,7 @@ function showProblem(problem, showCompleteness = true) {
     else if (showCompleteness && doc.querySelector("solutionCompleteness > partial")) bunch.div.setAttribute("unfinished", "partial");
     // just a little fun
     for (let a of document.querySelectorAll("[href=\"https://ncatlab.org/nlab/show/Fubini+theorem\"]")) xmlImporter.rickRollLink(a);
+    typeset(bunch.div);
 }
 //----------------------------------------------------------------------------------------------------------------
 
@@ -257,6 +250,7 @@ function showAllProblems() {
     for (let problem in problems) showProblem(problem);
     updateMetas();
     updateHides();
+    holdJax = false;
 }
 //----------------------------------------------------------------------------------------------------------------
 
@@ -322,15 +316,5 @@ function setupLocalStorage() {
     Store.erase = function erase(name) {
         if (Store.canStore()) localStorage.removeItem(name);
     };
-}
-//----------------------------------------------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------------------------------------------
-// Refreshes MathJax script which typesets LaTeX
-function refreshMathJax() {
-    try {
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-    } 
-    catch (e) {}
 }
 //----------------------------------------------------------------------------------------------------------------
