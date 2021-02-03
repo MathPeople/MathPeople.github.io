@@ -87,7 +87,7 @@ let doc = xmlImporter.newDocument(), id = "changeMe";
 function fixTextHeight(event) {
     event = event.target;
     while (event.nodeName.toLowerCase() != "textarea") event = event.parentNode;
-    event.style.height = "5px";
+    event.style.height = "auto";
     event.style.height = (event.scrollHeight)+"px";
 }
 
