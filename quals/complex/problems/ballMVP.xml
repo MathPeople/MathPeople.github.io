@@ -1,1 +1,22 @@
-<ballMVP><problem tex="Prove that a harmonic function $u$ on $\Omega$ satisfies the mean value property, which we rename the circle mean value property. Prove also that $u$ satisfies the ball mean value property that for all $a\in\Omega$ and all $r&gt;0$ small enough that $\overline{B_r(a)}\subset\Omega$&#xA;\[u(a)=\frac{1}{\pi r^2}\iint_{B_r(a)}u(x+iy)dxdy.\]"><solutionCompleteness radio="none"><full/></solutionCompleteness><questionViability radio="bad"><good/></questionViability><instructors><e/></instructors><topics><CauchyIntegralFormula/><Harmonic/><HarmonicConjugate/><MeanValueProperty/><RealIntegral/></topics></problem><solution tex="By choice of $a,r$ there is a simply connected open subset of $\Omega$ which contains $\overline{B_r(a)}$. Take a harmonic conjugate $v$ on this neighborhood to obtain the holomorphic function $f=u+iv$. Recall Cauchy's integral formula,&#xA;\[f(a)=\frac{1}{2\pi i}\int_{|z-a|=r}\frac{f(z)}{z-a}dz.\]&#xA;Restating with $u$ and $v$ gives&#xA;\[u(a)+iv(a)=\frac{1}{2\pi i}\int_0^{2\pi}\frac{u(a+re^{it})+iv(a+re^{it})}{re^{it}}ire^{it}dt=\frac{1}{2\pi}\int_0^{2\pi}u(a+re^{it})+iv(a+re^{it})dt.\]&#xA;The real part of the above equation is the circle mean value property.&#xA;Let $0&lt;s&lt;r$. Because $u$ satisfies the circle mean value property,&#xA;\[u(a)=\frac{1}{2\pi}\int_0^{2\pi}u(a+se^{i\theta})d\theta.\]&#xA;Scale both sides by $s$.&#xA;\[2\pi su(a)=\int_0^{2\pi}u(a+se^{i\theta})sd\theta.\]&#xA;Integrate both sides with respect to $s$ from $0$ to $r$.&#xA;\[\pi r^2u(a)=\int_0^r\int_0^{2\pi}u(a+se^{i\theta})sd\theta ds=\iint_{B_r(a)}u(x+iy)dxdy.\]"/></ballMVP>
+<?xml version="1.0" encoding="UTF-8"?>
+<ballMVP>
+  <problem tex="Prove that a harmonic function $u$ on $\Omega$ satisfies the mean value property, which we rename the circle mean value property. Prove also that $u$ satisfies the ball mean value property that for all $a\in\Omega$ and all $r&gt;0$ small enough that $\overline{B_r(a)}\subset\Omega$&#xA;\[u(a)=\frac{1}{\pi r^2}\iint_{B_r(a)}u(x+iy)dxdy.\]">
+    <solutionCompleteness radio="none">
+      <full/>
+    </solutionCompleteness>
+    <questionViability radio="bad">
+      <good/>
+    </questionViability>
+    <instructors>
+      <e/>
+    </instructors>
+    <topics>
+      <CauchyIntegralFormula/>
+      <Harmonic/>
+      <HarmonicConjugate/>
+      <MeanValueProperty/>
+      <RealIntegral/>
+    </topics>
+  </problem>
+  <solution tex="By choice of $a,r$ there is a simply connected open subset of $\Omega$ which contains $\overline{B_r(a)}$. Take a harmonic conjugate $v$ on this neighborhood to obtain the holomorphic function $f=u+iv$. Recall Cauchy's integral formula,&#xA;\[f(a)=\frac{1}{2\pi i}\int_{|z-a|=r}\frac{f(z)}{z-a}dz.\]&#xA;Restating with $u$ and $v$ gives&#xA;\[u(a)+iv(a)=\frac{1}{2\pi i}\int_0^{2\pi}\frac{u(a+re^{it})+iv(a+re^{it})}{re^{it}}ire^{it}dt=\frac{1}{2\pi}\int_0^{2\pi}u(a+re^{it})+iv(a+re^{it})dt.\]&#xA;The real part of the above equation is the circle mean value property.&#xA;Let $0&lt;s&lt;r$. Because $u$ satisfies the circle mean value property,&#xA;\[u(a)=\frac{1}{2\pi}\int_0^{2\pi}u(a+se^{i\theta})d\theta.\]&#xA;Scale both sides by $s$.&#xA;\[2\pi su(a)=\int_0^{2\pi}u(a+se^{i\theta})sd\theta.\]&#xA;Integrate both sides with respect to $s$ from $0$ to $r$.&#xA;\[\pi r^2u(a)=\int_0^r\int_0^{2\pi}u(a+se^{i\theta})sd\theta ds=\iint_{B_r(a)}u(x+iy)dxdy.\]"/>
+</ballMVP>

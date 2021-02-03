@@ -1,1 +1,20 @@
-<f19f6><problem tex="Using contour integration (that is, the residue theorem), evaluate&#xA;\[\int_0^\infty\frac{dx}{1+x^2}.\]"><solutionCompleteness radio="none"><full/></solutionCompleteness><questionViability radio="bad"><good/></questionViability><instructors><d/></instructors><topics><RealIntegral/><ResidueTheorem/><IntegralEstimates/></topics></problem><solution tex="First we note that $\frac{1}{1+x^2}$ is an $L^1$ even function, so $\int_0^\infty\frac{1}{1+x^2}dx=\frac{1}{2}\int_{-\infty}^\infty\frac{1}{1+x^2}dx$. Tabling this for now, suppose $R&gt;1$ and let $\gamma_R$ be the rainbow contour in $\mathbb{C}$ given by the straight line $L_R$ from $-R$ to $R$ and the arc $C_R$ from $R$ to $-R$ along the upper half of the circle $|z|=R$, oriented so that $\gamma_R$ has positive orientation. Then&#xA;\[\lim_{R\to\infty}\int_{\gamma_R}\frac{1}{1+z^2}dz=\lim_{R\to\infty}\int_{L_R}\frac{1}{1+z^2}dz+\lim_{R\to\infty}\int_{C_R}\frac{1}{1+z^2}dz.\]&#xA;We already know that $\lim_{R\to\infty}\int_{L_R}\frac{1}{1+z^2}dz=\int_{-\infty}^\infty\frac{1}{1+x^2}dx$, we shall show the $C_R$ component vanishes in the limit.&#xA;\[\left|\int_{C_R}\frac{1}{1+z^2}dz\right|\leq\int_{C_R}\left|\frac{1}{1+z^2}\right||dz|\leq\int_{C_R}\frac{|dz|}{|z^2|-1}=\int_0^\pi\frac{Rdt}{R^2-1}=\frac{\pi R}{R^2-1}\to0.\]&#xA;Therefore $\int_0^\infty\frac{1}{1+x^2}dx=\frac{1}{2}\lim_{R\to\infty}\int_{\gamma_R}\frac{1}{1+z^2}dz$. Moreover, Cauchy's integral theorem tells us that $\int_{\gamma_R}\frac{1}{1+z^2}dz$ does not depend on $R$ as long as $R&gt;1$, because the only singularities of $\frac{1}{1+z^2}$ occur at $z=\pm i$. Thus $\int_0^\infty\frac{1}{1+x^2}dx=\frac{1}{2}\int_{\gamma_R}\frac{1}{1+z^2}dz$ for any $R&gt;1$.&#xA;Now $\frac{1}{1+z^2}=\frac{1}{2i}\left(\frac{1}{z-i}-\frac{1}{z+i}\right)$, and the residue theorem tells us that the integral of this function around $\gamma_R$ is $2\pi i\left(\frac{1}{2i}\right)=\pi$ because the only contributing residue is the $\frac{1}{2i}$ coming from the pole at $z=i$. Therefore $\int_0^\infty\frac{1}{1+x^2}dx=\frac{\pi}{2}$."/></f19f6>
+<?xml version="1.0" encoding="UTF-8"?>
+<f19f6>
+  <problem tex="Using contour integration (that is, the residue theorem), evaluate&#xA;\[\int_0^\infty\frac{dx}{1+x^2}.\]">
+    <solutionCompleteness radio="none">
+      <full/>
+    </solutionCompleteness>
+    <questionViability radio="bad">
+      <good/>
+    </questionViability>
+    <instructors>
+      <d/>
+    </instructors>
+    <topics>
+      <RealIntegral/>
+      <ResidueTheorem/>
+      <IntegralEstimates/>
+    </topics>
+  </problem>
+  <solution tex="First we note that $\frac{1}{1+x^2}$ is an $L^1$ even function, so $\int_0^\infty\frac{1}{1+x^2}dx=\frac{1}{2}\int_{-\infty}^\infty\frac{1}{1+x^2}dx$. Tabling this for now, suppose $R&gt;1$ and let $\gamma_R$ be the rainbow contour in $\mathbb{C}$ given by the straight line $L_R$ from $-R$ to $R$ and the arc $C_R$ from $R$ to $-R$ along the upper half of the circle $|z|=R$, oriented so that $\gamma_R$ has positive orientation. Then&#xA;\[\lim_{R\to\infty}\int_{\gamma_R}\frac{1}{1+z^2}dz=\lim_{R\to\infty}\int_{L_R}\frac{1}{1+z^2}dz+\lim_{R\to\infty}\int_{C_R}\frac{1}{1+z^2}dz.\]&#xA;We already know that $\lim_{R\to\infty}\int_{L_R}\frac{1}{1+z^2}dz=\int_{-\infty}^\infty\frac{1}{1+x^2}dx$, we shall show the $C_R$ component vanishes in the limit.&#xA;\[\left|\int_{C_R}\frac{1}{1+z^2}dz\right|\leq\int_{C_R}\left|\frac{1}{1+z^2}\right||dz|\leq\int_{C_R}\frac{|dz|}{|z^2|-1}=\int_0^\pi\frac{Rdt}{R^2-1}=\frac{\pi R}{R^2-1}\to0.\]&#xA;Therefore $\int_0^\infty\frac{1}{1+x^2}dx=\frac{1}{2}\lim_{R\to\infty}\int_{\gamma_R}\frac{1}{1+z^2}dz$. Moreover, Cauchy's integral theorem tells us that $\int_{\gamma_R}\frac{1}{1+z^2}dz$ does not depend on $R$ as long as $R&gt;1$, because the only singularities of $\frac{1}{1+z^2}$ occur at $z=\pm i$. Thus $\int_0^\infty\frac{1}{1+x^2}dx=\frac{1}{2}\int_{\gamma_R}\frac{1}{1+z^2}dz$ for any $R&gt;1$.&#xA;Now $\frac{1}{1+z^2}=\frac{1}{2i}\left(\frac{1}{z-i}-\frac{1}{z+i}\right)$, and the residue theorem tells us that the integral of this function around $\gamma_R$ is $2\pi i\left(\frac{1}{2i}\right)=\pi$ because the only contributing residue is the $\frac{1}{2i}$ coming from the pole at $z=i$. Therefore $\int_0^\infty\frac{1}{1+x^2}dx=\frac{\pi}{2}$."/>
+</f19f6>

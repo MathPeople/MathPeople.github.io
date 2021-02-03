@@ -1,1 +1,13 @@
-<ll_6><problem tex="Find the Laurent series of the function $f(z)=\ln\left(\frac{z-1}{z+1}\right)$ around the origin of the disc."><questionViability radio="bad"><good/></questionViability><instructors/><topics><RadiusOfConvergence/><Laurent/></topics></problem><solution tex=""/></ll_6>
+<?xml version="1.0" encoding="UTF-8"?>
+<ll_6>
+  <problem tex="Find the Laurent series of the function $f(z)=\ln\left(\frac{z-1}{z+1}\right)$ around the origin of the disc.">
+    <questionViability radio="bad">
+      <good/>
+    </questionViability>
+    <topics>
+      <RadiusOfConvergence/>
+      <Laurent/>
+    </topics>
+  </problem>
+  <solution tex=""/>
+</ll_6>

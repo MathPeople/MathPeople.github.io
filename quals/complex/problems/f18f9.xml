@@ -1,1 +1,18 @@
-<f18f9><problem tex="Give the largest disc centered at the origin for which $f(z)=z^2+z$ is injective."><solutionCompleteness radio="none"><full/></solutionCompleteness><questionViability radio="bad"><good/></questionViability><instructors><c/></instructors><topics><Degree/></topics></problem><solution tex="First, note that $f'(z)=2z+1$. $f$ will certainly be not injective near $a$ if $f'(a)=0$, that is because the degree of $f$ will be larger than 1. $f'(a)=0\iff a=\frac{-1}{2}$, so an upper bound on the radius is $\frac{1}{2}$. To show that the answer is actually $\frac{1}{2}$, let's look at the outputs of $f$ . If $f(z)=c$ then&#xA;\[z^2+z=c\]&#xA;\[z^2+z-c=0\]&#xA;\[z=\frac{-1\pm\sqrt{1+4c}}{2}=\frac{1}{2}\pm c'.\]&#xA;These two roots are on opposite sides of $\frac{1}{2}$. If one occurs inside the disc $|z|&lt;\frac{1}{2}$, then the other will occur outside the disc. Thus $f$ is injective on the disc $|z|&lt;\frac{1}{2}$."/></f18f9>
+<?xml version="1.0" encoding="UTF-8"?>
+<f18f9>
+  <problem tex="Give the largest disc centered at the origin for which $f(z)=z^2+z$ is injective.">
+    <solutionCompleteness radio="none">
+      <full/>
+    </solutionCompleteness>
+    <questionViability radio="bad">
+      <good/>
+    </questionViability>
+    <instructors>
+      <c/>
+    </instructors>
+    <topics>
+      <Degree/>
+    </topics>
+  </problem>
+  <solution tex="First, note that $f'(z)=2z+1$. $f$ will certainly be not injective near $a$ if $f'(a)=0$, that is because the degree of $f$ will be larger than 1. $f'(a)=0\iff a=\frac{-1}{2}$, so an upper bound on the radius is $\frac{1}{2}$. To show that the answer is actually $\frac{1}{2}$, let's look at the outputs of $f$ . If $f(z)=c$ then&#xA;\[z^2+z=c\]&#xA;\[z^2+z-c=0\]&#xA;\[z=\frac{-1\pm\sqrt{1+4c}}{2}=\frac{1}{2}\pm c'.\]&#xA;These two roots are on opposite sides of $\frac{1}{2}$. If one occurs inside the disc $|z|&lt;\frac{1}{2}$, then the other will occur outside the disc. Thus $f$ is injective on the disc $|z|&lt;\frac{1}{2}$."/>
+</f18f9>

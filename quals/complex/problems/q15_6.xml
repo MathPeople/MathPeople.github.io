@@ -1,1 +1,20 @@
-<q15_6><problem tex="Evaluate $\int_\gamma\frac{\log z}{z^2-25}dz$ where $\gamma$ is the boundary of $B_2(4)$ in positive orientation. using the principal branch of log."><solutionCompleteness radio="none"><full/></solutionCompleteness><questionViability radio="bad"><good/></questionViability><instructors><a/><c/></instructors><topics><ResidueTheorem/><CauchyIntegralFormula/></topics></problem><solution tex="The principal branch of log is holomorphic on the interior and boundary of the ball centered at 4 of radius 2. By Cauchy's integral formula&#xA;\[\int_\gamma\frac{\frac{\log z}{z+5}}{z-5}dz=2\pi i\frac{\log 5}{5+5}=\frac{\pi i\log 5}{5}.\]"/></q15_6>
+<?xml version="1.0" encoding="UTF-8"?>
+<q15_6>
+  <problem tex="Evaluate $\int_\gamma\frac{\log z}{z^2-25}dz$ where $\gamma$ is the boundary of $B_2(4)$ in positive orientation. using the principal branch of log.">
+    <solutionCompleteness radio="none">
+      <full/>
+    </solutionCompleteness>
+    <questionViability radio="bad">
+      <good/>
+    </questionViability>
+    <instructors>
+      <a/>
+      <c/>
+    </instructors>
+    <topics>
+      <ResidueTheorem/>
+      <CauchyIntegralFormula/>
+    </topics>
+  </problem>
+  <solution tex="The principal branch of log is holomorphic on the interior and boundary of the ball centered at 4 of radius 2. By Cauchy's integral formula&#xA;\[\int_\gamma\frac{\frac{\log z}{z+5}}{z-5}dz=2\pi i\frac{\log 5}{5+5}=\frac{\pi i\log 5}{5}.\]"/>
+</q15_6>

@@ -1,1 +1,21 @@
-<q18_1><problem tex="Define a branch $f(z)$ of $\ln\left(\frac{z-i}{z-1}\right)$ on a region containing $0$. (You should specify the region and define the function explicitly). Find the radius of convergence for the power series expansion of $f(z)$ centered at $z=0$."><solutionCompleteness radio="none"><full/></solutionCompleteness><questionViability radio="bad"><good/></questionViability><instructors><a/><b/></instructors><topics><MobiusTransformation/><BranchOfLog/><RadiusOfConvergence/></topics></problem><solution tex="The singularity of the Mobius transformation $M(z)=\frac{z-i}{z-1}$ happens at $z=1$, so we will probably not be able to get our radius of convergence to be greater than $1$. Let's see where the unit disc goes under $M$. We have a trace of the unit circle as $1\mapsto i\mapsto -1\mapsto 1$, this maps to the sequence $\infty\mapsto0\mapsto\frac{1}{2}(1+i)\mapsto\infty$. That is, $M$ takes the positively oriented unit circle to the line $y=x$ in $\mathbb{R}^2$ going upwards. Conformal maps preserve orientation, so the disc goes to the upper-left half plane. Then we can define a branch of log on the image under $M$, for $re^{i\theta}=w=\frac{z-i}{z+1}$ we have that $\theta\in(0,2\pi)$ and&#xA;\[\ln(w)=\ln(r)+e^{i\theta}.\]&#xA;In terms of $z$ (where $|z|&lt;1$), take $\arg$ to output values in the interval $(0,2\pi)$. Then&#xA;\[\ln\left(\frac{z-i}{z-1}\right)=\ln\left|\frac{z-i}{z-1}\right|+i\arg\left(\frac{z-i}{z-1}\right).\]&#xA;There is a pole at $z=1$ for the Mobius transformation and a problem at $z=i$ because log cannot be extended to take in $0$. Therefore our largest ball is the unit disc."/></q18_1>
+<?xml version="1.0" encoding="UTF-8"?>
+<q18_1>
+  <problem tex="Define a branch $f(z)$ of $\ln\left(\frac{z-i}{z-1}\right)$ on a region containing $0$. (You should specify the region and define the function explicitly). Find the radius of convergence for the power series expansion of $f(z)$ centered at $z=0$.">
+    <solutionCompleteness radio="none">
+      <full/>
+    </solutionCompleteness>
+    <questionViability radio="bad">
+      <good/>
+    </questionViability>
+    <instructors>
+      <a/>
+      <b/>
+    </instructors>
+    <topics>
+      <MobiusTransformation/>
+      <BranchOfLog/>
+      <RadiusOfConvergence/>
+    </topics>
+  </problem>
+  <solution tex="The singularity of the Mobius transformation $M(z)=\frac{z-i}{z-1}$ happens at $z=1$, so we will probably not be able to get our radius of convergence to be greater than $1$. Let's see where the unit disc goes under $M$. We have a trace of the unit circle as $1\mapsto i\mapsto -1\mapsto 1$, this maps to the sequence $\infty\mapsto0\mapsto\frac{1}{2}(1+i)\mapsto\infty$. That is, $M$ takes the positively oriented unit circle to the line $y=x$ in $\mathbb{R}^2$ going upwards. Conformal maps preserve orientation, so the disc goes to the upper-left half plane. Then we can define a branch of log on the image under $M$, for $re^{i\theta}=w=\frac{z-i}{z+1}$ we have that $\theta\in(0,2\pi)$ and&#xA;\[\ln(w)=\ln(r)+e^{i\theta}.\]&#xA;In terms of $z$ (where $|z|&lt;1$), take $\arg$ to output values in the interval $(0,2\pi)$. Then&#xA;\[\ln\left(\frac{z-i}{z-1}\right)=\ln\left|\frac{z-i}{z-1}\right|+i\arg\left(\frac{z-i}{z-1}\right).\]&#xA;There is a pole at $z=1$ for the Mobius transformation and a problem at $z=i$ because log cannot be extended to take in $0$. Therefore our largest ball is the unit disc."/>
+</q18_1>

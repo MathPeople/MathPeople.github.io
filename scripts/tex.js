@@ -28,9 +28,13 @@ let qualNameIn = document.getElementById("qualName"),
     saveAllButton = document.getElementById("saveAll"),
     errorOutP = document.getElementById("errorOut");
 // script global variables
-let pairMode = true, qual = "", problemsTags = {}, editorMetas = {}, justJax = false;
+let pairMode = true, // problem/solution pair or solo mode
+    qual = "", // loaded qual (also used in autosave triggering)
+    problemsTags = {}, // keeps all the elements which make up the various lists of all problems (except the whole list, that is different)
+    editorMetas = {}, // tex.js' version of the repository of all used metainformation
+    justJax = false; // render just jax or render all the metainformation gui elements as well
 
-// jax configuration
+// jax configuration, short so that typing tex updates live
 jaxLoopWait = 100;
 
 // these define the active problem
@@ -41,7 +45,7 @@ let doc = xmlImporter.newDocument(), id = "changeMe";
     // fireblock in case something has an error
     function setListener(element, type, func) {try {element.addEventListener(type, func)} catch (e) {}}
     
-    qualNameIn.value = ""; // reset in case the value is cached by the browser
+    qualNameIn.value = ""; // browsers sometimes cache values of inputs with id but we want to ensure these inputs start with certain values
     setListener(qualNameIn, "change", loadQual);
     
     setListener(loadedProblems, "change", function() {
@@ -70,10 +74,10 @@ let doc = xmlImporter.newDocument(), id = "changeMe";
     
     newMetatypeType.selectedIndex = 0;
     
-    renameMetainformation.value = ""; // reset in case the value is cached by the browser
+    renameMetainformation.value = "";
     setListener(renameMetainformation, "change", hardRename);
     
-    renameSoftMetainformation.value = ""; // reset in case the value is cached by the browser
+    renameSoftMetainformation.value = "";
     setListener(renameSoftMetainformation, "change", softRename);
     
     toggleColumn.value = "";
@@ -104,38 +108,44 @@ function fixTextHeight(event) {
 
 // load all problems from a qual repository
 function importRemoteQuestions(nameOfQual, finished = function() {}) {
+    // don't render them as they are loaded
     holdJax = true;
+    // check list of problems to see what all needs loading
     xmlImporter.openTextFile("../quals/"+nameOfQual+"/problemsList.txt", null, function(list) {
+        // in case someone left a trailing newline, get rid of it
         list = list.trim();
+        // in case when a problems repository is empty. in js splitting an empty string is silly so we deal with this separately
         if (list === "") {
             clearTex();
             return finished();
         }
+        // problemsList.txt is a space-separated list of problem ids
         let lines = list.split(" "), numLines = lines.length;
-        for (let problem of lines) if (problem !== "" && problem != "changeMe") {
+        for (let problem of lines) if (problem !== "" && problem !== "changeMe") {// explicitly ignore a problem called changeMe
             let p = problem;
-            if (problem in problems) {
-                if (qual == "local") {
+            if (problem in problems) { // problem is already loaded, may happen if using autosave. otherwise it is a problem
+                if (qual === "local") {
                     if (--numLines === 0) {
                         finished();
                     }
                     continue;
                 } else errorOut("duplicate in problems list: " + problem);
             }
-            problems[problem] = undefined;
+            problems[problem] = undefined; // so we know that we have encountered this problem even before the problem file finishes loading
             problemsTags[problem] = {
                 idList: xmlImporter.element("option", idList, ["value", problem]),
                 loadedProblems: xmlImporter.element("option", loadedProblems, ["value", problem])
             };
             xmlImporter.text(problem, problemsTags[problem].loadedProblems);
+            // load the problem file
             xmlImporter.openXMLFile(
                 "../quals/"+nameOfQual+"/problems/"+p+".xml",
-                null,
-                function(problemDoc) {
+                null, // passer object
+                function(problemDoc) { // callback after loaded
                     doc = problems[p] = problemDoc;
-                    convertDoc();
-                    outputFromDoc();
-                    if (--numLines === 0) {
+                    convertDoc(); // normally this does nothing but here we convert files if we need to
+                    outputFromDoc(); // mainly do this so we populate the metainformation, remember jax is halted for now so it isn't rendered
+                    if (--numLines === 0) {// now every problem has been loaded
                         holdJax = false;
                         typeset(texLiveOut);
                         fixWholeList();
@@ -143,7 +153,7 @@ function importRemoteQuestions(nameOfQual, finished = function() {}) {
                     }
                 }, 
                 function() {
-                        errorOut("cannot find " + p);
+                    errorOut("cannot find " + p);
                 }
             );
         }
@@ -155,13 +165,17 @@ function importRemoteQuestions(nameOfQual, finished = function() {}) {
 
 // load all locally stored problems and set up for local autosaving
 function initializeLocal() {
-    let list = Store.fetch("local problems list");
+    // this is essentially the same as importRemoteQuestions, just without callbacks because we don't have to wait to fetch any files
+    let list = Store.fetch("local problems list"); /// plays the role of problemsList.txt
     if (!list) list = "";
     let lines = list.split(" ");
     for (let problem of lines) if (problem !== "" && problem !== "changeMe") {
         if (problem in problems) errorOut("duplicate in problems list: " + problem);
         doc = problems[problem] = xmlImporter.trim(xmlImporter.parseDoc(Store.fetch("local " + problem)));
+        convertDoc();
         outputFromDoc();
+        typeset(texLiveOut);
+        fixWholeList();
     }
     qualNameIn.value = "working locally";
     let button = xmlImporter.element("button", null, ["type", "button"]);
@@ -418,7 +432,7 @@ function resetDoc(e) {
             case "checkbox":
                 let metaNode = xmlImporter.elementDoc(doc, metaName, problem);
                 for (let value in meta.values) if (meta.values[value].input.checked) xmlImporter.elementDoc(doc, value, metaNode);
-                if (!metaNode.hasChildNodes()) problem.removeChild(metaNode);
+                if (metaNode.childElementCount === 0) problem.removeChild(metaNode);
             break; case "radio":
                 if (!meta.values[meta.defaultValue].input.checked) for (let value in meta.values) if (meta.values[value].input.checked) xmlImporter.elementDoc(doc, value, xmlImporter.elementDoc(doc, metaName, problem, ["radio", meta.defaultValue])); 
             break; case "scale":
@@ -532,7 +546,7 @@ function fixWholeList() {
             switch (editorMetas[meta].metaType) {
                 case "checkbox":
                     let td = xmlImporter.element("td", row, ["class", "checkboxlist"]);
-                    for (let child of metaNode.childNodes) {
+                    if (metaNode) for (let child of metaNode.childNodes) {
                         xmlImporter.text(child.nodeName, td);
                         xmlImporter.element("br", td);
                     }
@@ -591,16 +605,14 @@ function convertDoc() {
     // this function is in the load process so it will convert all files as they are loaded
     // take doc and process it from old format to new format, return nothing because the change is done directly to doc
     
-    // Here is an example of a conversion. This takes the checkbox metadata "instructors" and renames it to "instructor"
+    // Here is an example of a conversion. This removes any childless checkbox metainformations
     
-    /*
-    if (doc.querySelector("instructors")) {
-        let node = doc.querySelector("instructor");
-        let newNode = xmlImporter.elementDoc(doc, "instructor", node);
-        for (let valueNode of node.childNodes) newNode.appendChild(valueNode);
-        node.parentElement.removeChild(node);
-    }
-    */
+    
+    let problemNode = doc.querySelector("problem");
+    let removeThese = [];
+    for (let child of problemNode.childNodes) if (!child.hasAttribute("scale") && !child.hasChildNodes()) removeThese.push(child);
+    for (let child of removeThese) problemNode.removeChild(child);
+    
 }
 
 // get ids of all loaded problems

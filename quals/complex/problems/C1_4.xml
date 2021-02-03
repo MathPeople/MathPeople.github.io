@@ -1,1 +1,21 @@
-<C1_4><problem tex="Let $\sum_g$ be a compact Riemann surface with genus $g$. Prove that there exists no non-constant holomorphic map from $\sum_0$ to $\sum_g$, where $g \geq 1$. "><solutionCompleteness radio="none"><full/></solutionCompleteness><questionViability radio="bad"><good/></questionViability><instructors><a/></instructors><topics><PointSetTopology/><Liouville/><RiemannSurfaces/><HurwitzFormula/></topics></problem><solution tex="Suppose to the contrary that a nonconstant holomorphic map from the sphere to the $g$-surface exists. Then the Riemann Hurwitz formula gives&#xA;\[2=2-2(0)=d(2-2g)+R_f\leq d(2-2g)\leq2-2\leq2-2(1)=0\]&#xA;The contradiction is the result that $2\leq0$. Thus no such map exists.&#xA;We could also use a different solution involving covering spaces.&#xA;\[\]&#xA;Let $f:\Sigma_0\to\Sigma_g$ be a holomorphic map. We shall make use of the fact that $\mathbb{H}$ is the universal covering space for $\Sigma_g$ for all $g\geq2$. The case for $g = 1$ follows a similar argument with $\mathbb{C}$ replacing $\mathbb{H}$. Let $p:\mathbb{H}\to\Sigma_g$ be the universal covering map and consider the lifting criterion. The lift $F$ of $f$, $f=p\circ F$, exists if and only if $im(f_*) \subset im(p_*)$. But, since both $\mathbb{H}$ and $\sum_0$ are both simply connected, their fundamental groups are trivial. Therefore, $im(p_*) = 0 = im(f_*)$ which implies that $F$ exists. Since $f$ is a holomorphic function, one can show that $F$ is in fact holomorphic as well. Since $\sum_0 = S^2$ is a compact Riemann surface, by problem 2, this implies $F$ is constant. Since $f = p \circ F$, $f$ is constant. This proves the result.&#xA;\[\]"/></C1_4>
+<?xml version="1.0" encoding="UTF-8"?>
+<C1_4>
+  <problem tex="Let $\sum_g$ be a compact Riemann surface with genus $g$. Prove that there exists no non-constant holomorphic map from $\sum_0$ to $\sum_g$, where $g \geq 1$. ">
+    <solutionCompleteness radio="none">
+      <full/>
+    </solutionCompleteness>
+    <questionViability radio="bad">
+      <good/>
+    </questionViability>
+    <instructors>
+      <a/>
+    </instructors>
+    <topics>
+      <PointSetTopology/>
+      <Liouville/>
+      <RiemannSurfaces/>
+      <HurwitzFormula/>
+    </topics>
+  </problem>
+  <solution tex="Suppose to the contrary that a nonconstant holomorphic map from the sphere to the $g$-surface exists. Then the Riemann Hurwitz formula gives&#xA;\[2=2-2(0)=d(2-2g)+R_f\leq d(2-2g)\leq2-2\leq2-2(1)=0\]&#xA;The contradiction is the result that $2\leq0$. Thus no such map exists.&#xA;We could also use a different solution involving covering spaces.&#xA;\[\]&#xA;Let $f:\Sigma_0\to\Sigma_g$ be a holomorphic map. We shall make use of the fact that $\mathbb{H}$ is the universal covering space for $\Sigma_g$ for all $g\geq2$. The case for $g = 1$ follows a similar argument with $\mathbb{C}$ replacing $\mathbb{H}$. Let $p:\mathbb{H}\to\Sigma_g$ be the universal covering map and consider the lifting criterion. The lift $F$ of $f$, $f=p\circ F$, exists if and only if $im(f_*) \subset im(p_*)$. But, since both $\mathbb{H}$ and $\sum_0$ are both simply connected, their fundamental groups are trivial. Therefore, $im(p_*) = 0 = im(f_*)$ which implies that $F$ exists. Since $f$ is a holomorphic function, one can show that $F$ is in fact holomorphic as well. Since $\sum_0 = S^2$ is a compact Riemann surface, by problem 2, this implies $F$ is constant. Since $f = p \circ F$, $f$ is constant. This proves the result.&#xA;\[\]"/>
+</C1_4>

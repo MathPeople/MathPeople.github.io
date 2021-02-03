@@ -1,1 +1,17 @@
-<ll_3><problem tex="Find the Laurent series of $f(z)=\frac{1}{(z-1)(z-2)}$ in the annulus $1&lt;|z|&lt;2$."><solutionCompleteness radio="none"><full/></solutionCompleteness><questionViability radio="bad"><good/></questionViability><instructors/><topics><SumConvergence/><RadiusOfConvergence/><Laurent/></topics></problem><solution tex="The partial fraction decomposition of the function becomes,&#xA;\[f(z)=\frac{-1}{z-1}+\frac{1}{z-2}=\frac{1}{1-z}-\frac{1}{2(1-\frac{z}{2})}\]&#xA;When $|z|&gt;1$,&#xA;\[\frac{1}{1-z}=\frac{1}{z(1-\frac{1}{z})}\]&#xA;Therefore, the Laurent series is,&#xA;\[=\frac{1}{z(1-\frac{1}{z})}-\frac{1}{2(1-\frac{z}{2})}\]&#xA;\[=\frac{1}{z} \sum_{i=0}^{\infty} z^{-i}-\frac{1}{2} \sum_{i=0}^{\infty} 2^{-i} z^{i}\]"/></ll_3>
+<?xml version="1.0" encoding="UTF-8"?>
+<ll_3>
+  <problem tex="Find the Laurent series of $f(z)=\frac{1}{(z-1)(z-2)}$ in the annulus $1&lt;|z|&lt;2$.">
+    <solutionCompleteness radio="none">
+      <full/>
+    </solutionCompleteness>
+    <questionViability radio="bad">
+      <good/>
+    </questionViability>
+    <topics>
+      <SumConvergence/>
+      <RadiusOfConvergence/>
+      <Laurent/>
+    </topics>
+  </problem>
+  <solution tex="The partial fraction decomposition of the function becomes,&#xA;\[f(z)=\frac{-1}{z-1}+\frac{1}{z-2}=\frac{1}{1-z}-\frac{1}{2(1-\frac{z}{2})}\]&#xA;When $|z|&gt;1$,&#xA;\[\frac{1}{1-z}=\frac{1}{z(1-\frac{1}{z})}\]&#xA;Therefore, the Laurent series is,&#xA;\[=\frac{1}{z(1-\frac{1}{z})}-\frac{1}{2(1-\frac{z}{2})}\]&#xA;\[=\frac{1}{z} \sum_{i=0}^{\infty} z^{-i}-\frac{1}{2} \sum_{i=0}^{\infty} 2^{-i} z^{i}\]"/>
+</ll_3>

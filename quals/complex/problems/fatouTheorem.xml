@@ -1,1 +1,15 @@
-<fatouTheorem><problem tex="Suppose $f:\mathbb{D}\to\mathbb{D}$ is a holomorphic function. Must $f$ extend continuously to a continuous function from $\overline{\mathbb{D}}$ to $\overline{\mathbb{D}}$?"><instructors><e/></instructors><topics><FunctionBounds/><PointSetTopology/><ClassificationOfSingularities/><RadiusOfConvergence/></topics></problem><solution tex="Check out Fatou's theorem. This is not an easy question. The answer appears to be no."/></fatouTheorem>
+<?xml version="1.0" encoding="UTF-8"?>
+<fatouTheorem>
+  <problem tex="Suppose $f:\mathbb{D}\to\mathbb{D}$ is a holomorphic function. Must $f$ extend continuously to a continuous function from $\overline{\mathbb{D}}$ to $\overline{\mathbb{D}}$?">
+    <instructors>
+      <e/>
+    </instructors>
+    <topics>
+      <FunctionBounds/>
+      <PointSetTopology/>
+      <ClassificationOfSingularities/>
+      <RadiusOfConvergence/>
+    </topics>
+  </problem>
+  <solution tex="Check out Fatou's theorem. This is not an easy question. The answer appears to be no."/>
+</fatouTheorem>

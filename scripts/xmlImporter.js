@@ -84,7 +84,7 @@ xmlImporter.parser = new DOMParser();
 xmlImporter.serializer = new XMLSerializer();
 
 // serialize an XML document. this could be done with an XMLSerializer but that doesn't seem to add indentation, so we do it manually here
-xmlImporter.nodeToString = function nodeToString(node, indent = "", tab = "  ", newLine = "\r\n") {
+xmlImporter.nodeToString = function nodeToString(node, indent = "", tab = "  ", newLine = "\n") {
     if (node.nodeType == 3) return node.nodeValue;
     if (node.nodeType == 9) return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + xmlImporter.nodeToString(node.firstChild, indent, tab, newLine);
     let line = newLine+indent+"<"+xmlImporter.nodeToStringOpeningTagInsides(node);

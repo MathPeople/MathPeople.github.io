@@ -1,1 +1,21 @@
-<q16_10><problem tex="Let $f$ be an entire function such that $|f(z)|=|f(\frac{1}{z})|$ for all nonzero $z$. Prove that $f$ is constant."><solutionCompleteness radio="none"><full/></solutionCompleteness><questionViability radio="bad"><good/></questionViability><instructors><a/><c/></instructors><topics><FunctionBounds/><PointSetTopology/><Liouville/></topics></problem><solution tex="Because $f$ is continuous, $f\left(\overline{\mathbb{D}}\right)$ is compact and therefore bounded, let $M$ be a bound. For any $|z|&gt;1, \frac{1}{z}\in D$ so $|f(z)|=|f\left(\frac{1}{z}\right)|\leq M$. Therefore $f$ is a bounded entire function which, by Liouville's theorem, must be constant."/></q16_10>
+<?xml version="1.0" encoding="UTF-8"?>
+<q16_10>
+  <problem tex="Let $f$ be an entire function such that $|f(z)|=|f(\frac{1}{z})|$ for all nonzero $z$. Prove that $f$ is constant.">
+    <solutionCompleteness radio="none">
+      <full/>
+    </solutionCompleteness>
+    <questionViability radio="bad">
+      <good/>
+    </questionViability>
+    <instructors>
+      <a/>
+      <c/>
+    </instructors>
+    <topics>
+      <FunctionBounds/>
+      <PointSetTopology/>
+      <Liouville/>
+    </topics>
+  </problem>
+  <solution tex="Because $f$ is continuous, $f\left(\overline{\mathbb{D}}\right)$ is compact and therefore bounded, let $M$ be a bound. For any $|z|&gt;1, \frac{1}{z}\in D$ so $|f(z)|=|f\left(\frac{1}{z}\right)|\leq M$. Therefore $f$ is a bounded entire function which, by Liouville's theorem, must be constant."/>
+</q16_10>

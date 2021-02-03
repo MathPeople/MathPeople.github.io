@@ -1,1 +1,21 @@
-<q16_6><problem tex="Let $f:D\to\mathbb{C}$ be a nonconstant holomorphic function on the unit disc. Assume $f(0)=1$ and $Re(f(z))\geq0$. Prove that for all $|z|\leq1$,&#xA;\[|f(z)|\leq\frac{1+|z|}{1-|z|}.\]"><solutionCompleteness radio="none"><full/></solutionCompleteness><questionViability radio="bad"><good/></questionViability><instructors><a/><c/></instructors><topics><FunctionBounds/><MobiusTransformation/><Schwarz/></topics></problem><solution tex="Because $Re(f)\geq0$ for all $z\in D$, we know that $f$ maps into the right half plane. Take a Mobius transformation which sends $1$ to $0$ and sends the right half plane to the unit disc. $m(z)=\frac{z-1}{z+1}$ works. Then look at&#xA;\[m\circ f:D\to D.\]&#xA;By construction, $m(f(0))=m(1)=0$. Thus the Schwarz lemma gives that for all $z\in D$,&#xA;\[|m(f(z))|\leq|z|\]&#xA;\[\left|\frac{f(z)-1}{f(z)+1}\right|\leq|z|\]&#xA;\[|f(z)-1|\leq|zf(z)+z|\]&#xA;\[|f(z)|-1\leq|f(z)-1|\leq|zf(z)+z|\leq|zf(z)|+|z|\]&#xA;\[|f(z)|-|zf(z)|\leq1+|z|\]&#xA;\[|f(z)|(1-|z|)\leq1+|z|\]&#xA;\[|f(z)|\leq\frac{1+|z|}{1-|z|}.\]"/></q16_6>
+<?xml version="1.0" encoding="UTF-8"?>
+<q16_6>
+  <problem tex="Let $f:D\to\mathbb{C}$ be a nonconstant holomorphic function on the unit disc. Assume $f(0)=1$ and $Re(f(z))\geq0$. Prove that for all $|z|\leq1$,&#xA;\[|f(z)|\leq\frac{1+|z|}{1-|z|}.\]">
+    <solutionCompleteness radio="none">
+      <full/>
+    </solutionCompleteness>
+    <questionViability radio="bad">
+      <good/>
+    </questionViability>
+    <instructors>
+      <a/>
+      <c/>
+    </instructors>
+    <topics>
+      <FunctionBounds/>
+      <MobiusTransformation/>
+      <Schwarz/>
+    </topics>
+  </problem>
+  <solution tex="Because $Re(f)\geq0$ for all $z\in D$, we know that $f$ maps into the right half plane. Take a Mobius transformation which sends $1$ to $0$ and sends the right half plane to the unit disc. $m(z)=\frac{z-1}{z+1}$ works. Then look at&#xA;\[m\circ f:D\to D.\]&#xA;By construction, $m(f(0))=m(1)=0$. Thus the Schwarz lemma gives that for all $z\in D$,&#xA;\[|m(f(z))|\leq|z|\]&#xA;\[\left|\frac{f(z)-1}{f(z)+1}\right|\leq|z|\]&#xA;\[|f(z)-1|\leq|zf(z)+z|\]&#xA;\[|f(z)|-1\leq|f(z)-1|\leq|zf(z)+z|\leq|zf(z)|+|z|\]&#xA;\[|f(z)|-|zf(z)|\leq1+|z|\]&#xA;\[|f(z)|(1-|z|)\leq1+|z|\]&#xA;\[|f(z)|\leq\frac{1+|z|}{1-|z|}.\]"/>
+</q16_6>

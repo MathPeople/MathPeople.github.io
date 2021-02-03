@@ -1,1 +1,9 @@
-<ll_1><problem tex="For what values of $z$ is&#xA;\[\sum_{n=0}^\infty\left(\frac{z}{1+z}\right)^{\!n}\]&#xA;convergent?"><instructors/><topics><SumConvergence/></topics></problem><solution tex=""/></ll_1>
+<?xml version="1.0" encoding="UTF-8"?>
+<ll_1>
+  <problem tex="For what values of $z$ is&#xA;\[\sum_{n=0}^\infty\left(\frac{z}{1+z}\right)^{\!n}\]&#xA;convergent?">
+    <topics>
+      <SumConvergence/>
+    </topics>
+  </problem>
+  <solution tex=""/>
+</ll_1>

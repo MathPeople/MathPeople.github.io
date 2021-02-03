@@ -1,1 +1,23 @@
-<q17_6><problem tex="Let $u$ be a positive harmonic function over the punctured plane $\mathbb{C}\setminus\{0\}$. Show that $u$ must be constant."><solutionCompleteness radio="none"><full/></solutionCompleteness><questionViability radio="bad"><good/></questionViability><instructors><a/><b/></instructors><topics><ExpAndTrig/><EntireFunction/><Harmonic/><FunctionBounds/><Harnack/></topics></problem><solution tex="Look at the composition map $U:\mathbb{C}\to[0,\infty)$,&#xA;\[\mathbb{C}\xrightarrow{\exp}\mathbb{C}\setminus\{0\}\xrightarrow{u}[0,\infty).\]&#xA;Precomposing a harmonic function with a holomorphic function gives a harmonic function. This can be computed directly using the Cauchy-Riemann equations, &lt;a href=&quot;https://math.stackexchange.com/questions/151827/composition-of-a-harmonic-function-with-a-holomorphic-function-is-still-harmonic&quot;&gt;https://math.stackexchange.com/questions/151827/composition-of-a-harmonic-function-with-a-holomorphic-function-is-still-harmonic&lt;/a&gt;.&#xA;Now we answer a simpler question: show any nonnegative harmonic function $U$ defined on all of $\mathbb{C}$ must be constant. Recall Harnack's inequality, it is stated below for a ball of radius $R$ centered at the origin and a point $re^{i\theta}$ in the ball.&#xA;\[\frac{R-r}{R+r}U(0)\leq U(re^{i\theta})\leq\frac{R+r}{R-r}U(0).\]&#xA;Letting $R\to\infty$ gives that $U(0)=U(re^{i\theta})$, so $U$ is constant. In this problem, $U=u\circ\exp$ and $\exp$ is surjective, so $U$ being constant forces $u$ to be constant."/></q17_6>
+<?xml version="1.0" encoding="UTF-8"?>
+<q17_6>
+  <problem tex="Let $u$ be a positive harmonic function over the punctured plane $\mathbb{C}\setminus\{0\}$. Show that $u$ must be constant.">
+    <solutionCompleteness radio="none">
+      <full/>
+    </solutionCompleteness>
+    <questionViability radio="bad">
+      <good/>
+    </questionViability>
+    <instructors>
+      <a/>
+      <b/>
+    </instructors>
+    <topics>
+      <ExpAndTrig/>
+      <EntireFunction/>
+      <Harmonic/>
+      <FunctionBounds/>
+      <Harnack/>
+    </topics>
+  </problem>
+  <solution tex="Look at the composition map $U:\mathbb{C}\to[0,\infty)$,&#xA;\[\mathbb{C}\xrightarrow{\exp}\mathbb{C}\setminus\{0\}\xrightarrow{u}[0,\infty).\]&#xA;Precomposing a harmonic function with a holomorphic function gives a harmonic function. This can be computed directly using the Cauchy-Riemann equations, &lt;a href=&quot;https://math.stackexchange.com/questions/151827/composition-of-a-harmonic-function-with-a-holomorphic-function-is-still-harmonic&quot;&gt;https://math.stackexchange.com/questions/151827/composition-of-a-harmonic-function-with-a-holomorphic-function-is-still-harmonic&lt;/a&gt;.&#xA;Now we answer a simpler question: show any nonnegative harmonic function $U$ defined on all of $\mathbb{C}$ must be constant. Recall Harnack's inequality, it is stated below for a ball of radius $R$ centered at the origin and a point $re^{i\theta}$ in the ball.&#xA;\[\frac{R-r}{R+r}U(0)\leq U(re^{i\theta})\leq\frac{R+r}{R-r}U(0).\]&#xA;Letting $R\to\infty$ gives that $U(0)=U(re^{i\theta})$, so $U$ is constant. In this problem, $U=u\circ\exp$ and $\exp$ is surjective, so $U$ being constant forces $u$ to be constant."/>
+</q17_6>
