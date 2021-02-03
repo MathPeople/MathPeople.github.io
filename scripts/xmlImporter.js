@@ -17,6 +17,7 @@ xmlImporter.trim = function trim(node) {
             child = child.nextSibling;
         }
     }
+    return node;
 }
 // fetch xml file at location and call finished(responseXML, pass) when done
 xmlImporter.openXMLFile = function openXMLFile(location, pass, finished, failed=function(){console.warn("failed HTTP request " + location)}) {

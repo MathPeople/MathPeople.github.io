@@ -148,7 +148,7 @@ function initializeLocal() {
     let lines = list.split(" ");
     for (let problem of lines) if (problem !== "" && problem !== "changeMe") {
         if (problem in problems) errorOut("duplicate in problems list: " + problem);
-        doc = problems[problem] = xmlImporter.parseDoc(Store.fetch("local " + problem));
+        doc = problems[problem] = xmlImporter.trim(xmlImporter.parseDoc(Store.fetch("local " + problem)));
         outputFromDoc();
     }
     qualNameIn.value = "working locally";
