@@ -71,3 +71,7 @@ details {
 .hide {
     display: none;
 }
+
+td.checkboxlist {
+    font-size: 70%;
+}

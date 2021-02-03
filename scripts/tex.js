@@ -525,13 +525,13 @@ function fixWholeList() {
     for (let problem in problems) {
         let row = xmlImporter.element("tr", null);
         rows.push(row);
-        xmlImporter.text((problem in matches)? "✓": "X", xmlImporter.element("td", row));
+        xmlImporter.text((problem in matches)? "✓": "X", xmlImporter.element("td", row)); // the X here is not the unicode fancy X so that it shows up as different even if the user doesn't have a powerful-enough font for unicode check mark and fancy X
         xmlImporter.text(problem, xmlImporter.element("td", row));
         for (let meta of showMetas) {
             let metaNode = problems[problem].querySelector("problem > " + meta);
             switch (editorMetas[meta].metaType) {
                 case "checkbox":
-                    let td = xmlImporter.element("td", row);
+                    let td = xmlImporter.element("td", row, ["class", "checkboxlist"]);
                     for (let child of metaNode.childNodes) {
                         xmlImporter.text(child.nodeName, td);
                         xmlImporter.element("br", td);
