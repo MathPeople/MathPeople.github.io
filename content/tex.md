@@ -51,7 +51,7 @@
             </div>
             <div>
                 <label for="practiceSearch">Search</label>
-                <input id="practiceSearch" type="text" value="*"/>
+                <input id="practiceSearch" type="text"/>
             </div>
             <table id="wholeListHere"></table>
         </details>

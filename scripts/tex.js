@@ -1,5 +1,7 @@
 /*
     First read the wiki for using this editor, in particular the parts about how problem focus works. The active problem is the problem with current focus and is the only one which can be changed through interaction with the GUI. The editor works by letting the user focus on a problem and interact with the GUI to make changes to it. The problem exists as an XML DOM. Any change directed to the problem first changes that problem's DOM and then repopulates the document HTML DOM with information from the problem XML DOM. Saving consists of saving these problem XML DOMs.
+    
+    Note for future work: this script uses some functionality from problems.js, it would be a good idea to make the sharing more fully compatible. Specifically they use the problems object differently than we do (we use it just for storing doms) but we could simply and add our doms to their problems object instead of overwriting it.
 */
 
 // editor DOM elements
@@ -16,6 +18,7 @@ let qualNameIn = document.getElementById("qualName"),
     renameMetainformation = document.getElementById("renameMetainformation"),
     renameSoftMetainformation = document.getElementById("renameSoftMetainformation"),
     toggleColumn = document.getElementById("toggleColumn"),
+    practiceSearch = document.getElementById("practiceSearch"),
     wholeListHere = document.getElementById("wholeListHere"),
     texProblem = document.getElementById("texProblem"),
     texSolution = document.getElementById("texSolution"),
@@ -75,6 +78,9 @@ let doc = xmlImporter.newDocument(), id = "changeMe";
     
     toggleColumn.value = "";
     setListener(toggleColumn, "change", toggleColumnListener);
+    
+    practiceSearch.value = "*";
+    setListener(practiceSearch, "change", fixWholeList);
     
     for (let e of [texProblem, texSolution]) setListener(e, "input", resetDoc);
 
@@ -507,6 +513,7 @@ function fixWholeList() {
     if (holdJax || justJax) return;
     wholeListHere.innerHTML = "";
     let header = xmlImporter.element("tr", wholeListHere);
+    xmlImporter.text("🔍", xmlImporter.element("th", header));
     xmlImporter.text("problem id", xmlImporter.element("th", header));
     let showMetas = [];
     for (let meta in editorMetas) if (!editorMetas[meta].hide) {
@@ -514,9 +521,11 @@ function fixWholeList() {
         xmlImporter.text(meta, xmlImporter.element("th", header));
     }
     let rows = [];
+    let matches = getProblemsFromSelector2(practiceSearch.value);
     for (let problem in problems) {
-        let row = xmlImporter.element("tr", wholeListHere);
+        let row = xmlImporter.element("tr", null);
         rows.push(row);
+        xmlImporter.text((problem in matches)? "✓": "X", xmlImporter.element("td", row));
         xmlImporter.text(problem, xmlImporter.element("td", row));
         for (let meta of showMetas) {
             let metaNode = problems[problem].querySelector("problem > " + meta);
@@ -536,6 +545,26 @@ function fixWholeList() {
             }
         }
     }
+    let comparator = function(a, b) {
+        let aName = a.firstChild.nextSibling.firstChild.nodeValue, bName = b.firstChild.nextSibling.firstChild.nodeValue;
+        if ((aName in matches) && !(bName in matches)) return -1;
+        if (!(aName in matches) && (bName in matches)) return 1;
+        return aName.localeCompare(bName);
+    }
+    rows.sort(comparator);
+    for (let row of rows) wholeListHere.appendChild(row);
+}
+
+// this should really be unnecessary because it is a copy (almost) of problems.js' function but these two scripts (problems.js and tex.js) are not fully intercompatible so here is our version:
+function getProblemsFromSelector2(selector) {
+    let returner = {};
+    for (let id in problems) {
+        try {
+            if (problems[id].evaluate(selector, problems[id], null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue) 
+                returner[id] = undefined;
+        } catch (e) {}
+    }
+    return returner;
 }
 
 function toggleColumnListener() {

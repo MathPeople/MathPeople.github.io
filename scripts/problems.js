@@ -256,8 +256,8 @@ function showAllProblems() {
 
 //----------------------------------------------------------------------------------------------------------------
 //
-function getProblemsFromSelector() {
-    let selector = selectorIn.value, returner = {};
+function getProblemsFromSelector(selector) {
+    let returner = {};
     for (let id in problems) {
         try {
             if (problems[id].doc.evaluate(selector, problems[id].doc, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue) 
@@ -271,7 +271,7 @@ function getProblemsFromSelector() {
 //----------------------------------------------------------------------------------------------------------------
 // search problems for any node which matches the selector, show if one is found else hide
 function updateHides() {
-    let shows = getProblemsFromSelector();
+    let shows = getProblemsFromSelector(selectorIn.value);
     for (let id in problems) {
         if (id in shows) problems[id].div.removeAttribute("hide");
         else problems[id].div.setAttribute("hide", "");
