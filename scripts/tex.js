@@ -184,7 +184,7 @@ function initializeLocal() {
     button.addEventListener("click", clearLocalQual);
 }
 
-// 3 successful cases: import qual, initialize local, or do both
+// 3 successful cases: import qual, initialize local, or do both, depending on the value of qualNameIn
 function loadQual() {
     if (!nodeNameScreen(qualNameIn.value)) {
         if (qualNameIn.value.substring(0, 6) == "local ") {
@@ -226,7 +226,7 @@ function handleIdChange() {
             outputFromDoc();
         } else {
             delete (problems[oldID]);
-            if (problemsTags[oldID]) {
+            if (problemsTags[oldID]) {// change the various lists of ids to have this problem selected
                 problemsTags[oldID].idList.parentElement.removeChild(problemsTags[oldID].idList);
                 problemsTags[oldID].loadedProblems.parentElement.removeChild(problemsTags[oldID].loadedProblems);
                 delete problemsTags[oldID];
