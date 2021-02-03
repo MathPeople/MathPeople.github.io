@@ -36,10 +36,10 @@ let typesetThese = []
 function typeset(element) {typesetThese.push(element)}
 
 // id for loop checking if there is anything queued up for jax
-let jaxLoop;
+let jaxLoop, jaxLoopWait = 2000;
 
 function startJaxLoop() {
-    jaxLoop = window.setInterval(checkTypesetting, 2000);
+    jaxLoop = window.setInterval(checkTypesetting, jaxLoopWait);
 }
 
 // if anything to typeset, stop jax loop and start clearing the typeset queue

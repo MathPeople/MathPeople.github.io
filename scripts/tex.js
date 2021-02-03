@@ -25,6 +25,9 @@ let qualNameIn = document.getElementById("qualName"),
 // script global variables
 let pairMode = true, qual = "", problemsTags = {}, editorMetas = {};
 
+// jax configuration
+jaxLoopWait = 100;
+
 // these define the active problem
 let doc = xmlImporter.newDocument(), id = "changeMe";
 
@@ -90,13 +93,11 @@ function fixTextHeight(event) {
 
 // load all problems from a qual repository
 function importRemoteQuestions(nameOfQual, finished = function() {}) {
-    let exchange = refreshMathJax;
-    refreshMathJax = function() {};
+    holdJax = true;
     xmlImporter.openTextFile("../quals/"+nameOfQual+"/problemsList.txt", null, function(list) {
         list = list.trim();
         if (list === "") {
             clearTex();
-            refreshMathJax = exchange;
             return finished();
         }
         let lines = list.split(" "), numLines = lines.length;
@@ -105,8 +106,6 @@ function importRemoteQuestions(nameOfQual, finished = function() {}) {
             if (problem in problems) {
                 if (qual == "local") {
                     if (--numLines === 0) {
-                        refreshMathJax = exchange;
-                        refreshMathJax();
                         finished();
                     }
                     continue;
@@ -126,8 +125,8 @@ function importRemoteQuestions(nameOfQual, finished = function() {}) {
                     convertDoc();
                     outputFromDoc();
                     if (--numLines === 0) {
-                        refreshMathJax = exchange;
-                        refreshMathJax();
+                        holdJax = false;
+                        typeset(texLiveOut);
                         finished();
                     }
                 }, 
@@ -138,15 +137,12 @@ function importRemoteQuestions(nameOfQual, finished = function() {}) {
         }
     }, function() {
         inputMessage(qualNameIn, "that qual has not been successfully initiated", 3000);
-        refreshMathJax = exchange;
         window.setTimeout(function() {qualNameIn.removeAttribute("disabled")}, 3000);
     });
 }
 
 // load all locally stored problems and set up for local autosaving
 function initializeLocal() {
-    let exchange = refreshMathJax;
-    refreshMathJax = function() {};
     let list = Store.fetch("local problems list");
     if (!list) list = "";
     let lines = list.split(" ");
@@ -156,8 +152,6 @@ function initializeLocal() {
         outputFromDoc();
     }
     qualNameIn.value = "working locally";
-    refreshMathJax = exchange;
-    refreshMathJax();
     let button = xmlImporter.element("button", null, ["type", "button"]);
     qualNameIn.parentElement.insertBefore(button, qualNameIn.nextSibling);
     button.innerHTML = "Erase Local Storage";
@@ -457,6 +451,7 @@ function outputFromDoc() {
         if (solution) texLiveOut.innerHTML = "<h4>Problem</h4><p></p><h4>Solution</h4><p></p>";
         else texLiveOut.innerHTML = "<h4>Problem</h4><p></p>";
     }
+    if (!holdJax) typeset(texLiveOut);
     // reset metainformation
     for (let meta in editorMetas) {
         switch (editorMetas[meta].metaType) {
@@ -490,7 +485,6 @@ function outputFromDoc() {
     }
     codeOut.value = xmlImporter.nodeToString(doc);
     fixTextHeight({target: codeOut});
-    refreshMathJax();
     if (qual == "local" && id != "changeMe") {
         Store.store("local " + id, codeOut.value);
         Store.store("local problems list", problemsListString());
@@ -520,8 +514,6 @@ function problemsListString() {
     for (let problem in problems) if (problem != "changeMe") returner += " " + problem;
     return returner.substring(1);
 }
-
-function refreshMathJax() {try {MathJax.Hub.Queue(["Typeset", MathJax.Hub])} catch (e) {}}
 
 // temporary message displayed in an input element
 function inputMessage(input, message, time = 1000) {
