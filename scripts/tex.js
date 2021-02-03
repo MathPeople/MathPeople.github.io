@@ -15,6 +15,8 @@ let qualNameIn = document.getElementById("qualName"),
     defaultIn = document.getElementById("defaultOption"),
     renameMetainformation = document.getElementById("renameMetainformation"),
     renameSoftMetainformation = document.getElementById("renameSoftMetainformation"),
+    toggleColumn = document.getElementById("toggleColumn"),
+    wholeListHere = document.getElementById("wholeListHere"),
     texProblem = document.getElementById("texProblem"),
     texSolution = document.getElementById("texSolution"),
     texLiveOut = document.getElementById("texLiveOut"),
@@ -23,7 +25,7 @@ let qualNameIn = document.getElementById("qualName"),
     saveAllButton = document.getElementById("saveAll"),
     errorOutP = document.getElementById("errorOut");
 // script global variables
-let pairMode = true, qual = "", problemsTags = {}, editorMetas = {};
+let pairMode = true, qual = "", problemsTags = {}, editorMetas = {}, justJax = false;
 
 // jax configuration
 jaxLoopWait = 100;
@@ -70,6 +72,9 @@ let doc = xmlImporter.newDocument(), id = "changeMe";
     
     renameSoftMetainformation.value = ""; // reset in case the value is cached by the browser
     setListener(renameSoftMetainformation, "change", softRename);
+    
+    toggleColumn.value = "";
+    setListener(toggleColumn, "change", toggleColumnListener);
     
     for (let e of [texProblem, texSolution]) setListener(e, "input", resetDoc);
 
@@ -127,6 +132,7 @@ function importRemoteQuestions(nameOfQual, finished = function() {}) {
                     if (--numLines === 0) {
                         holdJax = false;
                         typeset(texLiveOut);
+                        fixWholeList();
                         finished();
                     }
                 }, 
@@ -396,7 +402,8 @@ function ensureMetatype(metaName, type = "checkbox", defaultValue) {
 }
 
 // update doc to represent what is present in the interface
-function resetDoc() {
+function resetDoc(e) {
+    justJax = e && (e.target == texProblem || e.target == texSolution);
     while (doc.firstChild) doc.removeChild(doc.firstChild);
     let problem = xmlImporter.elementDoc(doc, "problem", xmlImporter.elementDoc(doc, id, doc), ["tex", texProblem.value]);
     for (let metaName in editorMetas) {
@@ -425,7 +432,10 @@ function outputFromDoc() {
     // update problemsTags
     if (id != "changeMe") problems[id] = doc;
     if (!(id in problemsTags) && id != "changeMe") {
-        problemsTags[id] = {idList: xmlImporter.element("option", idList, ["value", id]), loadedProblems: xmlImporter.element("option", loadedProblems, ["value", id])};
+        problemsTags[id] = {
+            idList: xmlImporter.element("option", idList, ["value", id]),
+            loadedProblems: xmlImporter.element("option", loadedProblems, ["value", id])
+        };
         xmlImporter.text(id, problemsTags[id].loadedProblems);
     }
     {
@@ -483,11 +493,67 @@ function outputFromDoc() {
             }
         }
     }
+    fixWholeList();
     codeOut.value = xmlImporter.nodeToString(doc);
     fixTextHeight({target: codeOut});
     if (qual == "local" && id != "changeMe") {
         Store.store("local " + id, codeOut.value);
         Store.store("local problems list", problemsListString());
+    }
+}
+
+// update the whole list of problems with the current values
+function fixWholeList() {
+    if (holdJax || justJax) return;
+    wholeListHere.innerHTML = "";
+    let header = xmlImporter.element("tr", wholeListHere);
+    xmlImporter.text("problem id", xmlImporter.element("th", header));
+    let showMetas = [];
+    for (let meta in editorMetas) if (!editorMetas[meta].hide) {
+        showMetas.push(meta);
+        xmlImporter.text(meta, xmlImporter.element("th", header));
+    }
+    let rows = [];
+    for (let problem in problems) {
+        let row = xmlImporter.element("tr", wholeListHere);
+        rows.push(row);
+        xmlImporter.text(problem, xmlImporter.element("td", row));
+        for (let meta of showMetas) {
+            let metaNode = problems[problem].querySelector("problem > " + meta);
+            switch (editorMetas[meta].metaType) {
+                case "checkbox":
+                    let td = xmlImporter.element("td", row);
+                    for (let child of metaNode.childNodes) {
+                        xmlImporter.text(child.nodeName, td);
+                        xmlImporter.element("br", td);
+                    }
+                    if (td.lastChild) td.removeChild(td.lastChild);
+                break; case "radio":
+                    xmlImporter.text(metaNode? metaNode.firstChild.nodeName: editorMetas[meta].defaultValue, xmlImporter.element("td", row));
+                break; case "scale":
+                    xmlImporter.text(metaNode? metaNode.getAttribute("scale"): 0, xmlImporter.element("td", row));
+                break;
+            }
+        }
+    }
+}
+
+function toggleColumnListener() {
+    let meta = editorMetas[toggleColumn.value];
+    if (meta) {
+        meta.hide = !meta.hide;
+        fixWholeList();
+        toggleColumn.setAttribute("placeholder", (meta.hide? "hid ": "showed ") + toggleColumn.value);
+        toggleColumn.value = "";
+        window.setTimeout(function() {toggleColumn.setAttribute("placeholder", "")}, 3000);
+    } else {
+        let value = toggleColumn.value;
+        toggleColumn.value = "cannot find " + value;
+        toggleColumn.setAttribute("disabled", "");
+        window.setTimeout(function() {
+            toggleColumn.value = value;
+            toggleColumn.removeAttribute("disabled");
+        }, 3000);
     }
 }
 
