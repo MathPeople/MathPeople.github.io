@@ -8,6 +8,10 @@
         <link rel="stylesheet" type="text/css" href="../css/xmlViewer.css"/>
         <script src="../scripts/problems.js"></script>
         <script src="../scripts/tex.js" async defer></script>
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
+        <link rel="manifest" href="/site.webmanifest">
     </head>
     <body>
         <div class="title">
@@ -62,6 +66,10 @@
         <div id="texLiveOut"><p>Rendered TeX will go here</p></div>
         <button type="button" id="save">Save</button>
         <div><textarea id="codeOut" spellcheck="false">Formatted code will go here</textarea></div>
+        <details id="practiceTests">
+            <summary>Practice Tests</summary>
+            <button id="newPracticeTestButton">New Practice Test Configuration</button>
+        </details>
         <button type="button" id="saveAll">Save All (.zip)</button>
         <p id="errorOut"/>
         <div id="problemsSpot"/>

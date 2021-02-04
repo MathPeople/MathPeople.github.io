@@ -85,8 +85,9 @@ xmlImporter.serializer = new XMLSerializer();
 
 // serialize an XML document. this could be done with an XMLSerializer but that doesn't seem to add indentation, so we do it manually here
 xmlImporter.nodeToString = function nodeToString(node, indent = "", tab = "  ", newLine = "\n") {
-    if (node.nodeType == 3) return node.nodeValue;
-    if (node.nodeType == 9) return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + xmlImporter.nodeToString(node.firstChild, indent, tab, newLine);
+    if (node.nodeType === 3) return node.nodeValue;
+    if (node.nodeType === 9) return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + xmlImporter.nodeToString(node.firstChild, indent, tab, newLine);
+    if (node.nodeType !== 1) return xmlImporter.serializer.serializeToString(node);
     let line = newLine+indent+"<"+xmlImporter.nodeToStringOpeningTagInsides(node);
     line += node.childNodes.length == 0? "/>": ">";
     if (node.childNodes.length > 0) {
@@ -119,4 +120,30 @@ xmlImporter.rickRollLink = function rickRollLink(a) {
         rr.click();
         document.body.removeChild(rr);
     });
+}
+
+// check if a string successfully parses to an xml document
+{
+    let parserErrorNS = "";
+    try {
+        parserErrorNS = window.localStorage.getItem("parserErrorNS");
+        if (!parserErrorNS) {
+            console.groupCollapsed();
+            console.log("about to run a practice parser error");
+            let badDoc = xmlImporter.parseDoc("<");
+            console.log("practice parser error done");
+            parserErrorNS = badDoc.querySelector("parsererror").namespaceURI;
+            console.groupEnd();
+            window.localStorage.setItem("parserErrorNS", parserErrorNS);
+        }
+    } catch (e) {}
+
+    xmlImporter.isParserError = function isParseError(doc) {
+        return doc.getElementsByTagNameNS(parserErrorNS, 'parsererror').length > 0;
+    }
+    
+    xmlImporter.parsesTest = function parsesTest(line) {
+        let returner = xmlImporter.parseDoc(line);
+        return xmlImporter.isParserError(returner)? false: returner;
+    }
 }

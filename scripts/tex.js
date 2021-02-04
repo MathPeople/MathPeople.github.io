@@ -26,13 +26,16 @@ let qualNameIn = document.getElementById("qualName"),
     saveButton = document.getElementById("save"),
     codeOut = document.getElementById("codeOut"),
     saveAllButton = document.getElementById("saveAll"),
+    practiceTestsSpot = document.getElementById("practiceTests"),
+    newPracticeTestButton = document.getElementById("newPracticeTestButton"),
     errorOutP = document.getElementById("errorOut");
 // script global variables
 let pairMode = true, // problem/solution pair or solo mode
     qual = "", // loaded qual (also used in autosave triggering)
     problemsTags = {}, // keeps all the elements which make up the various lists of all problems (except the whole list, that is different)
     editorMetas = {}, // tex.js' version of the repository of all used metainformation
-    justJax = false; // render just jax or render all the metainformation gui elements as well
+    justJax = false, // render just jax or render all the metainformation gui elements as well
+    practiceTestConfigs = []; // holds all practice test configurations
 
 // jax configuration, short so that typing tex updates live
 jaxLoopWait = 100;
@@ -94,6 +97,8 @@ let doc = xmlImporter.newDocument(), id = "changeMe";
     }
     
     setListener(saveButton, "click", saveActiveProblem);
+    
+    setListener(newPracticeTestButton, "click", offerNewPracticeTest);
     
     setListener(saveAllButton, "click", saveAll);
 }
@@ -659,14 +664,43 @@ function noJax(line) {
 
 // this defines which strings are valid node names
 function nodeNameScreen(line) {
-    try {
-        document.createElement(line); return true;
-    } catch (e) {return false}
+    try {return document.createElement(line) !== false} catch (e) {return false}
 }
 
 // return the first instance in array of an object which has a value of value in property prop
 function getBy(array, prop, value) {
     for (let element of array) if (element[prop] == value) return element;
+}
+
+let practiceTestProto = {};
+
+// make a new practice test configuration zone
+function offerNewPracticeTest() {
+    let config = Object.create(practiceTestProto);
+    practiceTestConfigs.push(config);
+    config.div = xmlImporter.element("div", practiceTestsSpot, ["class", "practicetestconfig"]);
+    config.rawText = xmlImporter.element("textarea", config.div, ["class", "xmlin"]);
+    config.rawText.addEventListener("change", function() {config.inputChanged()});
+}
+
+// read in from rawText
+practiceTestProto.inputChanged = function inputChanged() {
+    let config = xmlImporter.parseDoc(this.rawText.value);
+    if (xmlImporter.isParserError(config)) {
+        this.div.removeAttribute("valid");
+        errorOutP.innerHTML = "";
+        xmlImporter.text(xmlImporter.serializer.serializeToString(config), xmlImporter.element("pre", errorOutP));
+        return;
+    }
+    let configName = xmlImporter.getRoot(config).nodeValue;
+    for (let c of practiceTestConfigs) if (c !== this && c.testName === configName) {
+        this.div.removeAttribute("valid");
+        errorOut("duplicated name: " + configName);
+        return;
+    }
+    this.testName = configName;
+    this.div.setAttribute("valid", "");
+    errorOutP.innerHTML = "";
 }
 
 // show the error to users even if they don't have the console open

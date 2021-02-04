@@ -75,3 +75,8 @@ details {
 td.checkboxlist {
     font-size: 70%;
 }
+
+.practicetestconfig[valid] {
+    border: 3px outset rgb(100, 255, 100);
+    border-radius: .2em;
+}
