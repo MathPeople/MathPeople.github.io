@@ -688,6 +688,10 @@ practiceTestProto.inputChanged = function inputChanged() {
     errorOutP.innerHTML = "";
 }
 
+function onPracticeTestReady() {
+    
+}
+
 // show the error to users even if they don't have the console open
 function errorOut(message) {
     errorOutP.innerHTML = message;

@@ -300,8 +300,16 @@ function tryRename() {
 // import practice test functionality
 let practiceTestsScript = xmlImporter.element("script", document.head, ["src", "/scripts/practiceTests.js"]);
 practiceTestsScript.addEventListener("load", function() {
-    console.log("loaded practice tests script");
+    // placing this call here allows the function to be overridden between loading problems.js and loading practiceTestsScript.js
+    onPracticeTestReady();
 });
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
+// do this when practice test script is ready
+function onPracticeTestReady() {
+    
+}
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
