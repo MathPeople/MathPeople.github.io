@@ -152,7 +152,7 @@ function loadProblem(doc) {
 function importAndDisplayQualProblems(qualName) {
     holdJax = true;
     xmlImporter.openTextFile(
-        "../quals/"+qualName+"/problemsList.txt",               // File to open-- the problem list for a given qual
+        "/quals/"+qualName+"/problemsList.txt",               // File to open-- the problem list for a given qual
 
         null,                                                   // Parameters to pass to the function below; here no additional
 
@@ -165,7 +165,7 @@ function importAndDisplayQualProblems(qualName) {
             let toGo = list.length;
             for (let problem of list) {
                 xmlImporter.openXMLFile(
-                    "../quals/"+qualName+"/problems/"+problem+".xml",
+                    "/quals/"+qualName+"/problems/"+problem+".xml",
                     null,
                     function(doc) {
                         loadProblem(doc);
@@ -294,6 +294,14 @@ function tryRename() {
     bunch.values[tag].alternateName.nodeValue = value;
     renameIn.value = "";
 }
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
+// import practice test functionality
+let practiceTestsScript = xmlImporter.element("script", document.head, ["src", "/scripts/practiceTests.js"]);
+practiceTestsScript.addEventListener("load", function() {
+    console.log("loaded practice tests script");
+});
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------

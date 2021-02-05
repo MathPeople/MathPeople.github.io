@@ -114,7 +114,7 @@ function importRemoteQuestions(nameOfQual, finished = function() {}) {
     // don't render them as they are loaded
     holdJax = true;
     // check list of problems to see what all needs loading
-    xmlImporter.openTextFile("../quals/"+nameOfQual+"/problemsList.txt", null, function(list) {
+    xmlImporter.openTextFile("/quals/"+nameOfQual+"/problemsList.txt", null, function(list) {
         // in case someone left a trailing newline, get rid of it
         list = list.trim();
         // in case when a problems repository is empty. in js splitting an empty string is silly so we deal with this separately
@@ -142,7 +142,7 @@ function importRemoteQuestions(nameOfQual, finished = function() {}) {
             xmlImporter.text(problem, problems[problem].tags.loadedProblems);
             // load the problem file
             xmlImporter.openXMLFile(
-                "../quals/"+nameOfQual+"/problems/"+p+".xml",
+                "/quals/"+nameOfQual+"/problems/"+p+".xml",
                 null, // passer object
                 function(problemDoc) { // callback after loaded
                     doc = problems[p].doc = problemDoc;

@@ -2,11 +2,11 @@
     <head>
         <meta charset="utf-8"/>
         <title>Browser TeX</title>
-        <link rel="stylesheet" type="text/css" href="../css/tex.css"/>
-        <script src="../scripts/xmlImporter.js"></script>
-        <script src="../scripts/jax.js"></script>
-        <script src="../scripts/problems.js"></script>
-        <script src="../scripts/tex.js" async defer></script>
+        <link rel="stylesheet" type="text/css" href="/css/tex.css"/>
+        <script src="/scripts/xmlImporter.js"></script>
+        <script src="/scripts/jax.js"></script>
+        <script src="/scripts/problems.js"></script>
+        <script src="/scripts/tex.js" async defer></script>
         <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
         <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="/icons/favicon-16x16.png">
