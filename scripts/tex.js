@@ -1,7 +1,7 @@
 /*
     First read the wiki for using this editor, in particular the parts about how problem focus works. The active problem is the problem with current focus and is the only one which can be changed through interaction with the GUI. The editor works by letting the user focus on a problem and interact with the GUI to make changes to it. The problem exists as an XML DOM. Any change directed to the problem first changes that problem's DOM and then repopulates the document HTML DOM with information from the problem XML DOM. Saving consists of saving these problem XML DOMs.
     
-    Note for future work: this script uses some functionality from problems.js, it would be a good idea to make the sharing more fully compatible. Specifically they use the problems object differently than we do (we use it just for storing doms) but we could simply and add our doms to their problems object instead of overwriting it.
+    This file requires problems.js to be loaded because it builds off some of the infrastructure there. Mostly this is xpath searching and practice test generation which is shared.
 */
 
 // editor DOM elements
@@ -32,8 +32,6 @@ let qualNameIn = document.getElementById("qualName"),
 // script global variables
 let pairMode = true, // problem/solution pair or solo mode
     qual = "", // loaded qual (also used in autosave triggering)
-    problemsTags = {}, // keeps all the elements which make up the various lists of all problems (except the whole list, that is different)
-    editorMetas = {}, // tex.js' version of the repository of all used metainformation
     justJax = false, // render just jax or render all the metainformation gui elements as well
     practiceTestConfigs = []; // holds all practice test configurations
 
@@ -136,18 +134,18 @@ function importRemoteQuestions(nameOfQual, finished = function() {}) {
                     continue;
                 } else errorOut("duplicate in problems list: " + problem);
             }
-            problems[problem] = undefined; // so we know that we have encountered this problem even before the problem file finishes loading
-            problemsTags[problem] = {
+            problems[problem] = {}; // so we know that we have encountered this problem even before the problem file finishes loading
+            problems[problem].tags = {
                 idList: xmlImporter.element("option", idList, ["value", problem]),
                 loadedProblems: xmlImporter.element("option", loadedProblems, ["value", problem])
             };
-            xmlImporter.text(problem, problemsTags[problem].loadedProblems);
+            xmlImporter.text(problem, problems[problem].tags.loadedProblems);
             // load the problem file
             xmlImporter.openXMLFile(
                 "../quals/"+nameOfQual+"/problems/"+p+".xml",
                 null, // passer object
                 function(problemDoc) { // callback after loaded
-                    doc = problems[p] = problemDoc;
+                    doc = problems[p].doc = problemDoc;
                     convertDoc(); // normally this does nothing but here we convert files if we need to
                     outputFromDoc(); // mainly do this so we populate the metainformation, remember jax is halted for now so it isn't rendered
                     if (--numLines === 0) {// now every problem has been loaded
@@ -176,7 +174,7 @@ function initializeLocal() {
     let lines = list.split(" ");
     for (let problem of lines) if (problem !== "" && problem !== "changeMe") {
         if (problem in problems) errorOut("duplicate in problems list: " + problem);
-        doc = problems[problem] = xmlImporter.trim(xmlImporter.parseDoc(Store.fetch("local " + problem)));
+        doc = problems[problem].doc = xmlImporter.trim(xmlImporter.parseDoc(Store.fetch("local " + problem)));
         convertDoc();
         outputFromDoc();
         typeset(texLiveOut);
@@ -227,15 +225,14 @@ function handleIdChange() {
         let oldID = id;
         id = idInput.value;
         if (id in problems) {
-            doc = problems[id];
+            doc = problems[id].doc;
             outputFromDoc();
         } else {
-            delete (problems[oldID]);
-            if (problemsTags[oldID]) {// change the various lists of ids to have this problem selected
-                problemsTags[oldID].idList.parentElement.removeChild(problemsTags[oldID].idList);
-                problemsTags[oldID].loadedProblems.parentElement.removeChild(problemsTags[oldID].loadedProblems);
-                delete problemsTags[oldID];
+            if (problems[oldID].tags) {// change the various lists of ids to have this problem selected
+                problems[oldID].tags.idList.parentElement.removeChild(problems[oldID].tags.idList);
+                problems[oldID].tags.loadedProblems.parentElement.removeChild(problems[oldID].tags.loadedProblems);
             }
+            delete problems[oldID];
             if (qual == "local") Store.erase("local " + oldID);
             resetDoc();
         }
@@ -267,11 +264,11 @@ function hardRename() {
             case 2:
                 // rename meta itself
                 let oldMeta = lines[0], newMeta = lines[1];
-                if (!(oldMeta in editorMetas)) return inputMessage(renameMetainformation, "cannot find " + oldMeta);
-                if (newMeta in editorMetas) return inputMessage(renameMetainformation, "naming conflict");
+                if (!(oldMeta in metas)) return inputMessage(renameMetainformation, "cannot find " + oldMeta);
+                if (newMeta in metas) return inputMessage(renameMetainformation, "naming conflict");
                 // rename meta in problem files
                 for (let problem in problems) {
-                    let doc = problems[problem], oldMetaNode = doc.querySelector(oldMeta);
+                    let doc = problems[problem].doc, oldMetaNode = doc.querySelector(oldMeta);
                     if (oldMetaNode) {
                         let newMetanode = xmlImporter.elementDoc(doc, newMeta);
                         for (let child of oldMetaNode.childNodes) newMetanode.appendChild(child.cloneNode(true));
@@ -279,26 +276,26 @@ function hardRename() {
                         oldMetaNode.parentElement.replaceChild(newMetanode, oldMetaNode);
                     }
                 }
-                // rename in editorMetas
-                editorMetas[newMeta] = editorMetas[oldMeta];
-                delete editorMetas[oldMeta];
-                editorMetas[newMeta].nameText.nodeValue = newMeta;
+                // rename in metas
+                metas[newMeta] = metas[oldMeta];
+                delete metas[oldMeta];
+                metas[newMeta].nameText.nodeValue = newMeta;
                 resetDoc();
                 renameMetainformation.value = "";
                 inputMessage(renameMetainformation, "successfully renamed " + oldMeta + " to " + newMeta);
             break; case 3:
                 // rename tag
                 let meta = lines[0], oldTag = lines[1], newTag = lines[2];
-                if (!(meta in editorMetas)) return inputMessage("cannot find " + meta);
-                if (editorMetas[meta].metaType == "scale") return inputMessage("scale metainformation has no tags to rename");
-                let metaBunch = editorMetas[meta];
+                if (!(meta in metas)) return inputMessage("cannot find " + meta);
+                if (metas[meta].metaType == "scale") return inputMessage("scale metainformation has no tags to rename");
+                let metaBunch = metas[meta];
                 if (!(oldTag in metaBunch.values)) return inputMessage("cannot find " + oldTag + " in " + meta);
                 let oldBunch = metaBunch.values[oldTag];
                 if (newTag in metaBunch.values) return inputMessage("naming conflict");
                 let newDefault = oldTag == metaBunch.defaultValue? newTag: metaBunch.defaultValue;
                 // rename tag in problem files
                 for (let problem in problems) {
-                    let doc = problems[problem], metaNode = doc.querySelector(meta);
+                    let doc = problems[problem].doc, metaNode = doc.querySelector(meta);
                     if (metaNode) {
                         if (metaBunch.metaType == "radio") metaNode.setAttribute("radio", newDefault);
                         let oldTagNode = doc.querySelector(meta + " " + oldTag);
@@ -310,7 +307,7 @@ function hardRename() {
                         }
                     }
                 }
-                // rename in editorMetas
+                // rename in metas
                 let newBunch;
                 switch (metaBunch.metaType) {
                     case "checkbox":
@@ -339,8 +336,8 @@ function hardRename() {
 function softRename() {
     let line = renameSoftMetainformation.value, lines = line.split(" ");
     let meta = lines[0], tag = lines[1];
-    if (!editorMetas[meta]) return inputMessage(renameSoftMetainformation, "cannot find metainformation " + meta);
-    let bunch = editorMetas[meta];
+    if (!metas[meta]) return inputMessage(renameSoftMetainformation, "cannot find metainformation " + meta);
+    let bunch = metas[meta];
     if (!bunch.values || !(tag in bunch.values)) return inputMessage(renameSoftMetainformation, "cannot find " + tag + " in " + meta);
     let value = line.substring(meta.length + tag.length + 2);
     // just a little fun
@@ -358,7 +355,7 @@ function tryNewMetatypeIn() {
 }
 
 function newCheckbox(metaName, value) {
-    let meta = editorMetas[metaName];
+    let meta = metas[metaName];
     if (meta.values[value]) return;
     let bunch = meta.values[value] = {};
     bunch.div = xmlImporter.element("div");
@@ -372,7 +369,7 @@ function newCheckbox(metaName, value) {
 }
 
 function newRadio(metaName, value) {
-    let meta = editorMetas[metaName];
+    let meta = metas[metaName];
     if (meta.values[value]) return;
     let bunch = meta.values[value] = {};
     bunch.div = xmlImporter.element("div");
@@ -388,8 +385,8 @@ function newRadio(metaName, value) {
 // only populates editor's metainformation gui
 function ensureMetatype(metaName, type = "checkbox", defaultValue) {
     type = type.toLowerCase();
-    if (editorMetas[metaName]) return;
-    let meta = editorMetas[metaName] = {values: {}, metaType: type, div: xmlImporter.element("div", putMetasHere, ["class", "meta"])};
+    if (metas[metaName]) return;
+    let meta = metas[metaName] = {values: {}, metaType: type, div: xmlImporter.element("div", putMetasHere, ["class", "meta"])};
     meta.nameText = xmlImporter.text(metaName, xmlImporter.element("h5", meta.div));
     switch (type) {
         case "checkbox":
@@ -431,8 +428,8 @@ function resetDoc(e) {
     justJax = e && (e.target == texProblem || e.target == texSolution);
     while (doc.firstChild) doc.removeChild(doc.firstChild);
     let problem = xmlImporter.elementDoc(doc, "problem", xmlImporter.elementDoc(doc, id, doc), ["tex", texProblem.value]);
-    for (let metaName in editorMetas) {
-        let meta = editorMetas[metaName];
+    for (let metaName in metas) {
+        let meta = metas[metaName];
         switch (meta.metaType) {
             case "checkbox":
                 let metaNode = xmlImporter.elementDoc(doc, metaName, problem);
@@ -454,19 +451,19 @@ resetDoc();
 // populate values in interface to match what is present in doc
 function outputFromDoc() {
     idInput.value = id = xmlImporter.getRoot(doc).nodeName;
-    // update problemsTags
-    if (id != "changeMe") problems[id] = doc;
-    if (!(id in problemsTags) && id != "changeMe") {
-        problemsTags[id] = {
+    // update problems tags
+    if (id !== "changeMe") problems[id] = {doc: doc};
+    if (id !== "changeMe" && !("tags" in problems[id])) {
+        problems[id].tags = {
             idList: xmlImporter.element("option", idList, ["value", id]),
             loadedProblems: xmlImporter.element("option", loadedProblems, ["value", id])
         };
-        xmlImporter.text(id, problemsTags[id].loadedProblems);
+        xmlImporter.text(id, problems[id].tags.loadedProblems);
     }
     {
         // set loadedProblems <select> to this problem's <option>
         let i = 0;
-        if (id != "changeMe") while (loadedProblems.childNodes[i] != problemsTags[id].loadedProblems) ++i;
+        if (id != "changeMe") while (loadedProblems.childNodes[i] != problems[id].tags.loadedProblems) ++i;
         loadedProblems.selectedIndex = i;
     }
     let problem = doc.querySelector("problem"), solution = doc.querySelector("solution");
@@ -488,14 +485,14 @@ function outputFromDoc() {
     }
     if (!holdJax) typeset(texLiveOut);
     // reset metainformation
-    for (let meta in editorMetas) {
-        switch (editorMetas[meta].metaType) {
+    for (let meta in metas) {
+        switch (metas[meta].metaType) {
             case "checkbox":
-                for (let value in editorMetas[meta].values) editorMetas[meta].values[value].input.checked = false;
+                for (let value in metas[meta].values) metas[meta].values[value].input.checked = false;
             break; case "radio":
-                editorMetas[meta].values[editorMetas[meta].defaultValue].input.checked = true;
+                metas[meta].values[metas[meta].defaultValue].input.checked = true;
             break; case "scale":
-                editorMetas[meta].input.value = 0;
+                metas[meta].input.value = 0;
         }
     }
     // handle metainformation
@@ -504,17 +501,17 @@ function outputFromDoc() {
             ensureMetatype(metaNode.nodeName, "radio", metaNode.getAttribute("radio"));
             let value = metaNode.firstChild;
             if (value) {
-                if (!(value.nodeName in editorMetas[metaNode.nodeName].values)) newRadio(metaNode.nodeName, value.nodeName);
-                editorMetas[metaNode.nodeName].values[value.nodeName].input.checked = true;
+                if (!(value.nodeName in metas[metaNode.nodeName].values)) newRadio(metaNode.nodeName, value.nodeName);
+                metas[metaNode.nodeName].values[value.nodeName].input.checked = true;
             }
         } else if (metaNode.hasAttribute("scale")) {
             ensureMetatype(metaNode.nodeName, "scale", metaNode.getAttribute("scale"));
-            editorMetas[metaNode.nodeName].input.value = metaNode.getAttribute("scale");
+            metas[metaNode.nodeName].input.value = metaNode.getAttribute("scale");
         } else {
             ensureMetatype(metaNode.nodeName, "checkbox");
             for (let valueNode of metaNode.childNodes) {
-                if (!(valueNode.nodeName in editorMetas[metaNode.nodeName].values)) newCheckbox(metaNode.nodeName, valueNode.nodeName);
-                editorMetas[metaNode.nodeName].values[valueNode.nodeName].input.checked = true;
+                if (!(valueNode.nodeName in metas[metaNode.nodeName].values)) newCheckbox(metaNode.nodeName, valueNode.nodeName);
+                metas[metaNode.nodeName].values[valueNode.nodeName].input.checked = true;
             }
         }
     }
@@ -535,20 +532,20 @@ function fixWholeList() {
     xmlImporter.text("🔍", xmlImporter.element("th", header));
     xmlImporter.text("problem id", xmlImporter.element("th", header));
     let showMetas = [];
-    for (let meta in editorMetas) if (!editorMetas[meta].hide) {
+    for (let meta in metas) if (!metas[meta].hide) {
         showMetas.push(meta);
         xmlImporter.text(meta, xmlImporter.element("th", header));
     }
     let rows = [];
-    let matches = getProblemsFromSelector2(practiceSearch.value);
+    let matches = getProblemsFromSelector(practiceSearch.value);
     for (let problem in problems) {
         let row = xmlImporter.element("tr", null);
         rows.push(row);
         xmlImporter.text((problem in matches)? "✓": "X", xmlImporter.element("td", row)); // the X here is not the unicode fancy X so that it shows up as different even if the user doesn't have a powerful-enough font for unicode check mark and fancy X
         xmlImporter.text(problem, xmlImporter.element("td", row));
         for (let meta of showMetas) {
-            let metaNode = problems[problem].querySelector("problem > " + meta);
-            switch (editorMetas[meta].metaType) {
+            let metaNode = problems[problem].doc.querySelector("problem > " + meta);
+            switch (metas[meta].metaType) {
                 case "checkbox":
                     let td = xmlImporter.element("td", row, ["class", "checkboxlist"]);
                     if (metaNode) for (let child of metaNode.childNodes) {
@@ -557,7 +554,7 @@ function fixWholeList() {
                     }
                     if (td.lastChild) td.removeChild(td.lastChild);
                 break; case "radio":
-                    xmlImporter.text(metaNode? metaNode.firstChild.nodeName: editorMetas[meta].defaultValue, xmlImporter.element("td", row));
+                    xmlImporter.text(metaNode? metaNode.firstChild.nodeName: metas[meta].defaultValue, xmlImporter.element("td", row));
                 break; case "scale":
                     xmlImporter.text(metaNode? metaNode.getAttribute("scale"): 0, xmlImporter.element("td", row));
                 break;
@@ -574,20 +571,8 @@ function fixWholeList() {
     for (let row of rows) wholeListHere.appendChild(row);
 }
 
-// this should really be unnecessary because it is a copy (almost) of problems.js' function but these two scripts (problems.js and tex.js) are not fully intercompatible so here is our version:
-function getProblemsFromSelector2(selector) {
-    let returner = {};
-    for (let id in problems) {
-        try {
-            if (problems[id].evaluate(selector, problems[id], null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue) 
-                returner[id] = undefined;
-        } catch (e) {}
-    }
-    return returner;
-}
-
 function toggleColumnListener() {
-    let meta = editorMetas[toggleColumn.value];
+    let meta = metas[toggleColumn.value];
     if (meta) {
         meta.hide = !meta.hide;
         fixWholeList();
@@ -730,8 +715,8 @@ function saveAll() {
         saveAll();
     });
     let bigFolder = zip.folder(qual), folder = bigFolder.folder("problems");
-    for (let problem in problems) if (problem != "changeMe") folder.file(problem+".xml", xmlImporter.nodeToString(problems[problem]));
-    bigFolder.file("problemsList.txt", allProps(problems));
+    for (let problem in problems) if (problem != "changeMe") folder.file(problem+".xml", xmlImporter.nodeToString(problems[problem].doc));
+    bigFolder.file("problemsList.txt", allProps(problems, "doc"));
     bigFolder.generateAsync({type:"blob"}).then(function (file) {
         // rename file from some machine name to "problems.zip"
         file = new File([file.slice(0, file.size, "application/zip")], "problems.zip", {type: "application/zip"});
@@ -755,9 +740,10 @@ function clearLocalQual() {
     window.location.reload(true);
 }
 
-function allProps(object) {
+function allProps(object, accessor) {
     let props = [];
-    for (let prop in object) props.push(prop);
+    if (typeof accessor !== "undefined") for (let prop in object) props.push(prop[accessor]);
+    else for (let prop in object) props.push(prop);
     if (props.length == 0) return "";
     props.sort();
     let line = "";

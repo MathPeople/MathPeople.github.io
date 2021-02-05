@@ -5,7 +5,6 @@
         <link rel="stylesheet" type="text/css" href="../css/tex.css"/>
         <script src="../scripts/xmlImporter.js"></script>
         <script src="../scripts/jax.js"></script>
-        <link rel="stylesheet" type="text/css" href="../css/xmlViewer.css"/>
         <script src="../scripts/problems.js"></script>
         <script src="../scripts/tex.js" async defer></script>
         <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon.png">
