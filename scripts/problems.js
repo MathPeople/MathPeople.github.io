@@ -256,11 +256,11 @@ function showAllProblems() {
 
 //----------------------------------------------------------------------------------------------------------------
 //
-function getProblemsFromSelector(selector) {
+function getProblemsFromSelector(selector, theseProblems) {
     let returner = {};
-    for (let id in problems) {
+    for (let id in theseProblems) {
         try {
-            if (problems[id].doc.evaluate(selector, problems[id].doc, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue) 
+            if (theseProblems[id].doc.evaluate(selector, theseProblems[id].doc, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue) 
                 returner[id] = undefined;
         } catch (e) {}
     }
@@ -271,7 +271,7 @@ function getProblemsFromSelector(selector) {
 //----------------------------------------------------------------------------------------------------------------
 // search problems for any node which matches the selector, show if one is found else hide
 function updateHides() {
-    let shows = getProblemsFromSelector(selectorIn.value);
+    let shows = getProblemsFromSelector(selectorIn.value, problems);
     for (let id in problems) {
         if (id in shows) problems[id].div.removeAttribute("hide");
         else problems[id].div.setAttribute("hide", "");

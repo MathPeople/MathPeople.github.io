@@ -1,0 +1,8 @@
+.questionnumber {
+    font-weight: bold;
+    margin: 1em;
+}
+
+.questionnumber::after {
+    content: ")";
+}

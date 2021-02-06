@@ -16,6 +16,9 @@ textarea {
     min-height: 5em;
     max-height: 80vh;
     width: 100%;
+    -moz-tab-size: 3;
+    -o-tab-size: 5;
+    tab-size: 3;
 }
 
 #texLiveOut {
@@ -76,7 +79,20 @@ td.checkboxlist {
     font-size: 70%;
 }
 
-.practicetestconfig[valid] {
-    border: 3px outset rgb(100, 255, 100);
-    border-radius: .2em;
+.practicetestconfig .errorout:empty {
+    display: none;
+}
+
+.practicetestconfig .errorout {
+    background: rgb(255, 170, 170);
+    border: 3px outset red;
+    border-radius: 8px;
+}
+
+.practicetestconfig {
+    overflow: hidden;
+    margin: .5em;
+    padding: .3em;
+    border: 1px solid lightgray;
+    border-radius: .3em;
 }

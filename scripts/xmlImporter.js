@@ -121,6 +121,20 @@ xmlImporter.rickRollLink = function rickRollLink(a) {
         document.body.removeChild(rr);
     });
 }
+{
+    let tabber = function(e) {
+        if (e.key == 'Tab') {
+            e.preventDefault();
+            let start = this.selectionStart, end = this.selectionEnd;
+            e.target.value = e.target.value.substring(0, start)+"\t"+e.target.value.substring(end);
+            e.target.selectionStart = e.target.selectionEnd = start + 1;
+        }
+    }
+    xmlImporter.makeTabbable = function makeTabbable(element) {
+        element.addEventListener('keydown', tabber);
+    }
+
+}
 
 // check if a string successfully parses to an xml document
 {

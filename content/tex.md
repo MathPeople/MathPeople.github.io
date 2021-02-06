@@ -65,7 +65,7 @@
         <div id="texLiveOut"><p>Rendered TeX will go here</p></div>
         <button type="button" id="save">Save</button>
         <div><textarea id="codeOut" spellcheck="false">Formatted code will go here</textarea></div>
-        <details id="practiceTests">
+        <details id="practiceTests" open>
             <summary>Practice Tests</summary>
             <button id="newPracticeTestButton">New Practice Test Configuration</button>
         </details>

@@ -92,6 +92,7 @@ let doc = xmlImporter.newDocument(), id = "changeMe";
     for (let textarea of document.getElementsByTagName("textarea")) {
         setListener(textarea, "input", fixTextHeight);
         setListener(textarea, "change", fixTextHeight);
+        xmlImporter.makeTabbable(textarea);
     }
     
     setListener(saveButton, "click", saveActiveProblem);
@@ -174,6 +175,7 @@ function initializeLocal() {
     let lines = list.split(" ");
     for (let problem of lines) if (problem !== "" && problem !== "changeMe") {
         if (problem in problems) errorOut("duplicate in problems list: " + problem);
+        problems[problem] = {};
         doc = problems[problem].doc = xmlImporter.trim(xmlImporter.parseDoc(Store.fetch("local " + problem)));
         convertDoc();
         outputFromDoc();
@@ -537,7 +539,7 @@ function fixWholeList() {
         xmlImporter.text(meta, xmlImporter.element("th", header));
     }
     let rows = [];
-    let matches = getProblemsFromSelector(practiceSearch.value);
+    let matches = getProblemsFromSelector(practiceSearch.value, problems);
     for (let problem in problems) {
         let row = xmlImporter.element("tr", null);
         rows.push(row);
@@ -665,31 +667,56 @@ function offerNewPracticeTest() {
     practiceTestConfigs.push(config);
     config.div = xmlImporter.element("div", practiceTestsSpot, ["class", "practicetestconfig"]);
     config.rawText = xmlImporter.element("textarea", config.div, ["class", "xmlin"]);
-    config.rawText.addEventListener("change", function() {config.inputChanged()});
+    xmlImporter.makeTabbable(config.rawText);
+    config.rawText.addEventListener("input", fixTextHeight);
+    config.rawText.addEventListener("input", function() {
+        config.compileButton.removeAttribute("hide");
+        config.makeTestButton.setAttribute("hide", "");
+        config.testOut.setAttribute("hide", "");
+    });
+    config.compileButton = xmlImporter.element("button", config.div);
+    xmlImporter.text("compile", config.compileButton);
+    config.compileButton.addEventListener("click", function() {config.compile()});
+    config.makeTestButton = xmlImporter.element("button", config.div, ["hide", ""]);
+    xmlImporter.text("make test", config.makeTestButton);
+    config.makeTestButton.addEventListener("click", function() {config.makeTest()});
+    config.errorOutPlace = xmlImporter.element("pre", config.div, ["class", "errorout"]);
+    config.testOut = xmlImporter.element("details", config.div, ["class", "testout", "hide", "", "open", ""]);
+    config.testNameNode = xmlImporter.text("", xmlImporter.element("summary", config.testOut));
+    config.test = xmlImporter.element("p", config.testOut);
+    xmlImporter.text("test goes here", config.test);
+    return config;
 }
 
 // read in from rawText
-practiceTestProto.inputChanged = function inputChanged() {
-    let config = xmlImporter.parseDoc(this.rawText.value);
-    if (xmlImporter.isParserError(config)) {
-        this.div.removeAttribute("valid");
-        errorOutP.innerHTML = "";
-        xmlImporter.text(xmlImporter.serializer.serializeToString(config), xmlImporter.element("pre", errorOutP));
-        return;
-    }
-    let configName = xmlImporter.getRoot(config).nodeValue;
-    for (let c of practiceTestConfigs) if (c !== this && c.testName === configName) {
-        this.div.removeAttribute("valid");
-        errorOut("duplicated name: " + configName);
-        return;
-    }
-    this.testName = configName;
-    this.div.setAttribute("valid", "");
-    errorOutP.innerHTML = "";
+practiceTestProto.compile = function compile() {
+    this.compileButton.setAttribute("hide", "");
+    this.doc = xmlImporter.parseDoc(this.rawText.value);
+    if (xmlImporter.isParserError(this.doc)) this.errorOut(xmlImporter.serializer.serializeToString(this.doc));
+    else this.errorOut("");
+    let root = xmlImporter.getRoot(this.doc);
+    this.name = root.hasAttribute("displayName")? root.getAttribute("displayName"): root.nodeName;
+    for (let c of practiceTestConfigs) if (c !== this && c.name === this.name) return this.errorOut("duplicated test name: " + this.name);
+    this.makeTest();
+}
+
+practiceTestProto.errorOut = function errorOut(message) {
+    this.errorOutPlace.innerHTML = message;
+    if (message === "") this.makeTestButton.removeAttribute("hide");
+    else this.makeTestButton.setAttribute("hide", "");
+}
+
+practiceTestProto.makeTest = function makeTest() {
+    let oldTest = this.test;
+    this.test = makePracticeTest(problems, this.doc);
+    this.testOut.removeAttribute("hide");
+    this.testNameNode.nodeValue = this.name;
+    this.testOut.replaceChild(this.test, oldTest);
+    typeset(this.testOut);
 }
 
 function onPracticeTestReady() {
-    
+    // this is one place to automatically load a practice test, but since this is the editor and we don't know what problems will be loaded automatic loading may not be a good idea
 }
 
 // show the error to users even if they don't have the console open
