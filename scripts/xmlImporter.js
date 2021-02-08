@@ -51,7 +51,7 @@ xmlImporter.openTextFile = function openTextFile(location, pass, finished, faile
 // descend from a document to its root node if necessary
 xmlImporter.getRoot = function getRoot(xml) {
     if (xml.nodeType == 1) return xml;
-    if (xml.nodeType == 9) return xml.firstChild;
+    if (xml.nodeType == 9) return xml.firstElementChild;
     throw new Error("cannot find root node of " + xml.nodeName);
 }
 
@@ -110,6 +110,23 @@ xmlImporter.nodeToStringOpeningTagInsides = function nodeToStringOpeningTagInsid
     let line = xmlImporter.serializer.serializeToString(clone);
     return line.substring(1, line.length - (clone.nodeName.length + 5));
 }
+
+// node to string but for display inside an element
+xmlImporter.nodeToInnerHTML = function nodeToInnerHTML(node, highlight) {
+    if (node.nodeType === 3) return "<span class=\"prenode\">"+node.nodeValue+"</span>";
+    if (node.nodeType === 9) return xmlImporter.nodeToInnerHTML(xmlImporter.getRoot(node), highlight);
+    let line = "<span class=\"prenode\"" + (node === highlight? " highlight=\"\"": "") + ">";
+    line += "&lt;"+(xmlImporter.nodeToStringOpeningTagInsides(node).replaceAll(/</g, "&lt;").replaceAll(/>/g, "&gt;"));
+    if (node.hasChildNodes()) {
+        line += "&gt;";
+        for (let child of node.childNodes) line += xmlImporter.nodeToInnerHTML(child, highlight);
+        line += "&lt;/"+node.nodeName+"&gt;";
+    } else line += "/&gt;";
+    line += "</span>";
+    return line;
+}
+
+
 
 // very important functionality
 xmlImporter.rickRollLink = function rickRollLink(a) {

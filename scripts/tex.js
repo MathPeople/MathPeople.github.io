@@ -680,11 +680,10 @@ function offerNewPracticeTest() {
     config.makeTestButton = xmlImporter.element("button", config.div, ["hide", ""]);
     xmlImporter.text("make test", config.makeTestButton);
     config.makeTestButton.addEventListener("click", function() {config.makeTest()});
-    config.errorOutPlace = xmlImporter.element("pre", config.div, ["class", "errorout"]);
+    config.errorOutPlace = xmlImporter.element("div", config.div, ["class", "errorout"]);
     config.testOut = xmlImporter.element("details", config.div, ["class", "testout", "hide", "", "open", ""]);
     config.testNameNode = xmlImporter.text("", xmlImporter.element("summary", config.testOut));
-    config.test = xmlImporter.element("p", config.testOut);
-    xmlImporter.text("test goes here", config.test);
+    xmlImporter.text("test goes here", config.test = xmlImporter.element("p", config.testOut));
     return config;
 }
 
@@ -692,7 +691,7 @@ function offerNewPracticeTest() {
 practiceTestProto.compile = function compile() {
     this.compileButton.setAttribute("hide", "");
     this.doc = xmlImporter.parseDoc(this.rawText.value);
-    if (xmlImporter.isParserError(this.doc)) this.errorOut(xmlImporter.serializer.serializeToString(this.doc));
+    if (xmlImporter.isParserError(this.doc)) return this.errorOut("<h4>Parser error, not a valid XML file. The structure of these parser errors varies from browser to browser, see below for the specific error.</h4><pre class='errorout'>"+xmlImporter.nodeToInnerHTML(this.doc)+"</pre>");
     else this.errorOut("");
     let root = xmlImporter.getRoot(this.doc);
     this.name = root.hasAttribute("displayName")? root.getAttribute("displayName"): root.nodeName;
@@ -702,17 +701,34 @@ practiceTestProto.compile = function compile() {
 
 practiceTestProto.errorOut = function errorOut(message) {
     this.errorOutPlace.innerHTML = message;
+    this.testOut.setAttribute("hide", "");
     if (message === "") this.makeTestButton.removeAttribute("hide");
     else this.makeTestButton.setAttribute("hide", "");
 }
 
+var putTestCountHere;
+
 practiceTestProto.makeTest = function makeTest() {
     let oldTest = this.test;
-    this.test = makePracticeTest(problems, this.doc);
-    this.testOut.removeAttribute("hide");
     this.testNameNode.nodeValue = this.name;
-    this.testOut.replaceChild(this.test, oldTest);
-    typeset(this.testOut);
+    this.errorOut("");
+    let countSpot = xmlImporter.element("p", this.div);
+    putTestCountHere = xmlImporter.text("tries left", countSpot);
+    // timeout is to remove generator from the main thread
+    let me = this;
+    makePracticeTest(problems, me.doc, function(result, success) {
+        if (success) {
+            me.test = result;
+            me.testOut.replaceChild(me.test, oldTest);
+            me.errorOut("");
+            me.testOut.removeAttribute("hide");
+        } else {
+            me.errorOut(result);
+        }
+        typeset(me.testOut);
+        putTestCountHere = undefined;
+        me.div.removeChild(countSpot);
+    }, 100);
 }
 
 function onPracticeTestReady() {

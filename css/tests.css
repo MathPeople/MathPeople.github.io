@@ -6,3 +6,16 @@
 .questionnumber::after {
     content: ")";
 }
+
+.prenode {
+    display: block;
+}
+
+.prenode .prenode {
+    margin: 0 2ch;
+}
+
+.prenode [highlight] {
+    background: yellow;
+    border: 2px inset goldenrod;
+}

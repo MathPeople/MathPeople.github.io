@@ -79,6 +79,10 @@ td.checkboxlist {
     font-size: 70%;
 }
 
+.errorout {
+    padding: .6em;
+}
+
 .practicetestconfig .errorout:empty {
     display: none;
 }
