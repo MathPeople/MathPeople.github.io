@@ -104,10 +104,19 @@ let doc = xmlImporter.newDocument(), id = "changeMe";
 
 // for auto-resizing textareas
 function fixTextHeight(event) {
+    // stash scroll location to avoid jumps
+    let scrollLeft = window.pageXOffset || (document.documentElement || document.body.parentNode || document.body).scrollLeft;
+    
+    let scrollTop = window.pageYOffset || (document.documentElement || document.body.parentNode || document.body).scrollTop;
+    
+    // resize textarea
     event = event.target;
     while (event.nodeName.toLowerCase() != "textarea") event = event.parentNode;
     event.style.height = "auto";
-    event.style.height = (event.scrollHeight)+"px";
+    event.style.height = event.scrollHeight+"px";
+    
+    // reset scroll location
+    window.scrollTo(scrollLeft, scrollTop);
 }
 
 // load all problems from a qual repository
