@@ -1,5 +1,6 @@
 /*
-xmlImporter handles the various parts of interacting with raw xml files
+    xmlImporter handles the various parts of interacting with raw xml files.
+    Because the DOM itself is so closely related, xmlIMporter also handles direct interaction with the DOM.
 */
 
 var xmlImporter = {};
@@ -138,6 +139,8 @@ xmlImporter.rickRollLink = function rickRollLink(a) {
         document.body.removeChild(rr);
     });
 }
+
+// Makes a textarea tabbable instead of the default behavior which is to tab out of elements. This is taken from a stackexchange post.
 {
     let tabber = function(e) {
         if (e.key == 'Tab') {

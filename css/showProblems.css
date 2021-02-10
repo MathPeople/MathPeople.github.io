@@ -71,6 +71,12 @@ input[type="text"] {
     font-size: 80%;
 }
 
+[default] {
+    border: 1px dashed forestgreen;
+    border-radius: 4px;
+    padding: .1em;
+}
+
 [hide] {
     display: none !important;
 }

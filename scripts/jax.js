@@ -49,11 +49,14 @@ function checkTypesetting() {
     doTypeset();
 }
 
+// cooldown between typeset calls, longer means less lag but also slower typesetting
+let typesetCooldown = 100;
+
 // typeset one element then wait and try again
 function doTypeset() {
-    if (typesetThese.length == 0) return startJaxLoop();
+    if (typesetThese.length == 0) {return startJaxLoop();}
     MathJax.typeset([typesetThese.shift()]);
-    window.setTimeout(doTypeset, 100);
+    window.setTimeout(doTypeset, typesetCooldown);
 }
 
 

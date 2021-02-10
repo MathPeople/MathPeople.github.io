@@ -11,7 +11,7 @@
         - Typeset test
     
     Many of the generator processes are recursive.
-    You can probably figure out what is happening at each stage of generation if you look through the error tracing.
+    You can find out what is happening at each stage of generation if you look through the error tracing.
 */
 // test display stylesheet
 xmlImporter.element("link", document.head, ["rel", "stylesheet", "type", "text/css", "href", "/css/tests.css"]);
