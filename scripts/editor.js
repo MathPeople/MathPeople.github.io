@@ -207,28 +207,33 @@ jaxLoopWait = 200;
                     meta.div.setAttribute("checkbox", "");
                     meta.newButtonIn = xmlImporter.element("input", meta.div, ["type", "text", "placeholder", "new option"]);
                     meta.newButtonIn.addEventListener("change", function(test) {
-                        /*test = test.target.value;
-                        if (!xmlImporter.nodeNameScreen(test)) return inputMessage(meta.newButtonIn, "invalid");
-                        for (let value in meta.values) if (value == test) return inputMessage(meta.newButtonIn, "already an option");
-                        newCheckbox(metaName, test);
+                        test = test.target.value;
+                        if (!xmlImporter.nodeNameScreen(test)) return xmlImporter.inputMessage(meta.newButtonIn, "invalid");
+                        for (let value in meta.values) if (value == test) return xmlImporter.inputMessage(meta.newButtonIn, "already an option");
                         meta.newButtonIn.value = "";
-                        meta.values[test].input.checked = true;
-                        resetDoc();*/
-                        console.log("new checkbox button");
+                        let doc = problems[activeProblem].doc;
+                        xmlImporter.elementDoc(
+                            doc,
+                            test,
+                            doc.querySelector("problem "+metaType)
+                        );
+                        loadProblem(doc);
+                        afterProblemsAreSet();
                     });
                 break; case "radio":
                     meta.div.setAttribute("radio", "");
                     //newRadio(metaName, defaultValue);
                     meta.newButtonIn = xmlImporter.element("input", meta.div, ["type", "text", "placeholder", "new option"]);
                     meta.newButtonIn.addEventListener("change", function(test) {
-                        /*test = test.target.value;
-                        if (!nodeNameScreen(test)) return inputMessage(meta.newButtonIn, "invalid");
-                        for (let value in meta.values) if (value == test) return inputMessage(meta.newButtonIn, "already an option");
-                        newRadio(metaName, test);
+                        test = test.target.value;
+                        if (!xmlImporter.nodeNameScreen(test)) return xmlImporter.inputMessage(meta.newButtonIn, "invalid");
+                        for (let value in meta.values) if (value == test) return xmlImporter.inputMessage(meta.newButtonIn, "already an option");
                         meta.newButtonIn.value = "";
-                        meta.values[test].input.checked = true;
-                        resetDoc();*/
-                        console.log("new radio button");
+                        let doc = problems[activeProblem].doc, metaNode = doc.querySelector(metaType);
+                        if (!metaNode) metaNode = xmlImporter.elementDoc(doc, metaNode, doc.querySelector("problem"), ["radio", meta.defaultValue]);
+                        xmlImporter.elementDoc(doc, test, metaNode);
+                        loadProblem(doc);
+                        afterProblemsAreSet();
                     });
                     // add the default value
                     let value = meta.defaultValue;
@@ -256,7 +261,14 @@ jaxLoopWait = 200;
                     meta.div.setAttribute("scale", "");
                     meta.input = xmlImporter.element("input", meta.div, ["type", "number", "step", "any"]);
                     meta.input.value = 0;
-                    meta.input.addEventListener("change", resetDoc);
+                    meta.input.addEventListener("change", function() {
+                        let doc = problems[activeProblem].doc, metaNode = doc.querySelector(metaType);
+                        if (!metaNode) metaNode = xmlImporter.elementDoc(doc, metaType, doc.querySelector("problem"));
+                        metaNode.setAttribute("scale", meta.input.value);
+                        if (meta.input.value == 0) metaNode.parentElement.removeChild(metaNode);
+                        loadProblem(doc);
+                        afterProblemsAreSet();
+                    });
             }
         }
         for (let value in values) {
