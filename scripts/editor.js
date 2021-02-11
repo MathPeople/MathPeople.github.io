@@ -137,7 +137,17 @@ let editor = document.getElementById("editor"),
         editor,
         "saveAll",
         saveAll
-    ), errorOutP = xmlImporter.element("p", editor, ["id", "errorOut"]);
+    ), errorOutP = xmlImporter.element(
+        "p",
+        editor,
+        ["id", "errorOut"]
+    ), dataRecovery = xmlImporter.makeDetails(
+        "Data Recovery",
+        editor,
+        true,
+        ["id", "dataRecovery",
+        "hide", ""]
+    );
 
 // Further setup of the above DOM elements
 {
@@ -722,6 +732,7 @@ function resetDoc() {
         }
     }
     if (pairMode) xmlImporter.elementDoc(doc, "solution", problemNode.parentElement, ["tex", texSolution.value]);
+    else if (texSolution.value != "") recoverData("former "+activeProblem+" solution", texSolution.value);
     if (problems[activeProblem]) eraseProblem(activeProblem);
     loadProblem(doc);
     afterProblemsAreSet();
@@ -823,6 +834,11 @@ function newMetaTypeTypeChange() {
             defaultIn.setAttribute("hide", "new metatype name");
     }*/
     console.log("new metatype type change");
+}
+
+function recoverData(name, value) {
+    xmlImporter.fixTextHeight(xmlImporter.element("textarea", xmlImporter.makeDetails(name, dataRecovery), ["class", "texoutput"])).value = value;
+    dataRecovery.removeAttribute("hide");
 }
 
 /*

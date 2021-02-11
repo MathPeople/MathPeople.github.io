@@ -110,7 +110,7 @@ xmlImporter.makeDetails = function makeDetails(text, loadHere, open = false, att
     return returner;
 }
 
-// Event listener for auto-resizing textareas
+// Event listener for auto-resizing textareas, returns the textarea itself
 xmlImporter.fixTextHeight = function fixTextHeight(event) {
     // stash scroll location to avoid jumps
     let scrollLeft = window.pageXOffset || (document.documentElement || document.body.parentNode || document.body).scrollLeft,
@@ -124,6 +124,7 @@ xmlImporter.fixTextHeight = function fixTextHeight(event) {
     
     // reset scroll location
     window.scrollTo(scrollLeft, scrollTop);
+    return event;
 }
 
 // temporary message displayed in an input element
