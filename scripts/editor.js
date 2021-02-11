@@ -62,16 +62,12 @@ let editor = document.getElementById("editor"),
         "New Metainformation Type",
         metainformationDetails,
         "newMetaType",
-        ["change", tryNewMetaTypeIn]
+        ["change", tryNewMetaTypeIn],
+        ["placeholder", "new metatype name"]
     ), newMetaTypeType = xmlImporter.element(
         "select",
         newMetaTypeIn.parentElement,
         ["id", "newMetaTypeType"]
-    ), defaultIn = xmlImporter.element(
-        "input",
-        newMetaTypeIn.parentElement,
-        ["id", "defaultOption",
-         "hide", ""]
     ), putMetasHere = xmlImporter.element(
         "div",
         metainformationDetails,
@@ -260,7 +256,7 @@ jaxLoopWait = 200;
                     meta.div.setAttribute("scale", "");
                     meta.input = xmlImporter.element("input", meta.div, ["type", "number", "step", "any"]);
                     meta.input.value = 0;
-                    //meta.input.addEventListener("change", resetDoc);
+                    meta.input.addEventListener("change", resetDoc);
             }
         }
         for (let value in values) {
@@ -569,10 +565,47 @@ function handleIdChange() {
 
 function tryNewMetaTypeIn() {
     if (announceFunctions) console.log("tryNewMetTypeIn");
-    /*let meta = newMetaTypeIn.value;
-    if (nodeNameScreen(meta)) ensureMetatype(meta, newMetatypeType.value, defaultIn.value);
-    newMetaTypeIn.value = "";*/
-    console.log("trying new metatype in");
+    let newMeta = newMetaTypeIn.value;
+    if (!xmlImporter.nodeNameScreen(newMeta)) return xmlImporter.inputMessage(newMetaTypeIn, "invalid node name");
+    if (idBlacklist.includes(newMeta)) return xmlImporter.inputMessage(newMetaTypeIn, "cannot use that name");
+    if (newMeta in metas) return xmlImporter.inputMessage(newMetaTypeIn, "already in use");
+    // Add a node which induces this metainformation. Add necessary default values, they can be renamed/changed later.
+    let doc = problems[activeProblem].doc, problemNode = doc.querySelector("problem");
+    switch (newMetaTypeType.selectedIndex) {
+        case 1: // checkbox
+            xmlImporter.elementDoc(
+                doc,
+                "defaultValue",
+                xmlImporter.elementDoc(
+                    doc,
+                    newMeta,
+                    problemNode
+                )
+            );
+        break; case 2: // radio
+            xmlImporter.elementDoc(
+                doc,
+                "otherValue",
+                xmlImporter.elementDoc(
+                    doc,
+                    newMeta,
+                    problemNode,
+                    ["radio", "defaultValue"]
+                )
+            );
+        break; case 3: // scale
+            xmlImporter.elementDoc(
+                doc,
+                newMeta,
+                problemNode,
+                ["scale", "1"]
+            );
+        break;
+    }
+    newMetaTypeIn.value = "First choose metainformation type -->";
+    newMetaTypeIn.setAttribute("disabled", "");
+    newMetaTypeType.selectedIndex = 0;
+    loadProblem(doc);
 }
 
 function hardRename() {
@@ -845,22 +878,10 @@ function saveAll() {
 
 function newMetaTypeTypeChange() {
     if (announceFunctions) console.log("newMetaTypeTypeChange");
-    /*if (newMetaTypeIn.hasAttribute("disabled")) {
+    if (newMetaTypeIn.hasAttribute("disabled")) {
         newMetaTypeIn.removeAttribute("disabled");
         newMetaTypeIn.value = "";
     }
-    switch (newMetatypeType.selectedIndex) {
-        case 1: // checkbox
-            defaultIn.setAttribute("hide", "");
-            newMetaTypeIn.setAttribute("placeholder", "new metatype name");
-        break; case 2: // radio
-            defaultIn.removeAttribute("hide");
-            defaultIn.value = "defaultValue";
-            newMetaTypeIn.setAttribute("placeholder", "new metatype name, enter default value first -->");
-        break; case 3: // scale
-            defaultIn.setAttribute("hide", "new metatype name");
-    }*/
-    console.log("new metatype type change");
 }
 
 function recoverData(name, value) {
