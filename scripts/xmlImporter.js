@@ -56,6 +56,11 @@ xmlImporter.getRoot = function getRoot(xml) {
     throw new Error("cannot find root node of " + xml.nodeName);
 }
 
+// this defines which strings are valid node names
+xmlImporter.nodeNameScreen = function nodeNameScreen(line) {
+    try {return document.createElement(line) !== false} catch (e) {return false}
+}
+
 // create a new node in arbitrary xml document
 xmlImporter.elementDoc = function elementDoc(doc, type, loadHere, atts = []) {
     let returner = doc.createElement(type);
@@ -72,6 +77,64 @@ xmlImporter.text = function text(line, loadHere) {
     let returner = document.createTextNode(line);
     if (loadHere) loadHere.appendChild(returner);
     return returner;
+}
+
+// Make a div to hold the element and a label for it, returns the element
+xmlImporter.labeledElement = function labeledElement(labelText, elementType, loadHere, id, listeners = [], attributes = []) {
+    let div = xmlImporter.element("div", loadHere);
+    xmlImporter.text(labelText, xmlImporter.element("label", div));
+    let returner = xmlImporter.element(elementType, div, ["id", id].concat(attributes));
+    let i = 0;
+    while (i < listeners.length) returner.addEventListener(listeners[i++], listeners[i++]);
+    return returner;
+}
+
+// Specialization for input is just the attribute type="text", otherwise this is xmlImporter.labeledElement
+xmlImporter.labeledInput = function labeledInput(labelText, loadHere, inputId, listeners = [], otherInputAtts = []) {
+    return xmlImporter.labeledElement(labelText, "input", loadHere, inputId, listeners, ["type", "text"].concat(otherInputAtts));
+}
+
+// Make a button and add text and a click event listener
+xmlImporter.makeButton = function makeButton(text, loadHere, buttonId, onclick, otherButtonAtts = []) {
+    let returner = xmlImporter.element("button", loadHere, ["type", "button", "id", buttonId].concat(otherButtonAtts));
+    xmlImporter.text(text, returner);
+    returner.addEventListener("click", onclick);
+    return returner;
+}
+
+// Make a details element with prescribed summary text
+xmlImporter.makeDetails = function makeDetails(text, loadHere, open = false, attributes) {
+    let returner = xmlImporter.element("details", loadHere, attributes);
+    if (open) returner.setAttribute("open", "");
+    xmlImporter.text(text, xmlImporter.element("summary", returner));
+    return returner;
+}
+
+// Event listener for auto-resizing textareas
+xmlImporter.fixTextHeight = function fixTextHeight(event) {
+    // stash scroll location to avoid jumps
+    let scrollLeft = window.pageXOffset || (document.documentElement || document.body.parentNode || document.body).scrollLeft,
+        scrollTop = window.pageYOffset || (document.documentElement || document.body.parentNode || document.body).scrollTop;
+    
+    // resize textarea
+    event = event.target;
+    while (event.nodeName.toLowerCase() != "textarea") event = event.parentNode;
+    event.style.height = "auto";
+    event.style.height = event.scrollHeight+"px";
+    
+    // reset scroll location
+    window.scrollTo(scrollLeft, scrollTop);
+}
+
+// temporary message displayed in an input element
+xmlImporter.inputMessage = function inputMessage(input, message, time = 1000) {
+    let line = input.value, able = !input.hasAttribute("disabled");
+    window.setTimeout(function() {input.value = message}, 10); // delay is to let blur happen
+    input.setAttribute("disabled", "");
+    window.setTimeout(function() {
+        input.value = line;
+        if (able) input.removeAttribute("disabled");
+    }, time);
 }
 
 // create a blank XML document

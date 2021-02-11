@@ -1,3 +1,16 @@
+[hide] {
+    display: none !important;
+}
+
+[default]::after {
+    content: " (default)";
+}
+
+[floatright] {
+    display: inline;
+    float: right;
+}
+
 p {
     text-indent: .3em;
 }
@@ -10,15 +23,18 @@ p {
     margin: .5em;
 }
 
-textarea {
+.metavalue {
+    display: inline-block;
+}
+
+.texinput {
     resize: none;
-    overflow: hidden;
     min-height: 5em;
     max-height: 80vh;
     width: 100%;
-    -moz-tab-size: 3;
-    -o-tab-size: 5;
-    tab-size: 3;
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
 }
 
 #texLiveOut {
@@ -35,9 +51,24 @@ textarea {
     border: 3px outset skyblue;
 }
 
+.texoutput {
+    resize: none;
+    min-height: 5em;
+    max-height: 80vh;
+    width: 100%;
+    background: lightgray;
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+}
+
 #texOut {
     border: 1px dashed black;
     background-color: palegoldenrod;
+    display: block;
+}
+
+#codeOut {
     display: block;
 }
 

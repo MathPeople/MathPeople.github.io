@@ -155,27 +155,36 @@ function updateMetas() {
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
-// problems.js has already imported a qual, we just now populate from what is already set up
-// this is timeouted so the page can be more responsive
-window.setTimeout(function() {
+// make sure every problem is displayed, all the metainformation is updated, and the proper problems are hidden
+function updateShows() {
     // halt jax typesetting while we do this
     holdJax = true;
-    updateMetas();
     for (let problem in problems) showProblem(problem);
-    updateHides();
     holdJax = false;
-}, 1000);
+}
+
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
 // search problems for any node which matches the selector, show if one is found else hide
 function updateHides() {
-    let shows = getProblemsFromSelector(selectorIn.value, problems);
+    let shows = getProblemsFromSelector(selectorIn.value);
     for (let id in problems) {
         if (id in shows) problems[id].div.removeAttribute("hide");
         else problems[id].div.setAttribute("hide", "");
     }
 }
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
+// make sure every problem is displayed, all the metainformation is updated, and the proper problems are hidden
+function refresh() {
+    updateMetas();
+    updateShows();
+    updateHides();
+}
+// In case a problems repository is already imported. This is timeoutted for performance.
+window.setTimeout(refresh, 1000);
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------

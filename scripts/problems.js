@@ -45,17 +45,24 @@ setupLocalStorage();
 
 // Ensure metas holder object has a spot for this meta and its values
 function handleMetaNode(node) {
-    if (!(node.nodeName in metas)) metas[node.nodeName] = {values: {}, metaType: "checkboxes"}; // default to checkboxes, change later if needed
+    let introducedNewType, newMetaValues = {};
+    if (!(node.nodeName in metas)) {
+        introducedNewType = true;
+        metas[node.nodeName] = {values: {}, metaType: "checkbox"}; // default to checkbox, change later if needed
+    }
     let bunch = metas[node.nodeName], value = node.firstChild, numValues = 0; // count number of values to later make sure it is 1 in case this is a radio type
     while (value) {
-        bunch.values[value.nodeName] = undefined;
+        if (!(value.nodeName in bunch.values)) {
+            newMetaValues[value.nodeName] = undefined;
+            bunch.values[value.nodeName] = undefined;
+        }
         value = value.nextSibling;
         ++numValues;
     }
     if (node.hasAttribute("radio")) {
         if (numValues !== 1) throw Error("radio must have one and only one child node but this radio has " + numValues + " children");
         bunch.metaType = "radio"; // recognize this value
-        bunch.values[node.getAttribute("radio")] = undefined; // recognize default value
+        if (!(node.getAttribute("radio") in bunch.values)) bunch.values[node.getAttribute("radio")] = undefined; // recognize default value
         bunch.defaultValue = node.getAttribute("radio");
     } else if (node.hasAttribute("scale")) {
         if (numValues !== 0) throw Error("scale metainformation cannot have any child nodes but this one has " + numValues + " children");
@@ -63,7 +70,9 @@ function handleMetaNode(node) {
         if (typeof bunch.maxValue !== "number") bunch.maxValue = 0;
         bunch.maxValue = Math.max(bunch.maxValue, node.getAttribute("scale"));
     }
+    if (introducedNewType || !isEmpty(newMetaValues)) addingMetaOverride(node.nodeName, newMetaValues);
 }
+function addingMetaOverride() {}
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
@@ -71,10 +80,12 @@ function handleMetaNode(node) {
     Problems holds the doc for each problem, indexed by id (root node name). This doc is always assumed to be mutable so don't cache information from it, instead query the doc whenever information has to be gathered from the problem, information such as metainformation or TeX for problem/solution.
 */
 
-// Import problem from XML doc and update problems and metas acordingly. Problems holds the docs, metas is set by handleMetaNode.
-function loadProblem(doc) {
+// Import problem from XML doc and update problems and metas acordingly. Pass a function in as convertDoc if you want to convert the doc before loading it.
+function loadProblem(doc, convertDoc) {
+    if (convertDoc) doc = convertDoc(doc);
     let problem = xmlImporter.getRoot(doc).nodeName;
-    let returner = problems[problem] = {doc: doc};
+    if (problem in problems) eraseProblem(problem);
+    problems[problem] = {doc: doc};
     let problemNode = doc.querySelector("problem");
     if (problemNode) {
         let meta = problemNode.firstChild;
@@ -83,13 +94,15 @@ function loadProblem(doc) {
             meta = meta.nextSibling;
         }
     }
+    loadProblemOverride(problem);
 }
+function loadProblemOverride() {}
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
 var qualName;
 // Import the problems from a repository, storing the docs and populating metas with the encountered values.
-function importProblemsRepository(qual, finished = function() {}) {
+function importProblemsRepository(qual, onSuccess = function() {}, onfail = function() {}) {
     qualName = qual; // globally declare that this is the loaded qual
     xmlImporter.openTextFile(
         "/quals/"+qual+"/problemsList.txt",               // File to open-- the problem list for a given qual
@@ -108,28 +121,88 @@ function importProblemsRepository(qual, finished = function() {}) {
                     "/quals/"+qual+"/problems/"+problem+".xml",
                     null,
                     function(doc) {
+                        holdJax = true;
                         loadProblem(doc);
                         if (--toGo === 0) {
-                            finished();
+                            onSuccess();
+                            afterProblemsAreSet();
                         } 
                     }
                 );
             }
+        },
+        
+        function() {
+            qualName = undefined; // the qual failed so don't say it is loaded
+            onfail();
         }
     );
 }
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
-// To be overridden in applications, offering a chance to do something like remove display elements form the DOM or similar actions. This version just deletes the problem from the problems holder object.
+// things which use the whole problems set
+function afterProblemsAreSet() {
+    holdJax = false;
+    cleanupMetainformation();
+    afterProblemsAreSetOverride();
+}
+function afterProblemsAreSetOverride() {}
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
 function eraseProblem(problem) {
+    eraseProblemOverride(problem);
     delete problems[problem];
+}
+function eraseProblemOverride(problem) {}
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
+// Checks if a metainformation is in use and if not then it erases it. Returns whether something was erased.
+function tryEraseMetainformation(metaType, metaValue) {
+    if (metaValue) {
+        // don't look for the default value of radio since you won't find it
+        if (metas[metaType].metaType === "radio" && metaValue === metas[metaType].defaultValue) return false;
+        // erasing just the value
+        if (isEmpty(getProblemsFromSelector("//problem/"+metaType+"/"+metaValue))) {
+            erasePartMetainformation(metaType, metaValue);
+            return true;
+        }
+    } else {
+        // erasing the whole metainformation
+        if (isEmpty(getProblemsFromSelector("//problem/"+metaType))) {
+            eraseWholeMetainformation(metaType);
+            return true;
+        }
+    }
+    return false;
+}
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
+function eraseWholeMetainformation(metaType) {
+    eraseWholeMetainformationOverride(metaType);
+    delete metas[metaType];
+}
+function eraseWholeMetainformationOverride() {}
+function erasePartMetainformation(metaType, metaValue) {
+    erasePartMetainformationOverride(metaType, metaValue);
+    delete metas[metaType][metaValue];
+}
+function erasePartMetainformationOverride() {}
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
+// find any unused metainformation and erase them
+function cleanupMetainformation() {
+    for (let meta in metas) if (!tryEraseMetainformation(meta)) if (metas[meta].values) for (let value in metas[meta].values) tryEraseMetainformation(meta, value);
 }
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
 // Find which problems out of theseProblems match the XPath selector.
-function getProblemsFromSelector(selector, theseProblems) {
+function getProblemsFromSelector(selector, theseProblems = problems) {
     let returner = {};
     for (let id in theseProblems) {
         try {
@@ -163,6 +236,13 @@ function start() {
         loadScript("editor");
     }
     // any other applications beyond the two already created can be linked in here
+}
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
+// checks if an object has any properties
+function isEmpty(o) {
+    return Object.keys(o).length === 0;
 }
 //----------------------------------------------------------------------------------------------------------------
 

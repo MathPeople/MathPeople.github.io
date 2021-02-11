@@ -1,275 +1,519 @@
 /*
     First read the wiki for using this editor, in particular the parts about how problem focus works. The active problem is the problem with current focus and is the only one which can be changed through interaction with the GUI. The editor works by letting the user focus on a problem and interact with the GUI to make changes to it. The problem exists as an XML DOM. Any change directed to the problem first changes that problem's DOM and then repopulates the document HTML DOM with information from the problem XML DOM. Saving consists of saving these problem XML DOMs.
-    
-    This file requires problems.js to be loaded because it builds off some of the infrastructure there. Mostly this is xpath searching and practice test generation which is shared.
 */
 
 // editor DOM elements
-let qualNameIn = document.getElementById("qualName"),
-    loadedProblems = document.getElementById("loadedProblems"),
-    clearTexButton = document.getElementById("clearTex"),
-    pairSoloButton = document.getElementById("pairSolo"),
-    putMetasHere = document.getElementById("putMetasHere"),
-    idInput = document.getElementById("problemID"),
-    idList = document.getElementById("idList"),
-    newMetaTypeIn = document.getElementById("newMetatype"),
-    newMetatypeType = document.getElementById("newMetatypeType"),
-    defaultIn = document.getElementById("defaultOption"),
-    renameMetainformation = document.getElementById("renameMetainformation"),
-    renameSoftMetainformation = document.getElementById("renameSoftMetainformation"),
-    toggleColumn = document.getElementById("toggleColumn"),
-    practiceSearch = document.getElementById("practiceSearch"),
-    wholeListHere = document.getElementById("wholeListHere"),
-    texProblem = document.getElementById("texProblem"),
-    texSolution = document.getElementById("texSolution"),
-    texLiveOut = document.getElementById("texLiveOut"),
-    saveButton = document.getElementById("save"),
-    codeOut = document.getElementById("codeOut"),
-    saveAllButton = document.getElementById("saveAll"),
-    practiceTestsSpot = document.getElementById("practiceTests"),
-    newPracticeTestButton = document.getElementById("newPracticeTestButton"),
-    errorOutP = document.getElementById("errorOut");
+let editor = document.getElementById("editor"),
+    qualNameIn = xmlImporter.labeledInput(
+        "This is for qual",
+        editor,
+        "qualName",
+        ["change", loadQual]
+    ), loadedProblems = xmlImporter.labeledElement(
+        "Loaded problems:",
+        "select",
+        editor,
+        "loadedProblems",
+        ["change", function() {
+            idInput.value = loadedProblems.value;
+            handleIdChange();
+        }]
+    ), clearNewProblemButton = xmlImporter.makeButton(
+        "Clear / New Problem",
+        editor,
+        "clearNewProblem",
+        clearNewProblem
+    ), pairSoloButton = xmlImporter.makeButton(
+        "To Solo Mode",
+        editor,
+        "pairSolo",
+        pairSoloClicked
+    ), metainformationDetails = xmlImporter.makeDetails(
+        "Set the Metainformation",
+        editor,
+        true
+    ), idInput = xmlImporter.labeledInput(
+        "Problem ID: ",
+        metainformationDetails,
+        "problemID",
+        ["change", handleIdChange,
+        "blur", function() {idInput.value = activeProblem}],
+        ["list", "idList",
+        "disabled", ""]
+    ), idList = xmlImporter.element(
+        "datalist",
+        idInput.parentElement,
+        ["id", "idList"]
+    ), newMetaTypeIn = xmlImporter.labeledInput(
+        "New Metainformation Type",
+        metainformationDetails,
+        "newMetaType",
+        ["change", tryNewMetaTypeIn]
+    ), newMetaTypeType = xmlImporter.element(
+        "select",
+        newMetaTypeIn.parentElement,
+        ["id", "newMetaTypeType"]
+    ), defaultIn = xmlImporter.element(
+        "input",
+        newMetaTypeIn.parentElement,
+        ["id", "defaultOption",
+         "hide", ""]
+    ), putMetasHere = xmlImporter.element(
+        "div",
+        metainformationDetails,
+        ["id", "putMetasHere"]
+    ), renameMetainformation = xmlImporter.labeledInput(
+        "Rename Metainformation",
+        metainformationDetails,
+        "renameMetainformation",
+        ["change", hardRename]
+    ), renameSoftMetainformation = xmlImporter.labeledInput(
+        "Alternate Name Metainformation",
+        metainformationDetails,
+        "renameSoftMetainformation",
+        ["change", softRename]
+    ), wholeListDetails = xmlImporter.makeDetails(
+        "List View",
+        editor
+    ), toggleColumn = xmlImporter.labeledInput(
+        "Toggle Column",
+        wholeListDetails,
+        "toggleColumn",
+        ["change", toggleColumnListener]
+    ), practiceSearch = xmlImporter.labeledInput(
+        "Find Matches",
+        wholeListDetails,
+        "practiceSearch",
+        ["change", fixWholeList]
+    ), wholeListHere = xmlImporter.element(
+        "table",
+        wholeListDetails,
+        ["id", "wholeListHere"]
+    ), texProblem = xmlImporter.labeledElement(
+        "Problem",
+        "textarea",
+        editor,
+        "texProblem",
+        ["input", xmlImporter.fixTextHeight,
+        "input", resetDocTexOnly],
+        ["class", "texinput",
+        "spellcheck", "false"]
+    ), texSolution = xmlImporter.labeledElement(
+        "Solution",
+        "textarea",
+        editor,
+        "texSolution",
+        ["input", xmlImporter.fixTextHeight,
+        "input", resetDocTexOnly],
+        ["class", "texinput",
+        "spellcheck", "false"]
+    ), texLiveOut = xmlImporter.element(
+        "div",
+        editor,
+        ["id", "texLiveOut"]
+    ), saveButton = xmlImporter.makeButton(
+        "Save",
+        editor,
+        "save",
+        saveActiveProblem
+    ), codeOut =xmlImporter.element(
+        "textarea",
+        editor,
+        ["id", "codeOut",
+        "class", "texoutput",
+        "readonly", "",
+        "spellcheck", "false"]
+    ), practiceTestsSpot = xmlImporter.makeDetails(
+        "Practice Tests",
+        editor,
+        true
+    ), newPracticeTestButton = xmlImporter.makeButton(
+        "New Practice Test Configuration",
+        practiceTestsSpot,
+        "newPracticeTestButton",
+        offerNewPracticeTest
+    ), saveAllButton = xmlImporter.makeButton(
+        "Save All (.zip)",
+        editor,
+        "saveAll",
+        saveAll
+    ), errorOutP = xmlImporter.element("p", editor, ["id", "errorOut"]);
+
+// Further setup of the above DOM elements
+{
+    loadedProblems.parentElement.setAttribute("floatright", "");
+    
+    newMetaTypeIn.value = "First choose metainformation type -->";
+    newMetaTypeIn.setAttribute("disabled", "");
+    
+    newMetaTypeType.addEventListener("change", newMetaTypeTypeChange);
+    xmlImporter.text("Select Type", xmlImporter.element("option", newMetaTypeType, ["disabled", ""]));
+    xmlImporter.text("Checkbox", xmlImporter.element("option", newMetaTypeType));
+    xmlImporter.text("Radio", xmlImporter.element("option", newMetaTypeType));
+    xmlImporter.text("Scale", xmlImporter.element("option", newMetaTypeType));
+    newMetaTypeType.selectedIndex = 0;
+    
+    xmlImporter.makeTabbable(texProblem);
+    xmlImporter.makeTabbable(texSolution);
+    texSolution.parentElement.setAttribute("paironly", "");
+}
+
 // script global variables
-let pairMode = true, // problem/solution pair or solo mode
-    qual = "", // loaded qual (also used in autosave triggering)
+let activeProblem = "changeMe", // id of the problem currently in the gui
+    idBlacklist = ["problem", "solution"], // don't name a problem one of these
+    pairMode = true, // problem/solution pair or solo mode
     justJax = false, // render just jax or render all the metainformation gui elements as well
     practiceTestConfigs = []; // holds all practice test configurations
 
 // jax configuration, short so that typing tex updates live
-jaxLoopWait = 100;
+jaxLoopWait = 200;
 
-// these define the active problem
-let doc = xmlImporter.newDocument(), id = "changeMe";
-
-// set event listeners. Read the comments for the event handlers if you want to see what they do, this section just links event handlers to the GUI elements
+// overrides from problems.js
 {
-    // fireblock in case something has an error
-    function setListener(element, type, func) {try {element.addEventListener(type, func)} catch (e) {}}
-    
-    qualNameIn.value = ""; // browsers sometimes cache values of inputs with id but we want to ensure these inputs start with certain values
-    setListener(qualNameIn, "change", loadQual);
-    
-    setListener(loadedProblems, "change", function() {
-        idInput.value = loadedProblems.value;
-        handleIdChange();
-    });
-    
-    setListener(clearTexButton, "click", clearTex);
-    
-    setListener(pairSoloButton, "click", function() {
-        pairSoloButton.firstChild.nodeValue = "To " + (pairMode? "Pair": "Solo") + " mode";
-        pairMode = !pairMode;
-        if (pairMode) for (let hideMe of document.querySelectorAll("[pairOnly]")) hideMe.removeAttribute("hide");
-        else for (let hideMe of document.querySelectorAll("[pairOnly]")) hideMe.setAttribute("hide", "");
-        resetDoc();
-    })
-    
-    setListener(idInput, "change", handleIdChange);
-    setListener(idInput, "blur", function() {idInput.value = id});
-    
-    setListener(newMetaTypeIn, "change", tryNewMetatypeIn);
-    newMetaTypeIn.value = "First choose metainformation type -->";
-    newMetaTypeIn.setAttribute("disabled", "");
-    
-    setListener(newMetatypeType, "change", newMetatypeTypeChange);
-    
-    newMetatypeType.selectedIndex = 0;
-    
-    renameMetainformation.value = "";
-    setListener(renameMetainformation, "change", hardRename);
-    
-    renameSoftMetainformation.value = "";
-    setListener(renameSoftMetainformation, "change", softRename);
-    
-    toggleColumn.value = "";
-    setListener(toggleColumn, "change", toggleColumnListener);
-    
-    practiceSearch.value = "*";
-    setListener(practiceSearch, "change", fixWholeList);
-    
-    for (let e of [texProblem, texSolution]) setListener(e, "input", resetDoc);
-
-    for (let textarea of document.getElementsByTagName("textarea")) {
-        setListener(textarea, "input", fixTextHeight);
-        setListener(textarea, "change", fixTextHeight);
-        xmlImporter.makeTabbable(textarea);
+    // as we add metas, put the little buttons in the metainformation GUI section
+    let oldAddingMetaOverride = addingMetaOverride;
+    addingMetaOverride = function addingMetaOverride(metaType, values) {
+        let meta = metas[metaType];
+        if (!meta.div) {
+            meta.div = xmlImporter.element("div", putMetasHere, ["class", "meta"]);
+            meta.nameText = xmlImporter.text(metaType, xmlImporter.element("h5", meta.div));
+            switch (meta.metaType) {
+                case "checkbox":
+                    meta.div.setAttribute("checkbox", "");
+                    meta.newButtonIn = xmlImporter.element("input", meta.div, ["type", "text", "placeholder", "new option"]);
+                    meta.newButtonIn.addEventListener("change", function(test) {
+                        /*test = test.target.value;
+                        if (!xmlImporter.nodeNameScreen(test)) return inputMessage(meta.newButtonIn, "invalid");
+                        for (let value in meta.values) if (value == test) return inputMessage(meta.newButtonIn, "already an option");
+                        newCheckbox(metaName, test);
+                        meta.newButtonIn.value = "";
+                        meta.values[test].input.checked = true;
+                        resetDoc();*/
+                        console.log("new checkbox button");
+                    });
+                break; case "radio":
+                    meta.div.setAttribute("radio", "");
+                    //newRadio(metaName, defaultValue);
+                    meta.newButtonIn = xmlImporter.element("input", meta.div, ["type", "text", "placeholder", "new option"]);
+                    meta.newButtonIn.addEventListener("change", function(test) {
+                        /*test = test.target.value;
+                        if (!nodeNameScreen(test)) return inputMessage(meta.newButtonIn, "invalid");
+                        for (let value in meta.values) if (value == test) return inputMessage(meta.newButtonIn, "already an option");
+                        newRadio(metaName, test);
+                        meta.newButtonIn.value = "";
+                        meta.values[test].input.checked = true;
+                        resetDoc();*/
+                        console.log("new radio button");
+                    });
+                    // add the default value
+                    let value = meta.defaultValue;
+                    if (!meta.values[value]) meta.values[value] = {};
+                    bunch = meta.values[value];
+                    if (!bunch.div) {
+                        bunch.div = xmlImporter.element("div");
+                        if (meta.div.firstChild != meta.div.lastChild) meta.div.insertBefore(bunch.div, meta.div.lastChild);
+                        else meta.div.appendChild(bunch.div);
+                    }
+                    if (!bunch.input) {
+                        bunch.input = xmlImporter.labeledInput(
+                            value,
+                            bunch.div,
+                            "metainformation-"+metaType+"-value-"+value,
+                            ["change", resetDoc],
+                            ["type", "radio",
+                            "name", "metainformation-"+metaType]
+                        );
+                        bunch.input.parentElement.setAttribute("default", "");
+                        bunch.input.parentElement.setAttribute("class", "metavalue");
+                    }
+                    if (!bunch.alternateName) bunch.alternateName = xmlImporter.text(Store.fetch(qualName + " " + metaType + " " + value), xmlImporter.element("span", bunch.div));
+                break; case "scale":
+                    meta.div.setAttribute("scale", "");
+                    meta.input = xmlImporter.element("input", meta.div, ["type", "number", "step", "any"]);
+                    meta.input.value = 0;
+                    //meta.input.addEventListener("change", resetDoc);
+            }
+        }
+        for (let value in values) {
+            let bunch;
+            switch (meta.metaType) {
+                case "checkbox":
+                    if (!meta.values[value]) meta.values[value] = {};
+                    bunch = meta.values[value];
+                    if (!bunch.div) {
+                        bunch.div = xmlImporter.element("div");
+                        if (meta.div.firstChild != meta.div.lastChild) meta.div.insertBefore(bunch.div, meta.div.lastChild);
+                        else meta.div.appendChild(bunch.div);
+                    }
+                    if (!bunch.input) {
+                        bunch.input = xmlImporter.labeledInput(
+                            value,
+                            bunch.div,
+                            "metainformation-"+meta+"-value-"+value,
+                            ["change", resetDoc],
+                            ["type", "checkbox"]
+                        );
+                        bunch.input.parentElement.setAttribute("class", "metavalue");
+                    }
+                    if (!bunch.alternateName) bunch.alternateName = xmlImporter.text(Store.fetch(qualName + " " + metaType + " " + value), xmlImporter.element("span", bunch.div));
+                break; case "radio":
+                    if (!meta.values[value]) meta.values[value] = {};
+                    bunch = meta.values[value];
+                    if (!bunch.div) {
+                        bunch.div = xmlImporter.element("div");
+                        if (meta.div.firstChild != meta.div.lastChild) meta.div.insertBefore(bunch.div, meta.div.lastChild);
+                        else meta.div.appendChild(bunch.div);
+                    }
+                    if (!bunch.input) {
+                        bunch.input = xmlImporter.labeledInput(
+                            value,
+                            bunch.div,
+                            "metainformation-"+meta+"-value-"+value,
+                            ["change", resetDoc],
+                            ["type", "radio",
+                            "name", "metainformation-"+metaType]
+                        );
+                        bunch.input.parentElement.setAttribute("class", "metavalue");
+                    }
+                    if (!bunch.alternateName) bunch.alternateName = xmlImporter.text(Store.fetch(qualName + " " + metaType + " " + value), xmlImporter.element("span", bunch.div));
+                break;
+            }
+        }
+        oldAddingMetaOverride(metaType, values);
+    }
+    // as a problem is loaded, set all the gui elements to apply to the loading problem
+    let oldLoadProblemOverride = loadProblemOverride;
+    loadProblemOverride = function loadProblemOverride(problem) {
+        activeProblem = problem;
+        idInput.value = problem;
+        idInput.removeAttribute("disabled");
+        if (!problems[problem].loadedProblemsOption) {
+            problems[problem].loadedProblemsOption = xmlImporter.element("option", loadedProblems, ["value", problem]);
+            xmlImporter.text(problem, problems[problem].loadedProblemsOption);
+        }
+        if (!problems[problem].idListOption) {
+            problems[problem].idListOption = xmlImporter.element("option", idList, ["value", problem]);
+            xmlImporter.text(problem, problems[problem].idListOption);
+        }
+        for (let i = 0; i < loadedProblems.childNodes.length; ++i) if (loadedProblems.childNodes[i].value === problem) loadedProblems.selectedIndex = i;
+        if (!holdJax) {
+            for (let meta in metas) {
+                let node;
+                switch (metas[meta].metaType) {
+                    case "checkbox":
+                        for (let value in metas[meta].values) {
+                            if (problems[problem].doc.querySelector("problem >"+meta+" > "+value)) metas[meta].values[value].input.checked = true;
+                            else metas[meta].values[value].input.checked = false;
+                        }
+                    break; case "radio":
+                        for (let value in metas[meta].values) {
+                            node = problems[problem].doc.querySelector("problem > "+meta);
+                            if (node) {
+                                metas[meta].values[node.firstChild.nodeName].input.checked = true;
+                            } else {
+                                metas[meta].values[metas[meta].defaultValue].input.checked = true;
+                            }
+                        }
+                    break; case "scale":
+                        node = problems[problem].doc.querySelector("problem > "+meta);
+                        metas[meta].input.value = node? node.getAttribute("scale"): 0;
+                }
+            }
+        }
+        outputTexFromActiveProblem();
+        oldLoadProblemOverride(problem);
+    }
+    function outputTexFromActiveProblem() {
+        let problemNode = problems[activeProblem].doc.querySelector("problem"), solutionNode = problems[activeProblem].doc.querySelector("solution");
+        texProblem.value = problemNode? problemNode.getAttribute("tex"): "";
+        xmlImporter.fixTextHeight({target: texProblem});
+        texSolution.value = solutionNode? solutionNode.getAttribute("tex"): "";
+        xmlImporter.fixTextHeight({target: texSolution});
+        let line = "<h4>Problem</h4>"+texProblem.value;
+        if (solutionNode) line += "<h4>Solution</h4>"+texSolution.value;
+        texLiveOut.innerHTML = line;
+        if (!holdJax) typeset(texLiveOut);
+        codeOut.value = xmlImporter.nodeToString(problems[activeProblem].doc);
+        xmlImporter.fixTextHeight({target: codeOut});
+        oldLoadProblemOverride(activeProblem);
     }
     
-    setListener(saveButton, "click", saveActiveProblem);
+    //afterProblemsAreSetOverride
+    let oldAfterProblemsAreSetOverride = afterProblemsAreSetOverride;
+    afterProblemsAreSetOverride = function afterProblemsAreSetOverride() {
+        loadProblemOverride(activeProblem); // populate GUI with the current problem
+        fixWholeList();
+        sortList(loadedProblems);
+        sortList(idList);
+        oldAfterProblemsAreSetOverride();
+    }
+    // take an element whose children are options and sort them alphabetically
+    function sortList(listElement) {
+        let options = [listElement.childNodes.length];
+        let i = 0;
+        while (listElement.firstChild) options[i++] = listElement.removeChild(listElement.firstChild);
+        options.sort(optionComparator);
+        for (let option of options) listElement.appendChild(option);
+    }
+    // sort alphabetically
+    function optionComparator(a, b) {
+        return a.firstChild.nodeValue.localeCompare(b.firstChild.nodeValue);
+    }
     
-    setListener(newPracticeTestButton, "click", offerNewPracticeTest);
+    // remove this problem from lists
+    let oldEraseProblemOverride = eraseProblemOverride;
+    eraseProblemOverride = function eraseProblemOverride(problem) {
+        let e = problems[problem].idListOption;
+        if (e) e.parentElement.removeChild(e);
+        e = problems[problem].loadedProblemsOption;
+        if (e) e.parentElement.removeChild(e);
+    }
     
-    setListener(saveAllButton, "click", saveAll);
+    //eraseWhole/PartMetainformationOverride
+    let oldEraseWholeMetainformationOverride = eraseWholeMetainformationOverride;
+    eraseWholeMetainformationOverride = function eraseWholeMetainformationOverride(metaType) {
+        metas[metaType].div.parentElement.removeChild(metas[metaType].div);
+        oldEraseWholeMetainformationOverride(metaType);
+    }
+    
+    let oldErasePartMetainformationOverride = erasePartMetainformationOverride;
+    erasePartMetainformationOverride = function erasePartMetainformationOverride(metaType, metaValue) {
+        let div = metas[metaType].values[metaValue].div;
+        div.parentElement.removeChild(div);
+        oldErasePartMetainformationOverride(metaType, metaValue);
+    }
 }
 
-// for auto-resizing textareas
-function fixTextHeight(event) {
-    // stash scroll location to avoid jumps
-    let scrollLeft = window.pageXOffset || (document.documentElement || document.body.parentNode || document.body).scrollLeft;
-    
-    let scrollTop = window.pageYOffset || (document.documentElement || document.body.parentNode || document.body).scrollTop;
-    
-    // resize textarea
-    event = event.target;
-    while (event.nodeName.toLowerCase() != "textarea") event = event.parentNode;
-    event.style.height = "auto";
-    event.style.height = event.scrollHeight+"px";
-    
-    // reset scroll location
-    window.scrollTo(scrollLeft, scrollTop);
-}
-
-// load all problems from a qual repository
-function importRemoteQuestions(nameOfQual, finished = function() {}) {
-    // don't render them as they are loaded
-    holdJax = true;
-    // check list of problems to see what all needs loading
-    xmlImporter.openTextFile("/quals/"+nameOfQual+"/problemsList.txt", null, function(list) {
-        // in case someone left a trailing newline, get rid of it
-        list = list.trim();
-        // in case when a problems repository is empty. in js splitting an empty string is silly so we deal with this separately
-        if (list === "") {
-            clearTex();
-            return finished();
+// Take qualNameIn's value and load the corresponding problems
+function loadQual() {
+    // don't typeset them as they are imported
+    if (xmlImporter.nodeNameScreen(qualNameIn.value)) {
+        if (qualNameIn.value === "local") {
+            qualNameIn.value = "working locally";
+            qualNameIn.setAttribute("disabled", "");
+            qualName = "local";
+            loadFromLocalStorage();
+            return;
         }
-        // problemsList.txt is a space-separated list of problem ids
-        let lines = list.split(" "), numLines = lines.length;
-        for (let problem of lines) if (problem !== "" && problem !== "changeMe") {// explicitly ignore a problem called changeMe
-            let p = problem;
-            if (problem in problems) { // problem is already loaded, may happen if using autosave. otherwise it is a problem
-                if (qual === "local") {
-                    if (--numLines === 0) {
-                        finished();
-                    }
-                    continue;
-                } else errorOut("duplicate in problems list: " + problem);
-            }
-            problems[problem] = {}; // so we know that we have encountered this problem even before the problem file finishes loading
-            problems[problem].tags = {
-                idList: xmlImporter.element("option", idList, ["value", problem]),
-                loadedProblems: xmlImporter.element("option", loadedProblems, ["value", problem])
-            };
-            xmlImporter.text(problem, problems[problem].tags.loadedProblems);
-            // load the problem file
-            xmlImporter.openXMLFile(
-                "/quals/"+nameOfQual+"/problems/"+p+".xml",
-                null, // passer object
-                function(problemDoc) { // callback after loaded
-                    doc = problems[p].doc = problemDoc;
-                    convertDoc(); // normally this does nothing but here we convert files if we need to
-                    outputFromDoc(); // mainly do this so we populate the metainformation, remember jax is halted for now so it isn't rendered
-                    if (--numLines === 0) {// now every problem has been loaded
-                        holdJax = false;
-                        typeset(texLiveOut);
-                        fixWholeList();
-                        finished();
-                    }
-                }, 
+        else {
+            importProblemsRepository(
+                qualNameIn.value,
                 function() {
-                    errorOut("cannot find " + p);
-                }
+                    qualNameIn.value = "working on " + qualName;
+                    qualNameIn.setAttribute("disabled", "");
+                }, cantFindQual
             );
         }
-    }, function() {
-        inputMessage(qualNameIn, "that qual has not been successfully initiated", 3000);
-        window.setTimeout(function() {qualNameIn.removeAttribute("disabled")}, 3000);
-    });
-}
-
-// load all locally stored problems and set up for local autosaving
-function initializeLocal() {
-    // this is essentially the same as importRemoteQuestions, just without callbacks because we don't have to wait to fetch any files
-    let list = Store.fetch("local problems list"); /// plays the role of problemsList.txt
-    if (!list) list = "";
-    let lines = list.split(" ");
-    for (let problem of lines) if (problem !== "" && problem !== "changeMe") {
-        if (problem in problems) errorOut("duplicate in problems list: " + problem);
-        problems[problem] = {};
-        doc = problems[problem].doc = xmlImporter.trim(xmlImporter.parseDoc(Store.fetch("local " + problem)));
-        convertDoc();
-        outputFromDoc();
-        typeset(texLiveOut);
-        fixWholeList();
-    }
-    qualNameIn.value = "working locally";
-    let button = xmlImporter.element("button", null, ["type", "button"]);
-    qualNameIn.parentElement.insertBefore(button, qualNameIn.nextSibling);
-    button.innerHTML = "Erase Local Storage";
-    button.addEventListener("click", clearLocalQual);
-}
-
-// 3 successful cases: import qual, initialize local, or do both, depending on the value of qualNameIn
-function loadQual() {
-    if (!nodeNameScreen(qualNameIn.value)) {
+    } else {
         if (qualNameIn.value.substring(0, 6) == "local ") {
             // import qual then initialize local autosaving
-            qual = "local";
             let nameOfQual = qualNameIn.value.substring(6);
-            initializeLocal();
-            importRemoteQuestions(nameOfQual, function() {
-                qualNameIn.value = "working locally on " + nameOfQual;
-                qualNameIn.setAttribute("disabled", "");
-            });
+            if (!xmlImporter.nodeNameScreen(nameOfQual)) {
+                xmlImporter.inputMessage(qualNameIn, "invalid name");
+                return;
+            }
+            importProblemsRepository(
+                nameOfQual,
+                function() {
+                    qualNameIn.value = "working locally on " + qualName;
+                    qualNameIn.setAttribute("disabled", "");
+                    loadFromLocalStorage();
+                }, cantFindQual
+            );
             return;
-        } else return inputMessage(qualNameIn, "invalid name");
-    }
-    qual = qualNameIn.value;
-    qualNameIn.value = "loading " + qual;
-    qualNameIn.setAttribute("disabled", "");
-    // import qual or initialize local
-    if (qual == "local") {
-        initializeLocal();
-    } else {
-        importRemoteQuestions(qual, function() {
-            qualNameIn.value = "working on " + qual;
-        });
+        } else {
+            xmlImporter.inputMessage(qualNameIn, "invalid name");
+            return;
+        }
     }
 }
 
-/*
-    Two cases here, either opening an existing problem or renaming a problem.
-    Renaming consists of deleting under the old name and rewriting under the new name.
-    Loading consists of saving the old name (which is actually already saved, so just not deleting it) and then opening the existing problem
-*/
+// load problems from local storage
+function loadFromLocalStorage() {
+    holdJax = true;
+    let list = Store.fetch("local problems list"); // same as problemsList.txt, space separated list of ids
+    if (!list) list = "";
+    let lines = list.split(" ");
+    for (let problem of lines) {
+        if (problem !== "" && problem !== "changeMe") {
+            loadProblem(xmlImporter.trim(xmlImporter.parseDoc(Store.fetch("local " + problem))));
+        }
+    }
+    qualNameIn.parentElement.insertBefore(
+        xmlImporter.makeButton(
+            "Erase Local Storage",
+            null,
+            "eraseLocalStorage",
+            clearLocalQual
+        ), qualNameIn.nextElementSibling
+    );
+}
+
+// remove all locally stored problems
+function clearLocalQual() {
+    for (let problem of (Store.fetch("local problems list")).split(" ")) Store.erase("local " + problem);
+    Store.erase("local problems list");
+    // don't want to accidentally save anything to local storage while we erase it
+    Store.canStore = function() {return false}
+    // Give up on trying to reinitialize a local session, force a refresh and start anew.
+    // This shouldn't really be necessary but this is easy enough. Figure this out better if we want full offline capability.
+    document.body.innerHTML = "<p>Please refresh page now</p>";
+    window.location.reload(true);
+}
+
+// what to do if importing the qual failed
+function cantFindQual() {
+    xmlImporter.inputMessage(qualNameIn, "that qual has not been successfully initiated", 3000);
+}
+
+// This empties the interface and make doc a new problem document. This does not erase the active problem.
+function clearNewProblem() {
+    /*doc = xmlImporter.newDocument();
+    xmlImporter.elementDoc(doc, "changeMe", doc); // root node, required for xml files
+    outputFromDoc();
+    texProblem.value = texSolution.value = "";
+    if (!pairMode) swapPairMode();*/
+    console.log("clear/new probleming")
+}
+
+// switch between pair mode and solo mode
+function pairSoloClicked() {
+    /*pairSoloButton.firstChild.nodeValue = "To " + (pairMode? "Pair": "Solo") + " Mode";
+    pairMode = !pairMode;
+    if (pairMode) for (let hideMe of document.querySelectorAll("[paironly]")) hideMe.removeAttribute("hide");
+    else for (let hideMe of document.querySelectorAll("[paironly]")) hideMe.setAttribute("hide", "");
+    resetDoc();*/
+    console.log("pair solo switch");
+}
+
 function handleIdChange() {
-    if (nodeNameScreen(idInput.value)) {
-        let oldID = id;
-        id = idInput.value;
-        if (id in problems) {
-            doc = problems[id].doc;
-            outputFromDoc();
+    if (idBlacklist.includes(idInput.value)) return xmlImporter.inputMessage(idInput, "cannot name a problem that");
+    if (xmlImporter.nodeNameScreen(idInput.value)) {
+        let oldID = activeProblem;
+        activeProblem = idInput.value;
+        if (activeProblem in problems) {
+            loadProblemOverride(activeProblem);
         } else {
-            if (problems[oldID].tags) {// change the various lists of ids to have this problem selected
-                problems[oldID].tags.idList.parentElement.removeChild(problems[oldID].tags.idList);
-                problems[oldID].tags.loadedProblems.parentElement.removeChild(problems[oldID].tags.loadedProblems);
-            }
-            delete problems[oldID];
-            if (qual == "local") Store.erase("local " + oldID);
-            resetDoc();
+            let doc = problems[oldID].doc;
+            eraseProblem(oldID);
+            let root = xmlImporter.getRoot(doc), newRoot = xmlImporter.elementDoc(doc, activeProblem);
+            for (let att of root.attributes) newRoot.setAttribute(att.name, att.value);
+            while (root.firstChild) newRoot.appendChild(root.firstChild);
+            doc.replaceChild(newRoot, root);
+            loadProblem(doc);
         }
     } else inputMessage(idInput, "invalid nodeName");
 }
 
-function newMetatypeTypeChange() {
-    if (newMetaTypeIn.hasAttribute("disabled")) {
-        newMetaTypeIn.removeAttribute("disabled");
-        newMetaTypeIn.value = "";
-    }
-    switch (newMetatypeType.selectedIndex) {
-        case 1: // checkboxes
-            defaultIn.setAttribute("hide", "");
-            newMetaTypeIn.setAttribute("placeholder", "new metatype name");
-        break; case 2: // radio
-            defaultIn.removeAttribute("hide");
-            defaultIn.value = "defaultValue";
-            newMetaTypeIn.setAttribute("placeholder", "new metatype name, enter default value first -->");
-        break; case 3: // scale
-            defaultIn.setAttribute("hide", "new metatype name");
-    }
+function tryNewMetaTypeIn() {
+    /*let meta = newMetaTypeIn.value;
+    if (nodeNameScreen(meta)) ensureMetatype(meta, newMetatypeType.value, defaultIn.value);
+    newMetaTypeIn.value = "";*/
+    console.log("trying new metatype in");
 }
 
 function hardRename() {
-    try {
+    /*try {
         let line = renameMetainformation.value, lines = line.split(" ");
         switch (lines.length) {
             case 2:
@@ -341,11 +585,12 @@ function hardRename() {
     } catch (e) {
         console.log(e);
         inputMessage(renameMetainformation, "cannot do that");
-    }
+    }*/
+    console.log("hard renaming");
 }
 
 function softRename() {
-    let line = renameSoftMetainformation.value, lines = line.split(" ");
+    /*let line = renameSoftMetainformation.value, lines = line.split(" ");
     let meta = lines[0], tag = lines[1];
     if (!metas[meta]) return inputMessage(renameSoftMetainformation, "cannot find metainformation " + meta);
     let bunch = metas[meta];
@@ -356,188 +601,32 @@ function softRename() {
     Store.store(qual + " " + meta + " " + tag, value);
     bunch.values[tag].alternateName.nodeValue = value;
     renameSoftMetainformation.value = "";
-    inputMessage(renameSoftMetainformation, "successfully soft renamed " + qual + " " + meta + " " + tag + " to " + value);
+    inputMessage(renameSoftMetainformation, "successfully soft renamed " + qual + " " + meta + " " + tag + " to " + value);*/
+    console.log("soft renaming");
 }
 
-function tryNewMetatypeIn() {
-    let meta = newMetaTypeIn.value;
-    if (nodeNameScreen(meta)) ensureMetatype(meta, newMetatypeType.value, defaultIn.value);
-    newMetaTypeIn.value = "";
-}
-
-function newCheckbox(metaName, value) {
-    let meta = metas[metaName];
-    if (meta.values[value]) return;
-    let bunch = meta.values[value] = {};
-    bunch.div = xmlImporter.element("div");
-    if (meta.div.firstChild != meta.div.lastChild) meta.div.insertBefore(bunch.div, meta.div.lastChild);
-    else meta.div.appendChild(bunch.div);
-    xmlImporter.text(value, xmlImporter.element("label", bunch.div, ["for", "metainformation"+meta+"value"+value]));
-    bunch.input = xmlImporter.element("input", bunch.div, ["type", "checkbox"]);
-    bunch.input.addEventListener("change", resetDoc);
-    bunch.alternateName = xmlImporter.text(Store.fetch(qual + " " + metaName + " " + value), xmlImporter.element("span", bunch.div));
-    return bunch;
-}
-
-function newRadio(metaName, value) {
-    let meta = metas[metaName];
-    if (meta.values[value]) return;
-    let bunch = meta.values[value] = {};
-    bunch.div = xmlImporter.element("div");
-    if (meta.div.firstChild != meta.div.lastChild) meta.div.insertBefore(bunch.div, meta.div.lastChild);
-    else meta.div.appendChild(bunch.div);
-    xmlImporter.text(value, xmlImporter.element("label", bunch.div, ["for", "metainformation"+meta+"value"+value]));
-    bunch.input = xmlImporter.element("input", bunch.div, ["type", "radio", "name", "metainformation"+metaName, "id", "metainformation"+meta+"value"+value]);
-    bunch.input.addEventListener("change", resetDoc);
-    bunch.alternateName = xmlImporter.text(Store.fetch(qual + " " + metaName + " " + value), xmlImporter.element("span", bunch.div));
-    return bunch;
-}
-
-// only populates editor's metainformation gui
-function ensureMetatype(metaName, type = "checkbox", defaultValue) {
-    type = type.toLowerCase();
-    if (metas[metaName]) return;
-    let meta = metas[metaName] = {values: {}, metaType: type, div: xmlImporter.element("div", putMetasHere, ["class", "meta"])};
-    meta.nameText = xmlImporter.text(metaName, xmlImporter.element("h5", meta.div));
-    switch (type) {
-        case "checkbox":
-            meta.div.setAttribute("checkbox", "");
-            meta.newButtonIn = xmlImporter.element("input", meta.div, ["type", "text", "placeholder", "new option"]);
-            meta.newButtonIn.addEventListener("change", function(test) {
-                test = test.target.value;
-                if (!nodeNameScreen(test)) return inputMessage(meta.newButtonIn, "invalid");
-                for (let value in meta.values) if (value == test) return inputMessage(meta.newButtonIn, "already an option");
-                newCheckbox(metaName, test);
-                meta.newButtonIn.value = "";
-                meta.values[test].input.checked = true;
-                resetDoc();
-            });
-        break; case "radio":
-            meta.div.setAttribute("radio", "");
-            newRadio(metaName, defaultValue);
-            meta.defaultValue = defaultValue;
-            meta.newButtonIn = xmlImporter.element("input", meta.div, ["type", "text", "placeholder", "new option"]);
-            meta.newButtonIn.addEventListener("change", function(test) {
-                test = test.target.value;
-                if (!nodeNameScreen(test)) return inputMessage(meta.newButtonIn, "invalid");
-                for (let value in meta.values) if (value == test) return inputMessage(meta.newButtonIn, "already an option");
-                newRadio(metaName, test);
-                meta.newButtonIn.value = "";
-                meta.values[test].input.checked = true;
-                resetDoc();
-            });
-        break; case "scale":
-            meta.div.setAttribute("scale", "");
-            meta.input = xmlImporter.element("input", meta.div, ["type", "number", "step", "any"]);
-            meta.input.value = 0;
-            meta.input.addEventListener("change", resetDoc);
-    }
-}
-
-// update doc to represent what is present in the interface
-function resetDoc(e) {
-    justJax = e && (e.target == texProblem || e.target == texSolution);
-    while (doc.firstChild) doc.removeChild(doc.firstChild);
-    let problem = xmlImporter.elementDoc(doc, "problem", xmlImporter.elementDoc(doc, id, doc), ["tex", texProblem.value]);
-    for (let metaName in metas) {
-        let meta = metas[metaName];
-        switch (meta.metaType) {
-            case "checkbox":
-                let metaNode = xmlImporter.elementDoc(doc, metaName, problem);
-                for (let value in meta.values) if (meta.values[value].input.checked) xmlImporter.elementDoc(doc, value, metaNode);
-                if (metaNode.childElementCount === 0) problem.removeChild(metaNode);
-            break; case "radio":
-                if (!meta.values[meta.defaultValue].input.checked) for (let value in meta.values) if (meta.values[value].input.checked) xmlImporter.elementDoc(doc, value, xmlImporter.elementDoc(doc, metaName, problem, ["radio", meta.defaultValue])); 
-            break; case "scale":
-                if (meta.input.value != 0) xmlImporter.elementDoc(doc, metaName, problem, ["scale", meta.input.value]);
-            break;
-        }
-    }
-    if (pairMode) xmlImporter.elementDoc(doc, "solution", problem.parentElement, ["tex", texSolution.value]);
-    outputFromDoc();
-}
-// this initializes a blank doc in a new session
-resetDoc();
-
-// populate values in interface to match what is present in doc
-function outputFromDoc() {
-    idInput.value = id = xmlImporter.getRoot(doc).nodeName;
-    // update problems tags
-    if (id !== "changeMe") problems[id] = {doc: doc};
-    if (id !== "changeMe" && !("tags" in problems[id])) {
-        problems[id].tags = {
-            idList: xmlImporter.element("option", idList, ["value", id]),
-            loadedProblems: xmlImporter.element("option", loadedProblems, ["value", id])
-        };
-        xmlImporter.text(id, problems[id].tags.loadedProblems);
-    }
-    {
-        // set loadedProblems <select> to this problem's <option>
-        let i = 0;
-        if (id != "changeMe") while (loadedProblems.childNodes[i] != problems[id].tags.loadedProblems) ++i;
-        loadedProblems.selectedIndex = i;
-    }
-    let problem = doc.querySelector("problem"), solution = doc.querySelector("solution");
-    if ((pairMode && !solution) || (!pairMode && solution)) swapPairMode();
-    // set texs
-    if (problem) texProblem.value = problem.getAttribute("tex");
-    else texProblem.value = "";
-    fixTextHeight({target: texProblem});
-    if (solution) texSolution.value = solution.getAttribute("tex");
-    fixTextHeight({target: texSolution});
-    if (problem) {
-        if (solution) texLiveOut.innerHTML = "<h4>Problem</h4>"+texAttToInnerHTML(problem.getAttribute("tex"))+"<h4>Solution</h4>"+texAttToInnerHTML(solution.getAttribute("tex"));
-        else texLiveOut.innerHTML = texAttToInnerHTML(problem.getAttribute("tex"));
-        // just a little fun
-        for (let a of document.querySelectorAll("[href=\"https://ncatlab.org/nlab/show/Fubini+theorem\"]")) xmlImporter.rickRollLink(a);
+function toggleColumnListener() {
+    /*let meta = metas[toggleColumn.value];
+    if (meta) {
+        meta.hide = !meta.hide;
+        fixWholeList();
+        toggleColumn.setAttribute("placeholder", (meta.hide? "hid ": "showed ") + toggleColumn.value);
+        toggleColumn.value = "";
+        window.setTimeout(function() {toggleColumn.setAttribute("placeholder", "")}, 3000);
     } else {
-        if (solution) texLiveOut.innerHTML = "<h4>Problem</h4><p></p><h4>Solution</h4><p></p>";
-        else texLiveOut.innerHTML = "<h4>Problem</h4><p></p>";
-    }
-    if (!holdJax) typeset(texLiveOut);
-    // reset metainformation
-    for (let meta in metas) {
-        switch (metas[meta].metaType) {
-            case "checkbox":
-                for (let value in metas[meta].values) metas[meta].values[value].input.checked = false;
-            break; case "radio":
-                metas[meta].values[metas[meta].defaultValue].input.checked = true;
-            break; case "scale":
-                metas[meta].input.value = 0;
-        }
-    }
-    // handle metainformation
-    if (problem) for (let metaNode of problem.childNodes) {
-        if (metaNode.hasAttribute("radio")) {
-            ensureMetatype(metaNode.nodeName, "radio", metaNode.getAttribute("radio"));
-            let value = metaNode.firstChild;
-            if (value) {
-                if (!(value.nodeName in metas[metaNode.nodeName].values)) newRadio(metaNode.nodeName, value.nodeName);
-                metas[metaNode.nodeName].values[value.nodeName].input.checked = true;
-            }
-        } else if (metaNode.hasAttribute("scale")) {
-            ensureMetatype(metaNode.nodeName, "scale", metaNode.getAttribute("scale"));
-            metas[metaNode.nodeName].input.value = metaNode.getAttribute("scale");
-        } else {
-            ensureMetatype(metaNode.nodeName, "checkbox");
-            for (let valueNode of metaNode.childNodes) {
-                if (!(valueNode.nodeName in metas[metaNode.nodeName].values)) newCheckbox(metaNode.nodeName, valueNode.nodeName);
-                metas[metaNode.nodeName].values[valueNode.nodeName].input.checked = true;
-            }
-        }
-    }
-    fixWholeList();
-    codeOut.value = xmlImporter.nodeToString(doc);
-    fixTextHeight({target: codeOut});
-    if (qual == "local" && id != "changeMe") {
-        Store.store("local " + id, codeOut.value);
-        Store.store("local problems list", problemsListString());
-    }
+        let value = toggleColumn.value;
+        toggleColumn.value = "cannot find " + value;
+        toggleColumn.setAttribute("disabled", "");
+        window.setTimeout(function() {
+            toggleColumn.value = value;
+            toggleColumn.removeAttribute("disabled");
+        }, 3000);
+    }*/
+    console.log("toggling column");
 }
 
 // update the whole list of problems with the current values
 function fixWholeList() {
-    if (holdJax || justJax) return;
     wholeListHere.innerHTML = "";
     let header = xmlImporter.element("tr", wholeListHere);
     xmlImporter.text("🔍", xmlImporter.element("th", header));
@@ -548,11 +637,11 @@ function fixWholeList() {
         xmlImporter.text(meta, xmlImporter.element("th", header));
     }
     let rows = [];
-    let matches = getProblemsFromSelector(practiceSearch.value, problems);
+    let matches = getProblemsFromSelector(practiceSearch.value);
     for (let problem in problems) {
         let row = xmlImporter.element("tr", null);
         rows.push(row);
-        xmlImporter.text((problem in matches)? "✓": "X", xmlImporter.element("td", row)); // the X here is not the unicode fancy X so that it shows up as different even if the user doesn't have a powerful-enough font for unicode check mark and fancy X
+        xmlImporter.text((problem in matches)? "✓": "X", xmlImporter.element("td", row)); // the X here is not the unicode fancy X so that it shows up as different even if the user doesn't have a powerful enough font for unicode check mark and fancy X
         xmlImporter.text(problem, xmlImporter.element("td", row));
         for (let meta of showMetas) {
             let metaNode = problems[problem].doc.querySelector("problem > " + meta);
@@ -582,102 +671,63 @@ function fixWholeList() {
     for (let row of rows) wholeListHere.appendChild(row);
 }
 
-function toggleColumnListener() {
-    let meta = metas[toggleColumn.value];
-    if (meta) {
-        meta.hide = !meta.hide;
-        fixWholeList();
-        toggleColumn.setAttribute("placeholder", (meta.hide? "hid ": "showed ") + toggleColumn.value);
-        toggleColumn.value = "";
-        window.setTimeout(function() {toggleColumn.setAttribute("placeholder", "")}, 3000);
-    } else {
-        let value = toggleColumn.value;
-        toggleColumn.value = "cannot find " + value;
-        toggleColumn.setAttribute("disabled", "");
-        window.setTimeout(function() {
-            toggleColumn.value = value;
-            toggleColumn.removeAttribute("disabled");
-        }, 3000);
+// Update doc to represent what is present in the interface. This consists of creating a new document from the GUI values, deleting the old problem, and reloading it with the new doc.
+function resetDoc() {
+    if (activeProblem === "changeMe") return;
+    let doc = xmlImporter.newDocument();
+    let root = xmlImporter.elementDoc(doc, activeProblem, doc);
+    let problemNode = xmlImporter.elementDoc(doc, "problem", root, ["tex", texProblem.value]);
+    for (let metaName in metas) {
+        let meta = metas[metaName];
+        switch (meta.metaType) {
+            case "checkbox":
+                let metaNode = xmlImporter.elementDoc(doc, metaName, problemNode);
+                for (let value in meta.values) if (meta.values[value].input.checked) xmlImporter.elementDoc(doc, value, metaNode);
+                if (metaNode.childElementCount === 0) problemNode.removeChild(metaNode);
+            break; case "radio":
+                if (!meta.values[meta.defaultValue].input.checked) for (let value in meta.values) if (meta.values[value].input.checked) xmlImporter.elementDoc(doc, value, xmlImporter.elementDoc(doc, metaName, problemNode, ["radio", meta.defaultValue])); 
+            break; case "scale":
+                if (meta.input.value != 0) xmlImporter.elementDoc(doc, metaName, problemNode, ["scale", meta.input.value]);
+            break;
+        }
     }
+    if (pairMode) xmlImporter.elementDoc(doc, "solution", problemNode.parentElement, ["tex", texSolution.value]);
+    if (problems[activeProblem]) eraseProblem(activeProblem);
+    loadProblem(doc);
+    afterProblemsAreSet();
 }
-
-function convertDoc() {
-    // if you need to convert from a previous format to a new format then do so here
-    // this function is in the load process so it will convert all files as they are loaded
-    // take doc and process it from old format to new format, return nothing because the change is done directly to doc
-    
-    // Here is an example of a conversion. This removes any childless checkbox metainformations
-    
-    /*
-    let problemNode = doc.querySelector("problem");
-    let removeThese = [];
-    for (let child of problemNode.childNodes) if (!child.hasAttribute("scale") && !child.hasChildNodes()) removeThese.push(child);
-    for (let child of removeThese) problemNode.removeChild(child);
-    */
+// same as above but much quicker because it doesn't change any of the metainformation
+function resetDocTexOnly(e) {
+    problems[activeProblem].doc.querySelector("problem").setAttribute("tex", texProblem.value);
+    if (pairMode) problems[activeProblem].doc.querySelector("solution").setAttribute("tex", texSolution.value);
+    outputTexFromActiveProblem();
 }
+// this initializes a blank doc in a new session
+resetDoc();
 
-// get ids of all loaded problems
-function problemsListString() {
-    let returner = "";
-    for (let problem in problems) if (problem != "changeMe") returner += " " + problem;
-    return returner.substring(1);
-}
-
-// temporary message displayed in an input element
-function inputMessage(input, message, time = 1000) {
-    let line = input.value, able = !input.hasAttribute("disabled");
-    window.setTimeout(function() {input.value = message}, 10); // delay is to let blur happen
-    input.setAttribute("disabled", "");
-    window.setTimeout(function() {
-        input.value = line;
-        if (able) input.removeAttribute("disabled");
-    }, time);
-}
-
-// This empties the interface and make doc a new problem document. This does not erase the active problem.
-function clearTex() {
-    doc = xmlImporter.newDocument();
-    xmlImporter.elementDoc(doc, "changeMe", doc); // root node, required for xml files
-    outputFromDoc();
-    texProblem.value = texSolution.value = "";
-    if (!pairMode) swapPairMode();
-}
-
-// start a session with a blank slate
-clearTex();
-
-function swapPairMode() {
-    let exchange = resetDoc;
-    resetDoc = function() {}
-    pairSoloButton.click();
-    resetDoc = exchange;
-}
-
-// in case you want to show TeX without MathJax rendering it
-function noJax(line) {
-    return line.replace(/&/g, "&amp;").replace(/\\/g, "\\<span\\>");
-}
-
-// this defines which strings are valid node names
-function nodeNameScreen(line) {
-    try {return document.createElement(line) !== false} catch (e) {return false}
-}
-
-// return the first instance in array of an object which has a value of value in property prop
-function getBy(array, prop, value) {
-    for (let element of array) if (element[prop] == value) return element;
+// offer the currently active problem as an XML file for the user to download, named id.xml
+function saveActiveProblem() {
+    /*// codeOut already has the contents of the intended XML file so just copy it into a file
+    let file = new File([codeOut.value], id+".xml", {type: "text/xml"});
+    // make and click an appropriate download link
+    let url = URL.createObjectURL(file);
+    let a = xmlImporter.element("a", document.body, ["href", url, "download", ""]);
+    xmlImporter.text("download link", a);
+    a.click();
+    document.body.removeChild(a);*/
+    console.log("save active probleming");
 }
 
 let practiceTestProto = {};
 
 // make a new practice test configuration zone
 function offerNewPracticeTest() {
-    let config = Object.create(practiceTestProto);
+    /*let config = Object.create(practiceTestProto);
     practiceTestConfigs.push(config);
     config.div = xmlImporter.element("div", practiceTestsSpot, ["class", "practicetestconfig"]);
     config.rawText = xmlImporter.element("textarea", config.div, ["class", "xmlin"]);
     xmlImporter.makeTabbable(config.rawText);
-    config.rawText.addEventListener("input", fixTextHeight);
+    config.rawText.addEventListener("input", xmlImporter.fixTextHeight);
     config.rawText.addEventListener("input", function() {
         config.compileButton.removeAttribute("hide");
         config.makeTestButton.setAttribute("hide", "");
@@ -693,7 +743,80 @@ function offerNewPracticeTest() {
     config.testOut = xmlImporter.element("details", config.div, ["class", "testout", "hide", "", "open", ""]);
     config.testNameNode = xmlImporter.text("", xmlImporter.element("summary", config.testOut));
     xmlImporter.text("test goes here", config.test = xmlImporter.element("p", config.testOut));
-    return config;
+    return config;*/
+    console.log("offering new practice test");
+}
+
+// use JSZip magic to save all loaded problems in one .zip file/folder
+let zip;
+function saveAll() {
+    /*// this url is where JSZip source code is available
+    if (!zip) return xmlImporter.element("script", document.head, ["src", "https://stuk.github.io/jszip/dist/jszip.js"]).addEventListener("load", function() {
+        zip = new JSZip();
+        saveAll();
+    });
+    let bigFolder = zip.folder(qual), folder = bigFolder.folder("problems");
+    for (let problem in problems) if (problem != "changeMe") folder.file(problem+".xml", xmlImporter.nodeToString(problems[problem].doc));
+    bigFolder.file("problemsList.txt", allProps(problems, "doc"));
+    bigFolder.generateAsync({type:"blob"}).then(function (file) {
+        // rename file from some machine name to "problems.zip"
+        file = new File([file.slice(0, file.size, "application/zip")], "problems.zip", {type: "application/zip"});
+        // save problems.zip
+        let url = URL.createObjectURL(file);
+        let a = xmlImporter.element("a", document.body, ["href", url, "download", ""]);
+        xmlImporter.text("download link", a);
+        a.click();
+        document.body.removeChild(a);
+    });*/
+    console.log("save alling");
+}
+
+function newMetaTypeTypeChange() {
+    /*if (newMetaTypeIn.hasAttribute("disabled")) {
+        newMetaTypeIn.removeAttribute("disabled");
+        newMetaTypeIn.value = "";
+    }
+    switch (newMetatypeType.selectedIndex) {
+        case 1: // checkbox
+            defaultIn.setAttribute("hide", "");
+            newMetaTypeIn.setAttribute("placeholder", "new metatype name");
+        break; case 2: // radio
+            defaultIn.removeAttribute("hide");
+            defaultIn.value = "defaultValue";
+            newMetaTypeIn.setAttribute("placeholder", "new metatype name, enter default value first -->");
+        break; case 3: // scale
+            defaultIn.setAttribute("hide", "new metatype name");
+    }*/
+    console.log("new metatype type change");
+}
+
+/*
+
+// get ids of all loaded problems
+function problemsListString() {
+    let returner = "";
+    for (let problem in problems) if (problem != "changeMe") returner += " " + problem;
+    return returner.substring(1);
+}
+
+// start a session with a blank slate
+clearNewProblem();
+
+function swapPairMode() {
+    let exchange = resetDoc;
+    resetDoc = function() {}
+    pairSoloButton.click();
+    resetDoc = exchange;
+}
+
+// in case you want to show TeX without MathJax rendering it
+function noJax(line) {
+    return line.replace(/&/g, "&amp;").replace(/\\/g, "\\<span\\>");
+}
+
+// return the first instance in array of an object which has a value of value in property prop
+function getBy(array, prop, value) {
+    for (let element of array) if (element[prop] == value) return element;
 }
 
 // read in from rawText
@@ -750,52 +873,6 @@ function errorOut(message) {
     throw Error(message);
 }
 
-// offer the currently active problem as an XML file for the user to download, named id.xml
-function saveActiveProblem() {
-    // codeOut already has the contents of the intended XML file so just copy it into a file
-    let file = new File([codeOut.value], id+".xml", {type: "text/xml"});
-    // make and click an appropriate download link
-    let url = URL.createObjectURL(file);
-    let a = xmlImporter.element("a", document.body, ["href", url, "download", ""]);
-    xmlImporter.text("download link", a);
-    a.click();
-    document.body.removeChild(a);
-}
-
-// use JSZip magic to save all loaded problems in one .zip file/folder
-let zip;
-function saveAll() {
-    // this url is where JSZip source code is available
-    if (!zip) return xmlImporter.element("script", document.head, ["src", "https://stuk.github.io/jszip/dist/jszip.js"]).addEventListener("load", function() {
-        zip = new JSZip();
-        saveAll();
-    });
-    let bigFolder = zip.folder(qual), folder = bigFolder.folder("problems");
-    for (let problem in problems) if (problem != "changeMe") folder.file(problem+".xml", xmlImporter.nodeToString(problems[problem].doc));
-    bigFolder.file("problemsList.txt", allProps(problems, "doc"));
-    bigFolder.generateAsync({type:"blob"}).then(function (file) {
-        // rename file from some machine name to "problems.zip"
-        file = new File([file.slice(0, file.size, "application/zip")], "problems.zip", {type: "application/zip"});
-        // save problems.zip
-        let url = URL.createObjectURL(file);
-        let a = xmlImporter.element("a", document.body, ["href", url, "download", ""]);
-        xmlImporter.text("download link", a);
-        a.click();
-        document.body.removeChild(a);
-    });
-}
-
-// remove all locally stored problems
-function clearLocalQual() {
-    for (let problem of (Store.fetch("local problems list") || "").split(" ")) Store.erase("local " + problem);
-    Store.erase("local problems list");
-    // give up on trying to reinitialize a local session, force a refresh and start anew
-    // not really necessary but I didn't want to work out a local refresh
-    Store.canStore = function() {return false}
-    document.body.innerHTML = "<p>Please refresh page now</p>";
-    window.location.reload(true);
-}
-
 function allProps(object, accessor) {
     let props = [];
     if (typeof accessor !== "undefined") for (let prop in object) props.push(prop[accessor]);
@@ -806,3 +883,4 @@ function allProps(object, accessor) {
     for (let prop of props) line += " " + prop;
     return line.substring(1);
 }
+*/
