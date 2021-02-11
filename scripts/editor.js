@@ -670,19 +670,18 @@ function hardRename() {
 
 function softRename() {
     if (announceFunctions) console.log("softRename");
-    /*let line = renameSoftMetainformation.value, lines = line.split(" ");
+    let line = renameSoftMetainformation.value, lines = line.split(" ");
     let meta = lines[0], tag = lines[1];
-    if (!metas[meta]) return inputMessage(renameSoftMetainformation, "cannot find metainformation " + meta);
+    if (!metas[meta]) return xmlImporter.inputMessage(renameSoftMetainformation, "cannot find metainformation " + meta);
     let bunch = metas[meta];
-    if (!bunch.values || !(tag in bunch.values)) return inputMessage(renameSoftMetainformation, "cannot find " + tag + " in " + meta);
+    if (!bunch.values || !(tag in bunch.values)) return xmlImporter.inputMessage(renameSoftMetainformation, "cannot find " + tag + " in " + meta);
     let value = line.substring(meta.length + tag.length + 2);
     // just a little fun
     if (value == "Dr. Ian Malcolm") value = "Dr. Ian Malcolm, renowned chaos theorist and proponent of fundamental biological understanding";
-    Store.store(qual + " " + meta + " " + tag, value);
+    Store.store(qualName + " " + meta + " " + tag, value);
     bunch.values[tag].alternateName.nodeValue = value;
     renameSoftMetainformation.value = "";
-    inputMessage(renameSoftMetainformation, "successfully soft renamed " + qual + " " + meta + " " + tag + " to " + value);*/
-    console.log("soft renaming");
+    xmlImporter.inputMessage(renameSoftMetainformation, "successfully soft renamed " + qualName + " " + meta + " " + tag + " to " + value);
 }
 
 function toggleColumnListener() {
