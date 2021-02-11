@@ -151,9 +151,12 @@ function afterProblemsAreSetOverride() {}
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
+let currentlyErasing;
 function eraseProblem(problem) {
+    currentlyErasing = problem;
     eraseProblemOverride(problem);
     delete problems[problem];
+    currentlyErasing = undefined;
 }
 function eraseProblemOverride(problem) {}
 //----------------------------------------------------------------------------------------------------------------
@@ -248,7 +251,7 @@ function isEmpty(o) {
 // get ids of all loaded problems
 function problemsListString() {
     let returner = "";
-    for (let problem in problems) if (problem != "changeMe") returner += " " + problem;
+    for (let problem in problems) if (problem !== "changeMe" && problem !== currentlyErasing) returner += " " + problem;
     return returner.substring(1);
 }
 //----------------------------------------------------------------------------------------------------------------

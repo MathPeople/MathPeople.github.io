@@ -187,7 +187,7 @@ let editor = document.getElementById("editor"),
 if (announceFunctions) xmlImporter.makeButton("print stamp", editor, "printstamp", function() {console.log("\r\nstamp")});
 // script global variables
 let activeProblem = "changeMe", // id of the problem currently in the gui
-    idBlacklist = ["problem", "solution"], // don't name a problem one of these
+    idBlacklist = ["changeMe", "problem", "solution"], // don't name a problem one of these
     autosave = false,
     pairMode = true, // problem/solution pair or solo mode
     justJax = false, // render just jax or render all the metainformation gui elements as well
@@ -371,10 +371,8 @@ jaxLoopWait = 200;
         if (!holdJax) typeset(texLiveOut);
         codeOut.value = xmlImporter.nodeToString(problems[problem].doc);
         xmlImporter.fixTextHeight({target: codeOut});
-        if (autosave && problem !== "changeMe") {
-            Store.store("local "+problem, codeOut.value);
-            Store.store("local problems list", problemsListString());
-        }
+        if (autosave) Store.store("local problems list", problemsListString());
+        if (autosave && problem !== "changeMe") Store.store("local "+problem, codeOut.value);
         if (texProblem.value === "" && (!pairMode || texSolution.value === "")) eraseProblemButton.removeAttribute("hide");
         else eraseProblemButton.setAttribute("hide", "");
         oldLoadProblemOverride(problem);
