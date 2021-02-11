@@ -1,7 +1,7 @@
 /*
     First read the wiki for using this editor, in particular the parts about how problem focus works. The active problem is the problem with current focus and is the only one which can be changed through interaction with the GUI. The editor works by letting the user focus on a problem and interact with the GUI to make changes to it. The problem exists as an XML DOM. Any change directed to the problem first changes that problem's DOM and then repopulates the document HTML DOM with information from the problem XML DOM. Saving consists of saving these problem XML DOMs.
 */
-
+var announceFunctions = false;
 // editor DOM elements
 let editor = document.getElementById("editor"),
     qualNameIn = xmlImporter.labeledInput(
@@ -158,6 +158,7 @@ let editor = document.getElementById("editor"),
     texSolution.parentElement.setAttribute("paironly", "");
 }
 
+xmlImporter.makeButton("print stamp", editor, "printstamp", function() {console.log("\r\nstamp")});
 // script global variables
 let activeProblem = "changeMe", // id of the problem currently in the gui
     idBlacklist = ["problem", "solution"], // don't name a problem one of these
@@ -174,6 +175,7 @@ jaxLoopWait = 200;
     // as we add metas, put the little buttons in the metainformation GUI section
     let oldAddingMetaOverride = addingMetaOverride;
     addingMetaOverride = function addingMetaOverride(metaType, values) {
+        if (announceFunctions) console.log("addingMetaOverride "+metaType+" "+Object.keys(values));
         let meta = metas[metaType];
         if (!meta.div) {
             meta.div = xmlImporter.element("div", putMetasHere, ["class", "meta"]);
@@ -285,6 +287,7 @@ jaxLoopWait = 200;
     // as a problem is loaded, set all the gui elements to apply to the loading problem
     let oldLoadProblemOverride = loadProblemOverride;
     loadProblemOverride = function loadProblemOverride(problem) {
+        if (announceFunctions) console.log("loadProblemOverride "+problem);
         if (!problems[problem]) return;
         activeProblem = problem;
         idInput.value = problem;
@@ -326,14 +329,15 @@ jaxLoopWait = 200;
         oldLoadProblemOverride(problem);
     }
     function outputTexFromProblem(problem = activeProblem) {
+        if (announceFunctions) console.log("outputTexFromProblem "+problem);
         let problemNode = problems[problem].doc.querySelector("problem"), solutionNode = problems[problem].doc.querySelector("solution");
+        pairMode = solutionNode != null;
+        pairSoloRefresh();
         texProblem.value = problemNode? problemNode.getAttribute("tex"): "";
         xmlImporter.fixTextHeight({target: texProblem});
         texSolution.value = solutionNode? solutionNode.getAttribute("tex"): "";
         xmlImporter.fixTextHeight({target: texSolution});
-        let line = "<h4>Problem</h4>"+texProblem.value;
-        if (solutionNode) line += "<h4>Solution</h4>"+texSolution.value;
-        texLiveOut.innerHTML = line;
+        texLiveOut.innerHTML = solutionNode? "<h4>Problem</h4>"+texProblem.value+"<h4>Solution</h4>"+texSolution.value: texProblem.value;
         if (!holdJax) typeset(texLiveOut);
         codeOut.value = xmlImporter.nodeToString(problems[problem].doc);
         xmlImporter.fixTextHeight({target: codeOut});
@@ -347,6 +351,7 @@ jaxLoopWait = 200;
     //afterProblemsAreSetOverride
     let oldAfterProblemsAreSetOverride = afterProblemsAreSetOverride;
     afterProblemsAreSetOverride = function afterProblemsAreSetOverride() {
+        if (announceFunctions) console.log("afterProblemsAreSetOverride");
         loadProblemOverride(activeProblem); // populate GUI with the current problem
         fixWholeList();
         sortList(loadedProblems);
@@ -355,6 +360,7 @@ jaxLoopWait = 200;
     }
     // take an element whose children are options and sort them alphabetically
     function sortList(listElement) {
+        if (announceFunctions) console.log("sortList "+listElement.getAttribute("id"));
         let options = [];
         while (listElement.firstChild) options.push(listElement.removeChild(listElement.firstChild));
         options.sort(optionComparator);
@@ -368,6 +374,7 @@ jaxLoopWait = 200;
     // remove this problem from lists
     let oldEraseProblemOverride = eraseProblemOverride;
     eraseProblemOverride = function eraseProblemOverride(problem) {
+        if (announceFunctions) console.log("eraseProblemOverride "+problem);
         let e = problems[problem].idListOption;
         if (e) e.parentElement.removeChild(e);
         e = problems[problem].loadedProblemsOption;
@@ -379,12 +386,14 @@ jaxLoopWait = 200;
     //eraseWhole/PartMetainformationOverride
     let oldEraseWholeMetainformationOverride = eraseWholeMetainformationOverride;
     eraseWholeMetainformationOverride = function eraseWholeMetainformationOverride(metaType) {
+        if (announceFunctions) console.log("eraseWholeMetainformationOverride "+metaType);
         metas[metaType].div.parentElement.removeChild(metas[metaType].div);
         oldEraseWholeMetainformationOverride(metaType);
     }
     
     let oldErasePartMetainformationOverride = erasePartMetainformationOverride;
     erasePartMetainformationOverride = function erasePartMetainformationOverride(metaType, metaValue) {
+        if (announceFunctions) console.log("erasePartMetainformationOverride "+metaType+" "+metaValue);
         let div = metas[metaType].values[metaValue].div;
         div.parentElement.removeChild(div);
         oldErasePartMetainformationOverride(metaType, metaValue);
@@ -393,6 +402,7 @@ jaxLoopWait = 200;
 
 // Take qualNameIn's value and load the corresponding problems
 function loadQual() {
+    if (announceFunctions) console.log("loadQual");
     if (xmlImporter.nodeNameScreen(qualNameIn.value)) {
         if (qualNameIn.value === "local") {
             qualNameIn.value = "working locally";
@@ -442,6 +452,7 @@ function loadQual() {
 
 // load problems from local storage
 function loadFromLocalStorage() {
+    if (announceFunctions) console.log("loadFromLocalStorage");
     autosave = true;
     holdJax = true;
     let list = Store.fetch("local problems list"); // same as problemsList.txt, space separated list of ids
@@ -464,6 +475,7 @@ function loadFromLocalStorage() {
 
 // remove all locally stored problems
 function clearLocalQual() {
+    if (announceFunctions) console.log("clearLocalQual");
     let deleteMe = Object.assign({}, problems);
     for (let problem in deleteMe) eraseProblem(problem);
     Store.erase("local problems list");
@@ -471,28 +483,34 @@ function clearLocalQual() {
 
 // what to do if importing the qual failed
 function cantFindQual() {
+    if (announceFunctions) console.log("cantFindQual");
     xmlImporter.inputMessage(qualNameIn, "that qual has not been successfully initiated", 3000);
 }
 
 // This empties the interface and make doc a new problem document. This does not erase the active problem.
 function clearNewProblem() {
-    doc = xmlImporter.newDocument();
-    xmlImporter.elementDoc(doc, "changeMe", doc); // root node, required for xml files
-    if (!pairMode) swapPairMode();
+    if (announceFunctions) console.log("clearNewProblem");
+    doc = xmlImporter.parseDoc("<changeMe><problem tex=''/>"+(pairMode?"<solution tex=''/>":"")+"</changeMe>");
     loadProblem(doc);
+    afterProblemsAreSet();
 }
 
 // switch between pair mode and solo mode
 function pairSoloClicked() {
-    /*pairSoloButton.firstChild.nodeValue = "To " + (pairMode? "Pair": "Solo") + " Mode";
+    if (announceFunctions) console.log("pairSoloClicked");
     pairMode = !pairMode;
+    pairSoloRefresh();
+    resetDoc();
+}
+
+function pairSoloRefresh() {
+    pairSoloButton.firstChild.nodeValue = "To " + (pairMode? "Solo": "Pair") + " Mode";
     if (pairMode) for (let hideMe of document.querySelectorAll("[paironly]")) hideMe.removeAttribute("hide");
     else for (let hideMe of document.querySelectorAll("[paironly]")) hideMe.setAttribute("hide", "");
-    resetDoc();*/
-    console.log("pair solo switch");
 }
 
 function handleIdChange() {
+    if (announceFunctions) console.log("handleIdChange");
     if (idBlacklist.includes(idInput.value)) return xmlImporter.inputMessage(idInput, "cannot name a problem that");
     if (xmlImporter.nodeNameScreen(idInput.value)) {
         let oldID = activeProblem;
@@ -507,11 +525,13 @@ function handleIdChange() {
             while (root.firstChild) newRoot.appendChild(root.firstChild);
             doc.replaceChild(newRoot, root);
             loadProblem(doc);
+            afterProblemsAreSet();
         }
-    } else inputMessage(idInput, "invalid nodeName");
+    } else xmlImporter.inputMessage(idInput, "invalid nodeName");
 }
 
 function tryNewMetaTypeIn() {
+    if (announceFunctions) console.log("tryNewMetTypeIn");
     /*let meta = newMetaTypeIn.value;
     if (nodeNameScreen(meta)) ensureMetatype(meta, newMetatypeType.value, defaultIn.value);
     newMetaTypeIn.value = "";*/
@@ -519,6 +539,7 @@ function tryNewMetaTypeIn() {
 }
 
 function hardRename() {
+    if (announceFunctions) console.log("hardRename");
     /*try {
         let line = renameMetainformation.value, lines = line.split(" ");
         switch (lines.length) {
@@ -596,6 +617,7 @@ function hardRename() {
 }
 
 function softRename() {
+    if (announceFunctions) console.log("softRename");
     /*let line = renameSoftMetainformation.value, lines = line.split(" ");
     let meta = lines[0], tag = lines[1];
     if (!metas[meta]) return inputMessage(renameSoftMetainformation, "cannot find metainformation " + meta);
@@ -612,6 +634,7 @@ function softRename() {
 }
 
 function toggleColumnListener() {
+    if (announceFunctions) console.log("toggleColumnListener");
     /*let meta = metas[toggleColumn.value];
     if (meta) {
         meta.hide = !meta.hide;
@@ -633,6 +656,7 @@ function toggleColumnListener() {
 
 // update the whole list of problems with the current values
 function fixWholeList() {
+    if (announceFunctions) console.log("fixWholeList");
     wholeListHere.innerHTML = "";
     let header = xmlImporter.element("tr", wholeListHere);
     xmlImporter.text("🔍", xmlImporter.element("th", header));
@@ -677,8 +701,9 @@ function fixWholeList() {
     for (let row of rows) wholeListHere.appendChild(row);
 }
 
-// Update doc to represent what is present in the interface. This consists of creating a new document from the GUI values, deleting the old problem, and reloading it with the new doc.
+// Update active problem to represent what is present in the interface. This consists of creating a new document from the GUI values, deleting the old problem, and reloading it with the new doc.
 function resetDoc() {
+    if (announceFunctions) console.log("resetDoc");
     let doc = xmlImporter.newDocument();
     let root = xmlImporter.elementDoc(doc, activeProblem, doc);
     let problemNode = xmlImporter.elementDoc(doc, "problem", root, ["tex", texProblem.value]);
@@ -702,7 +727,8 @@ function resetDoc() {
     afterProblemsAreSet();
 }
 // same as above but much quicker because it doesn't change any of the metainformation
-function resetDocTexOnly(e) {
+function resetDocTexOnly() {
+    if (announceFunctions) console.log("resetDocTexOnly");
     problems[activeProblem].doc.querySelector("problem").setAttribute("tex", texProblem.value);
     if (pairMode) problems[activeProblem].doc.querySelector("solution").setAttribute("tex", texSolution.value);
     outputTexFromProblem();
@@ -712,6 +738,7 @@ resetDoc();
 
 // offer the currently active problem as an XML file for the user to download, named id.xml
 function saveActiveProblem() {
+    if (announceFunctions) console.log("saveActiveProblem");
     /*// codeOut already has the contents of the intended XML file so just copy it into a file
     let file = new File([codeOut.value], id+".xml", {type: "text/xml"});
     // make and click an appropriate download link
@@ -727,6 +754,7 @@ let practiceTestProto = {};
 
 // make a new practice test configuration zone
 function offerNewPracticeTest() {
+    if (announceFunctions) console.log("offerNewPracticeTest");
     /*let config = Object.create(practiceTestProto);
     practiceTestConfigs.push(config);
     config.div = xmlImporter.element("div", practiceTestsSpot, ["class", "practicetestconfig"]);
@@ -755,6 +783,7 @@ function offerNewPracticeTest() {
 // use JSZip magic to save all loaded problems in one .zip file/folder
 let zip;
 function saveAll() {
+    if (announceFunctions) console.log("saveAll");
     /*// this url is where JSZip source code is available
     if (!zip) return xmlImporter.element("script", document.head, ["src", "https://stuk.github.io/jszip/dist/jszip.js"]).addEventListener("load", function() {
         zip = new JSZip();
@@ -777,6 +806,7 @@ function saveAll() {
 }
 
 function newMetaTypeTypeChange() {
+    if (announceFunctions) console.log("newMetaTypeTypeChange");
     /*if (newMetaTypeIn.hasAttribute("disabled")) {
         newMetaTypeIn.removeAttribute("disabled");
         newMetaTypeIn.value = "";
