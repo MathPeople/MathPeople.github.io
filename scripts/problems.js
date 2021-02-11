@@ -164,9 +164,9 @@ function eraseProblemOverride(problem) {}
 //----------------------------------------------------------------------------------------------------------------
 // Checks if a metainformation is in use and if not then it erases it. Returns whether something was erased.
 function tryEraseMetainformation(metaType, metaValue) {
-    if (metaValue) {
-        // don't look for the default value of radio since you won't find it
-        if (metas[metaType].metaType === "radio" && metaValue === metas[metaType].defaultValue) return false;
+    if (typeof metaValue === "string") {
+        // special case for default radio value
+        if (metas[metaType].metaType === "radio" && metaValue === metas[metaType].defaultValue) return tryEraseMetainformation(metaType);
         // erasing just the value
         if (isEmpty(getProblemsFromSelector("//problem/"+metaType+"/"+metaValue))) {
             erasePartMetainformation(metaType, metaValue);
@@ -191,7 +191,7 @@ function eraseWholeMetainformation(metaType) {
 function eraseWholeMetainformationOverride() {}
 function erasePartMetainformation(metaType, metaValue) {
     erasePartMetainformationOverride(metaType, metaValue);
-    delete metas[metaType][metaValue];
+    delete metas[metaType].values[metaValue];
 }
 function erasePartMetainformationOverride() {}
 //----------------------------------------------------------------------------------------------------------------
