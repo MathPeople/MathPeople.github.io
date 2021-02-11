@@ -19,6 +19,12 @@ let editor = document.getElementById("editor"),
         editor,
         "pairSolo",
         pairSoloClicked
+    ), eraseProblemButton = xmlImporter.makeButton(
+        "Erase Problem",
+        editor,
+        "eraseProblem",
+        eraseActiveProblem,
+        ["hide", ""]
     ), idInput = xmlImporter.labeledInput(
         "Problem ID: ",
         editor,
@@ -369,6 +375,8 @@ jaxLoopWait = 200;
             Store.store("local "+problem, codeOut.value);
             Store.store("local problems list", problemsListString());
         }
+        if (texProblem.value === "" && (!pairMode || texSolution.value === "")) eraseProblemButton.removeAttribute("hide");
+        else eraseProblemButton.setAttribute("hide", "");
         oldLoadProblemOverride(problem);
     }
     
@@ -528,6 +536,10 @@ function pairSoloClicked() {
     pairMode = !pairMode;
     pairSoloRefresh();
     resetDoc();
+}
+
+function eraseActiveProblem() {
+    if (activeProblem !== "changeMe") eraseProblem(activeProblem);
 }
 
 function pairSoloRefresh() {
