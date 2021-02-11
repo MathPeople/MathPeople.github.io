@@ -244,6 +244,13 @@ function start() {
 function isEmpty(o) {
     return Object.keys(o).length === 0;
 }
+
+// get ids of all loaded problems
+function problemsListString() {
+    let returner = "";
+    for (let problem in problems) if (problem != "changeMe") returner += " " + problem;
+    return returner.substring(1);
+}
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------

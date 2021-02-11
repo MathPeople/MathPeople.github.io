@@ -161,6 +161,7 @@ let editor = document.getElementById("editor"),
 // script global variables
 let activeProblem = "changeMe", // id of the problem currently in the gui
     idBlacklist = ["problem", "solution"], // don't name a problem one of these
+    autosave = false,
     pairMode = true, // problem/solution pair or solo mode
     justJax = false, // render just jax or render all the metainformation gui elements as well
     practiceTestConfigs = []; // holds all practice test configurations
@@ -284,6 +285,7 @@ jaxLoopWait = 200;
     // as a problem is loaded, set all the gui elements to apply to the loading problem
     let oldLoadProblemOverride = loadProblemOverride;
     loadProblemOverride = function loadProblemOverride(problem) {
+        if (!problems[problem]) return;
         activeProblem = problem;
         idInput.value = problem;
         idInput.removeAttribute("disabled");
@@ -320,11 +322,11 @@ jaxLoopWait = 200;
                 }
             }
         }
-        outputTexFromActiveProblem();
+        outputTexFromProblem();
         oldLoadProblemOverride(problem);
     }
-    function outputTexFromActiveProblem() {
-        let problemNode = problems[activeProblem].doc.querySelector("problem"), solutionNode = problems[activeProblem].doc.querySelector("solution");
+    function outputTexFromProblem(problem = activeProblem) {
+        let problemNode = problems[problem].doc.querySelector("problem"), solutionNode = problems[problem].doc.querySelector("solution");
         texProblem.value = problemNode? problemNode.getAttribute("tex"): "";
         xmlImporter.fixTextHeight({target: texProblem});
         texSolution.value = solutionNode? solutionNode.getAttribute("tex"): "";
@@ -333,9 +335,13 @@ jaxLoopWait = 200;
         if (solutionNode) line += "<h4>Solution</h4>"+texSolution.value;
         texLiveOut.innerHTML = line;
         if (!holdJax) typeset(texLiveOut);
-        codeOut.value = xmlImporter.nodeToString(problems[activeProblem].doc);
+        codeOut.value = xmlImporter.nodeToString(problems[problem].doc);
         xmlImporter.fixTextHeight({target: codeOut});
-        oldLoadProblemOverride(activeProblem);
+        if (autosave && problem !== "changeMe") {
+            Store.store("local "+problem, codeOut.value);
+            Store.store("local problems list", problemsListString());
+        }
+        oldLoadProblemOverride(problem);
     }
     
     //afterProblemsAreSetOverride
@@ -349,9 +355,8 @@ jaxLoopWait = 200;
     }
     // take an element whose children are options and sort them alphabetically
     function sortList(listElement) {
-        let options = [listElement.childNodes.length];
-        let i = 0;
-        while (listElement.firstChild) options[i++] = listElement.removeChild(listElement.firstChild);
+        let options = [];
+        while (listElement.firstChild) options.push(listElement.removeChild(listElement.firstChild));
         options.sort(optionComparator);
         for (let option of options) listElement.appendChild(option);
     }
@@ -367,6 +372,8 @@ jaxLoopWait = 200;
         if (e) e.parentElement.removeChild(e);
         e = problems[problem].loadedProblemsOption;
         if (e) e.parentElement.removeChild(e);
+        if (autosave) Store.erase("local " + problem);
+        if (problem === activeProblem) clearNewProblem();
     }
     
     //eraseWhole/PartMetainformationOverride
@@ -386,13 +393,13 @@ jaxLoopWait = 200;
 
 // Take qualNameIn's value and load the corresponding problems
 function loadQual() {
-    // don't typeset them as they are imported
     if (xmlImporter.nodeNameScreen(qualNameIn.value)) {
         if (qualNameIn.value === "local") {
             qualNameIn.value = "working locally";
             qualNameIn.setAttribute("disabled", "");
             qualName = "local";
             loadFromLocalStorage();
+            afterProblemsAreSet();
             return;
         }
         else {
@@ -418,6 +425,11 @@ function loadQual() {
                     qualNameIn.value = "working locally on " + qualName;
                     qualNameIn.setAttribute("disabled", "");
                     loadFromLocalStorage();
+                    let realTypeset = typeset;
+                    typeset = function() {}
+                    for (let problem in problems) outputTexFromProblem(problem); // this saves all problems to local storage
+                    typeset = realTypeset;
+                    loadProblemOverride(activeProblem); // bring focus back to active problem
                 }, cantFindQual
             );
             return;
@@ -430,6 +442,7 @@ function loadQual() {
 
 // load problems from local storage
 function loadFromLocalStorage() {
+    autosave = true;
     holdJax = true;
     let list = Store.fetch("local problems list"); // same as problemsList.txt, space separated list of ids
     if (!list) list = "";
@@ -451,14 +464,9 @@ function loadFromLocalStorage() {
 
 // remove all locally stored problems
 function clearLocalQual() {
-    for (let problem of (Store.fetch("local problems list")).split(" ")) Store.erase("local " + problem);
+    let deleteMe = Object.assign({}, problems);
+    for (let problem in deleteMe) eraseProblem(problem);
     Store.erase("local problems list");
-    // don't want to accidentally save anything to local storage while we erase it
-    Store.canStore = function() {return false}
-    // Give up on trying to reinitialize a local session, force a refresh and start anew.
-    // This shouldn't really be necessary but this is easy enough. Figure this out better if we want full offline capability.
-    document.body.innerHTML = "<p>Please refresh page now</p>";
-    window.location.reload(true);
 }
 
 // what to do if importing the qual failed
@@ -468,12 +476,10 @@ function cantFindQual() {
 
 // This empties the interface and make doc a new problem document. This does not erase the active problem.
 function clearNewProblem() {
-    /*doc = xmlImporter.newDocument();
+    doc = xmlImporter.newDocument();
     xmlImporter.elementDoc(doc, "changeMe", doc); // root node, required for xml files
-    outputFromDoc();
-    texProblem.value = texSolution.value = "";
-    if (!pairMode) swapPairMode();*/
-    console.log("clear/new probleming")
+    if (!pairMode) swapPairMode();
+    loadProblem(doc);
 }
 
 // switch between pair mode and solo mode
@@ -673,7 +679,6 @@ function fixWholeList() {
 
 // Update doc to represent what is present in the interface. This consists of creating a new document from the GUI values, deleting the old problem, and reloading it with the new doc.
 function resetDoc() {
-    if (activeProblem === "changeMe") return;
     let doc = xmlImporter.newDocument();
     let root = xmlImporter.elementDoc(doc, activeProblem, doc);
     let problemNode = xmlImporter.elementDoc(doc, "problem", root, ["tex", texProblem.value]);
@@ -700,7 +705,7 @@ function resetDoc() {
 function resetDocTexOnly(e) {
     problems[activeProblem].doc.querySelector("problem").setAttribute("tex", texProblem.value);
     if (pairMode) problems[activeProblem].doc.querySelector("solution").setAttribute("tex", texSolution.value);
-    outputTexFromActiveProblem();
+    outputTexFromProblem();
 }
 // this initializes a blank doc in a new session
 resetDoc();
@@ -792,13 +797,6 @@ function newMetaTypeTypeChange() {
 
 /*
 
-// get ids of all loaded problems
-function problemsListString() {
-    let returner = "";
-    for (let problem in problems) if (problem != "changeMe") returner += " " + problem;
-    return returner.substring(1);
-}
-
 // start a session with a blank slate
 clearNewProblem();
 
@@ -873,6 +871,7 @@ function errorOut(message) {
     throw Error(message);
 }
 
+
 function allProps(object, accessor) {
     let props = [];
     if (typeof accessor !== "undefined") for (let prop in object) props.push(prop[accessor]);
@@ -882,5 +881,4 @@ function allProps(object, accessor) {
     let line = "";
     for (let prop of props) line += " " + prop;
     return line.substring(1);
-}
-*/
+}*/
