@@ -76,7 +76,8 @@ let editor = document.getElementById("editor"),
         "Rename Metainformation",
         metainformationDetails,
         "renameMetainformation",
-        ["change", hardRename]
+        ["change", hardRename],
+        ["placeholder", "metaType newName | metaType metaValue newName"]
     ), renameSoftMetainformation = xmlImporter.labeledInput(
         "Alternate Name Metainformation",
         metainformationDetails,
@@ -84,7 +85,8 @@ let editor = document.getElementById("editor"),
         ["change", softRename]
     ), wholeListDetails = xmlImporter.makeDetails(
         "List View",
-        editor
+        editor,
+        true
     ), toggleColumn = xmlImporter.labeledInput(
         "Toggle Column",
         wholeListDetails,
@@ -99,10 +101,14 @@ let editor = document.getElementById("editor"),
         "table",
         wholeListDetails,
         ["id", "wholeListHere"]
+    ), texSection = xmlImporter.makeDetails(
+        "\\(\\TeX\\) Content",
+        hideForChangeMe,
+        true
     ), texProblem = xmlImporter.labeledElement(
         "Problem",
         "textarea",
-        hideForChangeMe,
+        texSection,
         "texProblem",
         ["input", xmlImporter.fixTextHeight,
         "input", resetDocTexOnly],
@@ -111,7 +117,7 @@ let editor = document.getElementById("editor"),
     ), texSolution = xmlImporter.labeledElement(
         "Solution",
         "textarea",
-        hideForChangeMe,
+        texSection,
         "texSolution",
         ["input", xmlImporter.fixTextHeight,
         "input", resetDocTexOnly],
@@ -119,16 +125,16 @@ let editor = document.getElementById("editor"),
         "spellcheck", "false"]
     ), texLiveOut = xmlImporter.element(
         "div",
-        hideForChangeMe,
+        texSection,
         ["id", "texLiveOut"]
     ), saveButton = xmlImporter.makeButton(
         "Save",
-        hideForChangeMe,
+        texSection,
         "save",
         saveActiveProblem
     ), codeOut =xmlImporter.element(
         "textarea",
-        hideForChangeMe,
+        texSection,
         ["id", "codeOut",
         "class", "texoutput",
         "readonly", "",
@@ -175,6 +181,7 @@ let editor = document.getElementById("editor"),
     xmlImporter.text("Scale", xmlImporter.element("option", newMetaTypeType));
     newMetaTypeType.selectedIndex = 0;
     
+    typeset(texSection);
     xmlImporter.makeTabbable(texProblem);
     xmlImporter.makeTabbable(texSolution);
     texSolution.parentElement.setAttribute("paironly", "");
@@ -620,82 +627,42 @@ function tryNewMetaTypeIn() {
     loadProblem(doc);
 }
 
+let hardRenameHelperFunctions = {
+    errorOut: function errorOut(message) {xmlImporter.inputMessage(renameMetainformation, message)},
+    renameMetaType: function renameMetaType(oldMeta, newMeta, doc) {
+        let metaNode = doc.querySelector("problem > "+oldMeta);
+        if (metaNode) {
+            let copy = xmlImporter.elementDoc(doc, newMeta);
+            for (let att of metaNode.attributes) copy.setAttribute(att.name, att.value);
+            while (metaNode.firstChild) copy.appendChild(metaNode.firstChild);
+            metaNode.parentNode.replaceChild(copy, metaNode);
+            loadProblem(doc);
+        }
+    }
+}
+
 function hardRename() {
     if (announceFunctions) console.log("hardRename");
-    /*try {
-        let line = renameMetainformation.value, lines = line.split(" ");
-        switch (lines.length) {
-            case 2:
-                // rename meta itself
-                let oldMeta = lines[0], newMeta = lines[1];
-                if (!(oldMeta in metas)) return inputMessage(renameMetainformation, "cannot find " + oldMeta);
-                if (newMeta in metas) return inputMessage(renameMetainformation, "naming conflict");
-                // rename meta in problem files
-                for (let problem in problems) {
-                    let doc = problems[problem].doc, oldMetaNode = doc.querySelector(oldMeta);
-                    if (oldMetaNode) {
-                        let newMetanode = xmlImporter.elementDoc(doc, newMeta);
-                        for (let child of oldMetaNode.childNodes) newMetanode.appendChild(child.cloneNode(true));
-                        for (let att of oldMetaNode.attributes) newMetanode.setAttribute(att.name, att.value);
-                        oldMetaNode.parentElement.replaceChild(newMetanode, oldMetaNode);
-                    }
-                }
-                // rename in metas
-                metas[newMeta] = metas[oldMeta];
-                delete metas[oldMeta];
-                metas[newMeta].nameText.nodeValue = newMeta;
-                resetDoc();
-                renameMetainformation.value = "";
-                inputMessage(renameMetainformation, "successfully renamed " + oldMeta + " to " + newMeta);
-            break; case 3:
-                // rename tag
-                let meta = lines[0], oldTag = lines[1], newTag = lines[2];
-                if (!(meta in metas)) return inputMessage("cannot find " + meta);
-                if (metas[meta].metaType == "scale") return inputMessage("scale metainformation has no tags to rename");
-                let metaBunch = metas[meta];
-                if (!(oldTag in metaBunch.values)) return inputMessage("cannot find " + oldTag + " in " + meta);
-                let oldBunch = metaBunch.values[oldTag];
-                if (newTag in metaBunch.values) return inputMessage("naming conflict");
-                let newDefault = oldTag == metaBunch.defaultValue? newTag: metaBunch.defaultValue;
-                // rename tag in problem files
-                for (let problem in problems) {
-                    let doc = problems[problem].doc, metaNode = doc.querySelector(meta);
-                    if (metaNode) {
-                        if (metaBunch.metaType == "radio") metaNode.setAttribute("radio", newDefault);
-                        let oldTagNode = doc.querySelector(meta + " " + oldTag);
-                        if (oldTagNode) {
-                            let newTagNode = xmlImporter.elementDoc(doc, newTag);
-                            for (let att of oldTagNode.attributes) newTagNode.setAttribute(att.name, att.value);
-                            for (let child of oldTagNode.childNodes) newTagNode.appendChild(child.cloneNode(true));
-                            oldTagNode.parentElement.replaceChild(newTagNode, oldTagNode);
-                        }
-                    }
-                }
-                // rename in metas
-                let newBunch;
-                switch (metaBunch.metaType) {
-                    case "checkbox":
-                        newBunch = newCheckbox(meta, newTag);
-                        oldBunch.div.parentElement.replaceChild(newBunch.div, oldBunch.div);
-                        newBunch.input.checked = oldBunch.input.checked;
-                        delete metaBunch.values[oldTag];
-                    break; case "radio":
-                        newBunch = newRadio(meta, newTag);
-                        oldBunch.div.parentElement.replaceChild(newBunch.div, oldBunch.div);
-                        newBunch.input.checked = oldBunch.input.checked;
-                    break; default: errorOut("unsupported name change");
-                }
-                delete metaBunch.values[oldTag];
-                resetDoc();
-                renameMetainformation.value = "";
-                inputMessage(renameMetainformation, "successfully renamed " + oldTag + " in " + meta + " to " + newTag);
-            break; default: inputMessage("invalid syntax");
-        }
-    } catch (e) {
-        console.log(e);
-        inputMessage(renameMetainformation, "cannot do that");
-    }*/
-    console.log("hard renaming");
+    let lines = renameMetainformation.value.split(" ");
+    let metaType = lines[0];
+    if (lines.length === 2) { // renaming metatype
+        if (!(metaType in metas)) return hardRenameHelperFunctions.errorOut("cannot find that metainformation");
+        let newName = lines[1];
+        if (!xmlImporter.nodeNameScreen(newName)) return hardRenameHelperFunctions.errorOut("not a valid node name");
+        if (idBlacklist.includes(newName)) return hardRenameHelperFunctions.errorOut("cannot name metainformation that");
+        if (newName in metas) return hardRenameHelperFunctions.errorOut("that name is already in use");
+        // name is good, do the rename
+        let currentlyActive = activeProblem;
+        holdJax = true;
+        for (let problem in problems) if (problem !== activeProblem) hardRenameHelperFunctions.renameMetaType(metaType, newName, problems[problem].doc);
+        holdJax = false;
+        hardRenameHelperFunctions.renameMetaType(metaType, newName, problems[currentlyActive].doc);
+        afterProblemsAreSet();
+    } else if (lines.length === 3) { // renaming an option
+
+    } else return hardRenameHelperFunctions.errorOut("rename instructions are either 2 or 3 words long");
+    renameMetainformation.value = "";
+    hardRenameHelperFunctions.errorOut("successfully renamed");
 }
 
 function softRename() {
