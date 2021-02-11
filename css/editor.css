@@ -15,6 +15,16 @@ p {
     text-indent: .3em;
 }
 
+#showForChangeMe {
+    border: .5em ridge darkred;
+    border-radius: 2em;
+    background: chartreuse;
+    fill: purple;
+    padding: .5em;
+    font-size: 200%;
+    text-align: center;
+}
+
 .meta {
     border: 2px outset rgb(120, 130, 200);
     border-radius: 1ex;

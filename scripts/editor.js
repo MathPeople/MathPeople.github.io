@@ -9,15 +9,6 @@ let editor = document.getElementById("editor"),
         editor,
         "qualName",
         ["change", loadQual]
-    ), loadedProblems = xmlImporter.labeledElement(
-        "Loaded problems:",
-        "select",
-        editor,
-        "loadedProblems",
-        ["change", function() {
-            idInput.value = loadedProblems.value;
-            handleIdChange();
-        }]
     ), clearNewProblemButton = xmlImporter.makeButton(
         "Clear / New Problem",
         editor,
@@ -28,22 +19,39 @@ let editor = document.getElementById("editor"),
         editor,
         "pairSolo",
         pairSoloClicked
-    ), metainformationDetails = xmlImporter.makeDetails(
-        "Set the Metainformation",
-        editor,
-        true
     ), idInput = xmlImporter.labeledInput(
         "Problem ID: ",
-        metainformationDetails,
+        editor,
         "problemID",
         ["change", handleIdChange,
         "blur", function() {idInput.value = activeProblem}],
-        ["list", "idList",
-        "disabled", ""]
+        ["list", "idList"]
     ), idList = xmlImporter.element(
         "datalist",
         idInput.parentElement,
         ["id", "idList"]
+    ), loadedProblems = xmlImporter.labeledElement(
+        "Loaded problems:",
+        "select",
+        idInput.parentElement,
+        "loadedProblems",
+        ["change", function() {
+            idInput.value = loadedProblems.value;
+            handleIdChange();
+        }]
+    ), changeNameFirstP = xmlImporter.element(
+        "p",
+        editor,
+        ["id", "showForChangeMe",
+        "hide", ""]
+    ), hideForChangeMe = xmlImporter.element(
+        "div",
+        editor,
+        ["id", "hideForChangeMe"]
+    ),metainformationDetails = xmlImporter.makeDetails(
+        "Set the Metainformation",
+        hideForChangeMe,
+        true
     ), newMetaTypeIn = xmlImporter.labeledInput(
         "New Metainformation Type",
         metainformationDetails,
@@ -92,7 +100,7 @@ let editor = document.getElementById("editor"),
     ), texProblem = xmlImporter.labeledElement(
         "Problem",
         "textarea",
-        editor,
+        hideForChangeMe,
         "texProblem",
         ["input", xmlImporter.fixTextHeight,
         "input", resetDocTexOnly],
@@ -101,7 +109,7 @@ let editor = document.getElementById("editor"),
     ), texSolution = xmlImporter.labeledElement(
         "Solution",
         "textarea",
-        editor,
+        hideForChangeMe,
         "texSolution",
         ["input", xmlImporter.fixTextHeight,
         "input", resetDocTexOnly],
@@ -109,16 +117,16 @@ let editor = document.getElementById("editor"),
         "spellcheck", "false"]
     ), texLiveOut = xmlImporter.element(
         "div",
-        editor,
+        hideForChangeMe,
         ["id", "texLiveOut"]
     ), saveButton = xmlImporter.makeButton(
         "Save",
-        editor,
+        hideForChangeMe,
         "save",
         saveActiveProblem
     ), codeOut =xmlImporter.element(
         "textarea",
-        editor,
+        hideForChangeMe,
         ["id", "codeOut",
         "class", "texoutput",
         "readonly", "",
@@ -153,6 +161,8 @@ let editor = document.getElementById("editor"),
 {
     loadedProblems.parentElement.setAttribute("floatright", "");
     
+    xmlImporter.text("Change the name before working on this problem", changeNameFirstP);
+    
     newMetaTypeIn.value = "First choose metainformation type -->";
     newMetaTypeIn.setAttribute("disabled", "");
     
@@ -168,7 +178,7 @@ let editor = document.getElementById("editor"),
     texSolution.parentElement.setAttribute("paironly", "");
 }
 
-xmlImporter.makeButton("print stamp", editor, "printstamp", function() {console.log("\r\nstamp")});
+if (announceFunctions) xmlImporter.makeButton("print stamp", editor, "printstamp", function() {console.log("\r\nstamp")});
 // script global variables
 let activeProblem = "changeMe", // id of the problem currently in the gui
     idBlacklist = ["problem", "solution"], // don't name a problem one of these
@@ -301,7 +311,7 @@ jaxLoopWait = 200;
         if (!problems[problem]) return;
         activeProblem = problem;
         idInput.value = problem;
-        idInput.removeAttribute("disabled");
+        changeNameFirst(problem === "changeMe");
         if (!problems[problem].loadedProblemsOption) {
             problems[problem].loadedProblemsOption = xmlImporter.element("option", loadedProblems, ["value", problem]);
             xmlImporter.text(problem, problems[problem].loadedProblemsOption);
@@ -337,6 +347,10 @@ jaxLoopWait = 200;
         }
         outputTexFromProblem();
         oldLoadProblemOverride(problem);
+    }
+    function changeNameFirst(isChangeMe) {
+        (isChangeMe? changeNameFirstP: hideForChangeMe).removeAttribute("hide");
+        (isChangeMe? hideForChangeMe: changeNameFirstP).setAttribute("hide", "");
     }
     function outputTexFromProblem(problem = activeProblem) {
         if (announceFunctions) console.log("outputTexFromProblem "+problem);
