@@ -308,7 +308,7 @@ jaxLoopWait = 200;
     let oldLoadProblemOverride = loadProblemOverride;
     loadProblemOverride = function loadProblemOverride(problem) {
         if (announceFunctions) console.log("loadProblemOverride "+problem);
-        if (!problems[problem]) return;
+        if (!problems[problem]) {console.log("am here");return;}
         activeProblem = problem;
         idInput.value = problem;
         changeNameFirst(problem === "changeMe");
@@ -404,7 +404,7 @@ jaxLoopWait = 200;
         e = problems[problem].loadedProblemsOption;
         if (e) e.parentElement.removeChild(e);
         if (autosave) Store.erase("local " + problem);
-        if (problem === activeProblem) clearNewProblem();
+        if (problem === activeProblem && problem !== "changeMe") clearNewProblem();
     }
     
     //eraseWhole/PartMetainformationOverride
@@ -498,11 +498,14 @@ function loadFromLocalStorage() {
 }
 
 // remove all locally stored problems
-function clearLocalQual() {
+function clearLocalQual(e) {
     if (announceFunctions) console.log("clearLocalQual");
     let deleteMe = Object.assign({}, problems);
     for (let problem in deleteMe) eraseProblem(problem);
     Store.erase("local problems list");
+    qualNameIn.value = "";
+    qualNameIn.removeAttribute("disabled");
+    if (e && e.target && e.target.parentElement) e.target.parentElement.removeChild(e.target);
 }
 
 // what to do if importing the qual failed
