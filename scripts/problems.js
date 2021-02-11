@@ -62,8 +62,11 @@ function handleMetaNode(node) {
     if (node.hasAttribute("radio")) {
         if (numValues !== 1) throw Error("radio must have one and only one child node but this radio has " + numValues + " children");
         bunch.metaType = "radio"; // recognize this value
-        if (!(node.getAttribute("radio") in bunch.values)) bunch.values[node.getAttribute("radio")] = undefined; // recognize default value
-        bunch.defaultValue = node.getAttribute("radio");
+        if (!(node.getAttribute("radio") in bunch.values)) {
+            bunch.values[node.getAttribute("radio")] = undefined; // set the default value
+            bunch.defaultValue = node.getAttribute("radio");
+            newMetaValues[node.getAttribute("radio")] = undefined;
+        }
     } else if (node.hasAttribute("scale")) {
         if (numValues !== 0) throw Error("scale metainformation cannot have any child nodes but this one has " + numValues + " children");
         bunch.metaType = "scale";

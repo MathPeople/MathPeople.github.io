@@ -242,28 +242,6 @@ jaxLoopWait = 200;
                         loadProblem(doc);
                         afterProblemsAreSet();
                     });
-                    // add the default value
-                    let value = meta.defaultValue;
-                    if (!meta.values[value]) meta.values[value] = {};
-                    bunch = meta.values[value];
-                    if (!bunch.div) {
-                        bunch.div = xmlImporter.element("div");
-                        if (meta.div.firstChild != meta.div.lastChild) meta.div.insertBefore(bunch.div, meta.div.lastChild);
-                        else meta.div.appendChild(bunch.div);
-                    }
-                    if (!bunch.input) {
-                        bunch.input = xmlImporter.labeledInput(
-                            value,
-                            bunch.div,
-                            "metainformation-"+metaType+"-value-"+value,
-                            ["change", resetDoc],
-                            ["type", "radio",
-                            "name", "metainformation-"+metaType]
-                        );
-                        bunch.input.parentElement.setAttribute("default", "");
-                        bunch.input.parentElement.setAttribute("class", "metavalue");
-                    }
-                    if (!bunch.alternateName) bunch.alternateName = xmlImporter.text(Store.fetch(qualName + " " + metaType + " " + value), xmlImporter.element("span", bunch.div));
                 break; case "scale":
                     meta.div.setAttribute("scale", "");
                     meta.input = xmlImporter.element("input", meta.div, ["type", "number", "step", "any"]);
@@ -318,6 +296,7 @@ jaxLoopWait = 200;
                             "name", "metainformation-"+metaType]
                         );
                         bunch.input.parentElement.setAttribute("class", "metavalue");
+                        if (value == meta.defaultValue) bunch.input.parentElement.setAttribute("default", "");
                     }
                     if (!bunch.alternateName) bunch.alternateName = xmlImporter.text(Store.fetch(qualName + " " + metaType + " " + value), xmlImporter.element("span", bunch.div));
                 break;
@@ -638,6 +617,16 @@ let hardRenameHelperFunctions = {
             metaNode.parentNode.replaceChild(copy, metaNode);
             loadProblem(doc);
         }
+    },
+    renameMetaValue: function renameMetaValue(metaType, oldValue, newValue, doc, isRadioDefault) {
+        if (isRadioDefault) {
+            let metaNode = doc.querySelector("problem > "+metaType);
+            if (metaNode) metaNode.setAttribute("radio", newValue);
+        } else {
+            let metaNode = doc.querySelector("problem > "+metaType+" > "+oldValue);
+            if (metaNode) metaNode.parentElement.replaceChild(xmlImporter.elementDoc(doc, newValue), metaNode);
+        }
+        loadProblem(doc);
     }
 }
 
@@ -659,7 +648,21 @@ function hardRename() {
         hardRenameHelperFunctions.renameMetaType(metaType, newName, problems[currentlyActive].doc);
         afterProblemsAreSet();
     } else if (lines.length === 3) { // renaming an option
-
+        if (metas[metaType].metaType === "scale") return hardRenameHelperFunctions.errorOut("scale metas don't have named values");
+        let oldValue = lines[1], newValue = lines[2];
+        if (!(metaType in metas) || !(oldValue in metas[metaType].values)) return hardRenameHelperFunctions.errorOut("cannot find that metainformation");
+        if (!xmlImporter.nodeNameScreen(newValue)) return hardRenameHelperFunctions.errorOut("not a valid node name");
+        if (idBlacklist.includes(newValue)) return hardRenameHelperFunctions.errorOut("cannot name metainformation that");
+        if (newValue in metas[metaType].values) return hardRenameHelperFunctions.errorOut("that name is already in use");
+        if (!problems[activeProblem].doc.querySelector("problem > "+metaType)) return hardRenameHelperFunctions.errorOut("cannot rename default value from this problem");
+        // name is good, do the rename
+        let isRadioDefault = oldValue === metas[metaType].defaultValue;
+        let currentlyActive = activeProblem;
+        holdJax = true;
+        for (let problem in problems) if (problem !== activeProblem) hardRenameHelperFunctions.renameMetaValue(metaType, oldValue, newValue, problems[problem].doc, isRadioDefault);
+        holdJax = false;
+        hardRenameHelperFunctions.renameMetaValue(metaType, oldValue, newValue, problems[currentlyActive].doc, isRadioDefault);
+        afterProblemsAreSet();
     } else return hardRenameHelperFunctions.errorOut("rename instructions are either 2 or 3 words long");
     renameMetainformation.value = "";
     hardRenameHelperFunctions.errorOut("successfully renamed");
