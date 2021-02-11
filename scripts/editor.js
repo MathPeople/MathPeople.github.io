@@ -851,8 +851,10 @@ function newMetaTypeTypeChange() {
 }
 
 function recoverData(name, value) {
-    xmlImporter.fixTextHeight(xmlImporter.element("textarea", xmlImporter.makeDetails(name, dataRecovery), ["class", "texoutput"])).value = value;
+    let dataOut = xmlImporter.element("textarea", xmlImporter.makeDetails(name, dataRecovery, true), ["class", "texoutput"]);
+    dataOut.value = value;
     dataRecovery.removeAttribute("hide");
+    xmlImporter.fixTextHeight({target: dataOut});
 }
 
 /*
