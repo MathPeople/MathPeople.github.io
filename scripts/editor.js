@@ -191,6 +191,7 @@ if (announceFunctions) xmlImporter.makeButton("print stamp", editor, "printstamp
 // script global variables
 let activeProblem = "changeMe", // id of the problem currently in the gui
     idBlacklist = ["changeMe", "problem", "solution"], // don't name a problem one of these
+    changeMeOption, // option for putting in loadedProblems in between clicking clear/new problem and renaming the problem
     autosave = false,
     pairMode = true, // problem/solution pair or solo mode
     justJax = false, // render just jax or render all the metainformation gui elements as well
@@ -311,13 +312,21 @@ jaxLoopWait = 200;
         activeProblem = problem;
         idInput.value = problem;
         changeNameFirst(problem === "changeMe");
-        if (!problems[problem].loadedProblemsOption) {
+        if (!problems[problem].loadedProblemsOption && (problem !== "changeMe")) {
             problems[problem].loadedProblemsOption = xmlImporter.element("option", loadedProblems, ["value", problem]);
             xmlImporter.text(problem, problems[problem].loadedProblemsOption);
         }
-        if (!problems[problem].idListOption) {
+        if (!problems[problem].idListOption && (problem !== "changeMe")) {
             problems[problem].idListOption = xmlImporter.element("option", idList, ["value", problem]);
             xmlImporter.text(problem, problems[problem].idListOption);
+        }
+        if ((problem === "changeMe") && !changeMeOption) {
+            changeMeOption = xmlImporter.element("option", loadedProblems);
+            xmlImporter.text(problem, changeMeOption);
+        }
+        if ((problem !== "changeMe") && changeMeOption) {
+            loadedProblems.removeChild(changeMeOption);
+            changeMeOption = undefined;
         }
         for (let i = 0; i < loadedProblems.childNodes.length; ++i) if (loadedProblems.childNodes[i].value === problem) loadedProblems.selectedIndex = i;
         if (!holdJax) {
