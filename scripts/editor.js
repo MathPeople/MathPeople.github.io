@@ -799,15 +799,14 @@ resetDoc();
 // offer the currently active problem as an XML file for the user to download, named id.xml
 function saveActiveProblem() {
     if (announceFunctions) console.log("saveActiveProblem");
-    /*// codeOut already has the contents of the intended XML file so just copy it into a file
-    let file = new File([codeOut.value], id+".xml", {type: "text/xml"});
+    // codeOut already has the contents of the intended XML file so just copy it into a file
+    let file = new File([codeOut.value], activeProblem+".xml", {type: "text/xml"});
     // make and click an appropriate download link
     let url = URL.createObjectURL(file);
     let a = xmlImporter.element("a", document.body, ["href", url, "download", ""]);
     xmlImporter.text("download link", a);
     a.click();
-    document.body.removeChild(a);*/
-    console.log("save active probleming");
+    document.body.removeChild(a);
 }
 
 let practiceTestProto = {};
@@ -844,14 +843,19 @@ function offerNewPracticeTest() {
 let zip;
 function saveAll() {
     if (announceFunctions) console.log("saveAll");
-    /*// this url is where JSZip source code is available
-    if (!zip) return xmlImporter.element("script", document.head, ["src", "https://stuk.github.io/jszip/dist/jszip.js"]).addEventListener("load", function() {
-        zip = new JSZip();
-        saveAll();
-    });
-    let bigFolder = zip.folder(qual), folder = bigFolder.folder("problems");
+    // this url is where JSZip source code is available
+    if (!zip) {
+        xmlImporter.element("script", document.head, ["src", "https://stuk.github.io/jszip/dist/jszip.js"]).addEventListener("load", function() {
+            zip = new JSZip();
+            saveAllButton.removeAttribute("disabled");
+            saveAll();
+        });
+        saveAllButton.setAttribute("disabled", "");
+        return;
+    }
+    let bigFolder = zip.folder(qualName), folder = bigFolder.folder("problems");
     for (let problem in problems) if (problem != "changeMe") folder.file(problem+".xml", xmlImporter.nodeToString(problems[problem].doc));
-    bigFolder.file("problemsList.txt", allProps(problems, "doc"));
+    bigFolder.file("problemsList.txt", problemsListString());
     bigFolder.generateAsync({type:"blob"}).then(function (file) {
         // rename file from some machine name to "problems.zip"
         file = new File([file.slice(0, file.size, "application/zip")], "problems.zip", {type: "application/zip"});
@@ -861,8 +865,7 @@ function saveAll() {
         xmlImporter.text("download link", a);
         a.click();
         document.body.removeChild(a);
-    });*/
-    console.log("save alling");
+    });
 }
 
 function newMetaTypeTypeChange() {
@@ -956,14 +959,4 @@ function errorOut(message) {
     throw Error(message);
 }
 
-
-function allProps(object, accessor) {
-    let props = [];
-    if (typeof accessor !== "undefined") for (let prop in object) props.push(prop[accessor]);
-    else for (let prop in object) props.push(prop);
-    if (props.length == 0) return "";
-    props.sort();
-    let line = "";
-    for (let prop of props) line += " " + prop;
-    return line.substring(1);
-}*/
+*/

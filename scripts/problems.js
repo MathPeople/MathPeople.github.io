@@ -253,8 +253,11 @@ function isEmpty(o) {
 
 // get ids of all loaded problems
 function problemsListString() {
+    let list = [];
+    for (let problem in problems) if (problem !== "changeMe" && problem !== currentlyErasing) list.push(problem);
+    list.sort();
     let returner = "";
-    for (let problem in problems) if (problem !== "changeMe" && problem !== currentlyErasing) returner += " " + problem;
+    for (let problem of list) returner += " " + problem;
     return returner.substring(1);
 }
 //----------------------------------------------------------------------------------------------------------------
