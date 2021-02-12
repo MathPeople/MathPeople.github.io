@@ -634,6 +634,14 @@ function tryNewMetaTypeIn() {
     loadProblem(doc);
 }
 
+function newMetaTypeTypeChange() {
+    if (announceFunctions) console.log("newMetaTypeTypeChange");
+    if (newMetaTypeIn.hasAttribute("disabled")) {
+        newMetaTypeIn.removeAttribute("disabled");
+        newMetaTypeIn.value = "";
+    }
+}
+
 let hardRenameHelperFunctions = {
     errorOut: function errorOut(message) {xmlImporter.inputMessage(renameMetainformation, message)},
     renameMetaType: function renameMetaType(oldMeta, newMeta, doc) {
@@ -821,13 +829,59 @@ function saveActiveProblem() {
 
 let practiceTestProto = {};
 
+// read in from rawText
+practiceTestProto.compile = function compile() {
+    this.compileButton.setAttribute("hide", "");
+    this.doc = xmlImporter.parseDoc(this.rawText.value);
+    if (xmlImporter.isParserError(this.doc)) return this.errorOut("<h4>Parser error, not a valid XML file. The structure of these parser errors varies from browser to browser, see below for the specific error.</h4><pre class='errorout'>"+xmlImporter.nodeToInnerHTML(this.doc)+"</pre>");
+    else this.errorOut("");
+    let root = xmlImporter.getRoot(this.doc);
+    this.name = root.hasAttribute("displayName")? root.getAttribute("displayName"): root.nodeName;
+    for (let c of practiceTestConfigs) if (c !== this && c.name === this.name) return this.errorOut("duplicated test name: " + this.name);
+    this.makeTest();
+}
+
+practiceTestProto.errorOut = function errorOut(message) {
+    this.errorOutPlace.innerHTML = message;
+    this.testOut.setAttribute("hide", "");
+    if (message === "") this.makeTestButton.removeAttribute("hide");
+    else this.makeTestButton.setAttribute("hide", "");
+}
+
+practiceTestProto.makeTest = function makeTest() {
+    let oldTest = this.test;
+    this.testNameNode.nodeValue = this.name;
+    this.errorOut("");
+    let countSpot = xmlImporter.element("p", this.div);
+    this.putTestCountHere = xmlImporter.text("tries left", countSpot);
+    let me = this;
+    // timeout is to remove generator from the main thread
+    makePracticeTest(problems, this.doc, function(result, success) {
+        if (success) {
+            me.test = result;
+            me.testOut.replaceChild(me.test, oldTest);
+            me.errorOut("");
+            me.testOut.removeAttribute("hide");
+        } else {
+            me.errorOut(result);
+        }
+        typeset(me.testOut);
+        me.putTestCountHere = undefined;
+        me.div.removeChild(countSpot);
+    }, this.putTestCountHere, 100);
+}
+
+function onPracticeTestReady() {
+    // this is one place to automatically load a practice test, but since this is the editor and we don't know what problems will be loaded automatic loading may not be a good idea
+}
+
 // make a new practice test configuration zone
 function offerNewPracticeTest() {
     if (announceFunctions) console.log("offerNewPracticeTest");
-    /*let config = Object.create(practiceTestProto);
+    let config = Object.create(practiceTestProto);
     practiceTestConfigs.push(config);
     config.div = xmlImporter.element("div", practiceTestsSpot, ["class", "practicetestconfig"]);
-    config.rawText = xmlImporter.element("textarea", config.div, ["class", "xmlin"]);
+    config.rawText = xmlImporter.element("textarea", config.div, ["class", "texinput"]);
     xmlImporter.makeTabbable(config.rawText);
     config.rawText.addEventListener("input", xmlImporter.fixTextHeight);
     config.rawText.addEventListener("input", function() {
@@ -845,8 +899,7 @@ function offerNewPracticeTest() {
     config.testOut = xmlImporter.element("details", config.div, ["class", "testout", "hide", "", "open", ""]);
     config.testNameNode = xmlImporter.text("", xmlImporter.element("summary", config.testOut));
     xmlImporter.text("test goes here", config.test = xmlImporter.element("p", config.testOut));
-    return config;*/
-    console.log("offering new practice test");
+    return config;
 }
 
 // use JSZip magic to save all loaded problems in one .zip file/folder
@@ -878,73 +931,9 @@ function saveAll() {
     });
 }
 
-function newMetaTypeTypeChange() {
-    if (announceFunctions) console.log("newMetaTypeTypeChange");
-    if (newMetaTypeIn.hasAttribute("disabled")) {
-        newMetaTypeIn.removeAttribute("disabled");
-        newMetaTypeIn.value = "";
-    }
-}
-
 function recoverData(name, value) {
     let dataOut = xmlImporter.element("textarea", xmlImporter.makeDetails(name, dataRecovery, true), ["class", "texoutput"]);
     dataOut.value = value;
     dataRecovery.removeAttribute("hide");
     xmlImporter.fixTextHeight({target: dataOut});
 }
-/*
-// read in from rawText
-practiceTestProto.compile = function compile() {
-    this.compileButton.setAttribute("hide", "");
-    this.doc = xmlImporter.parseDoc(this.rawText.value);
-    if (xmlImporter.isParserError(this.doc)) return this.errorOut("<h4>Parser error, not a valid XML file. The structure of these parser errors varies from browser to browser, see below for the specific error.</h4><pre class='errorout'>"+xmlImporter.nodeToInnerHTML(this.doc)+"</pre>");
-    else this.errorOut("");
-    let root = xmlImporter.getRoot(this.doc);
-    this.name = root.hasAttribute("displayName")? root.getAttribute("displayName"): root.nodeName;
-    for (let c of practiceTestConfigs) if (c !== this && c.name === this.name) return this.errorOut("duplicated test name: " + this.name);
-    this.makeTest();
-}
-
-practiceTestProto.errorOut = function errorOut(message) {
-    this.errorOutPlace.innerHTML = message;
-    this.testOut.setAttribute("hide", "");
-    if (message === "") this.makeTestButton.removeAttribute("hide");
-    else this.makeTestButton.setAttribute("hide", "");
-}
-
-var putTestCountHere;
-
-practiceTestProto.makeTest = function makeTest() {
-    let oldTest = this.test;
-    this.testNameNode.nodeValue = this.name;
-    this.errorOut("");
-    let countSpot = xmlImporter.element("p", this.div);
-    putTestCountHere = xmlImporter.text("tries left", countSpot);
-    // timeout is to remove generator from the main thread
-    let me = this;
-    makePracticeTest(problems, me.doc, function(result, success) {
-        if (success) {
-            me.test = result;
-            me.testOut.replaceChild(me.test, oldTest);
-            me.errorOut("");
-            me.testOut.removeAttribute("hide");
-        } else {
-            me.errorOut(result);
-        }
-        typeset(me.testOut);
-        putTestCountHere = undefined;
-        me.div.removeChild(countSpot);
-    }, 100);
-}
-
-function onPracticeTestReady() {
-    // this is one place to automatically load a practice test, but since this is the editor and we don't know what problems will be loaded automatic loading may not be a good idea
-}
-
-// show the error to users even if they don't have the console open
-function errorOut(message) {
-    errorOutP.innerHTML = message;
-    throw Error(message);
-}
-
-*/

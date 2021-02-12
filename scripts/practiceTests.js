@@ -211,7 +211,7 @@ function shuffle(array) {
     
     generatorStuff.errors = {};
     
-    function makePracticeTest(theseProblems, configuration, callback, numTries = 100) {
+    function makePracticeTest(theseProblems, configuration, callback, putTestCountHere, numTries = 100) {
         let startedWith = numTries;
         // Why the internal function makeTest? To allow for window.setTimeout callbacks which give time between each try so as to update the number of tries displayed to the user in putTestCountHere
         function makeTest() {

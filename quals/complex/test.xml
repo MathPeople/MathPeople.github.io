@@ -1,0 +1,19 @@
+<test displayName="Practice Qual">
+    <section displayName="Part A/B">
+        <question xpath="//problem[not(topics/RiemannSurfaces) and topics/Montel]"/>
+        <question xpath="//problem[not(topics/RiemannSurfaces) and topics/RealIntegral]"/>
+        <question xpath="//problem[not(topics/RiemannSurfaces) and topics/Liouville]"/>
+        <question xpath="//problem[not(topics/RiemannSurfaces)]"/>
+        <question xpath="//problem[not(topics/RiemannSurfaces)]"/>
+        <question xpath="//problem[not(topics/RiemannSurfaces)]"/>
+        <shuffle/>
+    </section>
+    <section displayName="Part C">
+        <question xpath="//problem[topics/RiemannSurfaces]"/>
+        <question xpath="//problem[topics/RiemannSurfaces]"/>
+        <question xpath="//problem[topics/RiemannSurfaces]"/>
+    </section>
+    <group force="">
+        <question xpath="*[not(//solution) or not(//questionViability)]"/>
+    </group>
+</test>
