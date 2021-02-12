@@ -395,6 +395,7 @@ jaxLoopWait = 200;
         for (let meta in metas) sortMeta(meta);
         fixWholeList();
         sortList(loadedProblems);
+        if (changeMeOption) loadedProblems.insertBefore(changeMeOption, loadedProblems.firstChild);
         sortList(idList);
         oldAfterProblemsAreSetOverride();
     }
