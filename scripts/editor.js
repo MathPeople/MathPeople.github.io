@@ -207,8 +207,7 @@ jaxLoopWait = 200;
         if (announceFunctions) console.log("addingMetaOverride "+metaType+" "+Object.keys(values));
         let meta = metas[metaType];
         if (!meta.div) {
-            meta.div = xmlImporter.element("div", putMetasHere, ["class", "meta"]);
-            meta.nameText = xmlImporter.text(metaType, xmlImporter.element("h5", meta.div));
+            meta.div = xmlImporter.makeDetails(metaType, putMetasHere, false, ["class", "meta"]);
             switch (meta.metaType) {
                 case "checkbox":
                     meta.div.setAttribute("checkbox", "");
@@ -377,6 +376,13 @@ jaxLoopWait = 200;
     afterProblemsAreSetOverride = function afterProblemsAreSetOverride() {
         if (announceFunctions) console.log("afterProblemsAreSetOverride");
         loadProblemOverride(activeProblem); // populate GUI with the current problem
+        let metaNames = [];
+        for (let meta in metas) metaNames.push(meta);
+        metaNames.sort();
+        for (let meta of metaNames) {
+            putMetasHere.removeChild(metas[meta].div);
+            putMetasHere.appendChild(metas[meta].div);
+        }
         for (let meta in metas) sortMeta(meta);
         fixWholeList();
         sortList(loadedProblems);
