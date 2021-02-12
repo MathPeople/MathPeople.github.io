@@ -377,10 +377,22 @@ jaxLoopWait = 200;
     afterProblemsAreSetOverride = function afterProblemsAreSetOverride() {
         if (announceFunctions) console.log("afterProblemsAreSetOverride");
         loadProblemOverride(activeProblem); // populate GUI with the current problem
+        for (let meta in metas) sortMeta(meta);
         fixWholeList();
         sortList(loadedProblems);
         sortList(idList);
         oldAfterProblemsAreSetOverride();
+    }
+    function sortMeta(metaType) {
+        let meta = metas[metaType];
+        if (meta.metaType === "scale") return;
+        let valueNames = [];
+        for (let value in meta.values) valueNames.push(value);
+        valueNames.sort();
+        for (let value of valueNames) {
+            meta.div.removeChild(meta.values[value].div);
+            meta.div.insertBefore(meta.values[value].div, meta.newButtonIn);
+        }
     }
     // take an element whose children are options and sort them alphabetically
     function sortList(listElement) {
@@ -686,23 +698,13 @@ function softRename() {
 
 function toggleColumnListener() {
     if (announceFunctions) console.log("toggleColumnListener");
-    /*let meta = metas[toggleColumn.value];
+    let metaName = toggleColumn.value, meta = metas[metaName];
     if (meta) {
         meta.hide = !meta.hide;
         fixWholeList();
-        toggleColumn.setAttribute("placeholder", (meta.hide? "hid ": "showed ") + toggleColumn.value);
         toggleColumn.value = "";
-        window.setTimeout(function() {toggleColumn.setAttribute("placeholder", "")}, 3000);
-    } else {
-        let value = toggleColumn.value;
-        toggleColumn.value = "cannot find " + value;
-        toggleColumn.setAttribute("disabled", "");
-        window.setTimeout(function() {
-            toggleColumn.value = value;
-            toggleColumn.removeAttribute("disabled");
-        }, 3000);
-    }*/
-    console.log("toggling column");
+        xmlImporter.inputMessage(toggleColumn, (meta.hide? "hid ": "showed ") + metaName);
+    } else xmlImporter.inputMessage(toggleColumn, "cannot find that metainformation");
 }
 
 // update the whole list of problems with the current values
