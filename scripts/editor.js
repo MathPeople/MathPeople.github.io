@@ -892,29 +892,7 @@ function recoverData(name, value) {
     dataRecovery.removeAttribute("hide");
     xmlImporter.fixTextHeight({target: dataOut});
 }
-
 /*
-
-// start a session with a blank slate
-clearNewProblem();
-
-function swapPairMode() {
-    let exchange = resetDoc;
-    resetDoc = function() {}
-    pairSoloButton.click();
-    resetDoc = exchange;
-}
-
-// in case you want to show TeX without MathJax rendering it
-function noJax(line) {
-    return line.replace(/&/g, "&amp;").replace(/\\/g, "\\<span\\>");
-}
-
-// return the first instance in array of an object which has a value of value in property prop
-function getBy(array, prop, value) {
-    for (let element of array) if (element[prop] == value) return element;
-}
-
 // read in from rawText
 practiceTestProto.compile = function compile() {
     this.compileButton.setAttribute("hide", "");
