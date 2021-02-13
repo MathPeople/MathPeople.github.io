@@ -213,7 +213,15 @@ function processPracticeTest(config, result, success) {
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
+function erasePracticeTest(config) {
+    if (config.div.parentElement) config.div.parentElement.removeChild(config.div);
+    delete practiceTests[config.name];
+    erasePracticeTestOverride(config);
+}
+function erasePracticeTestOverride() {}
+//----------------------------------------------------------------------------------------------------------------
 
+//----------------------------------------------------------------------------------------------------------------
 let currentlyErasing;
 function eraseProblem(problem) {
     currentlyErasing = problem;

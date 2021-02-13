@@ -378,22 +378,13 @@ jaxLoopWait = 200;
         // read in from rawText and save if autosaving
         let compilePracticeTest = function compilePracticeTest(config) {
             config.compileButton.setAttribute("hide", "");
-            config.doc = xmlImporter.parseDoc(config.rawText.value);
-            if (xmlImporter.isParserError(config.doc)) return practiceTestErrorOut(config, "<h4>Parser error, not a valid XML file. The structure of these parser errors varies from browser to browser, see below for the specific error.</h4><pre class='errorout'>"+xmlImporter.nodeToInnerHTML(config.doc)+"</pre>");
-            else practiceTestErrorOut(config, "");
-            let root = xmlImporter.getRoot(config.doc);
-            if (config.name !== root.nodeName) Store.erase("local practiceTest " + root.nodeName);
-            config.name = root.nodeName;
-            config.displayName = root.hasAttribute("displayName")? root.getAttribute("displayName"): root.nodeName;
-            for (let c in practiceTests) if (c === config.name && practiceTests[c] !== config) return practiceTestErrorOut(config, "duplicated test name: " + config.name + " (" + config.displayName + ")");
-            config.button.removeAttribute("hide");
-            if (autosave) {
-                let list = "";
-                for (let test in practiceTestConfigs) list += " " + test;
-                Store.store("local practiceTests list", list.substring(1));
-                Store.store("local practiceTest " + config.name, config.rawText.value);
-            }
-            makeTest(config);
+            let doc = xmlImporter.parseDoc(config.rawText.value);
+            if (xmlImporter.isParserError(doc)) return practiceTestErrorOut(config, "<h4>Parser error, not a valid XML file. The structure of these parser errors varies from browser to browser, see below for the specific error.</h4><pre class='errorout'>"+xmlImporter.nodeToInnerHTML(doc)+"</pre>");
+            let root = xmlImporter.getRoot(doc);
+            // test for name conflict
+            for (let otherName in practiceTests) if (practiceTests[otherName] !== config && otherName === root.nodeName) return practiceTestErrorOut(config, "name conflict: "+otherName+" is already in use");
+            erasePracticeTest(config);
+            loadPracticeTest(xmlImporter.trim(doc));
         }
 
         // make a new practice test configuration zone
@@ -873,31 +864,13 @@ function saveActiveProblem() {
 }
 
 // make a new practice test configuration zone
-        function offerNewPracticeTest() {
-            if (announceFunctions) console.log("offerNewPracticeTest");
-            let config = Object.create(practiceTestProto);
-            practiceTestConfigs.push(config);
-            config.div = xmlImporter.element("div", practiceTestsSpot, ["class", "practicetestconfig"]);
-            config.rawText = xmlImporter.element("textarea", config.div, ["class", "texinput"]);
-            xmlImporter.makeTabbable(config.rawText);
-            config.rawText.addEventListener("input", xmlImporter.fixTextHeight);
-            config.rawText.addEventListener("input", function() {
-                config.compileButton.removeAttribute("hide");
-                config.makeTestButton.setAttribute("hide", "");
-                config.testOut.setAttribute("hide", "");
-            });
-            config.compileButton = xmlImporter.element("button", config.div);
-            xmlImporter.text("compile", config.compileButton);
-            config.compileButton.addEventListener("click", function() {config.compile()});
-            config.makeTestButton = xmlImporter.element("button", config.div, ["hide", ""]);
-            xmlImporter.text("make test", config.makeTestButton);
-            config.makeTestButton.addEventListener("click", function() {config.makeTest()});
-            config.errorOutPlace = xmlImporter.element("div", config.div, ["class", "errorout"]);
-            config.testOut = xmlImporter.element("details", config.div, ["class", "testout", "hide", "", "open", ""]);
-            config.testNameNode = xmlImporter.text("", xmlImporter.element("summary", config.testOut));
-            xmlImporter.text("test goes here", config.test = xmlImporter.element("p", config.testOut));
-            return config;
-        }
+function offerNewPracticeTest() {
+    if (announceFunctions) console.log("offerNewPracticeTest");
+    let num = 0;
+    while (("practiceTest"+num) in practiceTests) ++num;
+    let fakeDoc = xmlImporter.parseDoc("<practiceTest"+num+"/>");
+    loadPracticeTest(fakeDoc);
+}
 
 // use JSZip magic to save all loaded problems in one .zip file/folder
 let zip;

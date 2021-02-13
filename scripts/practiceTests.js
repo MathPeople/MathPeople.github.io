@@ -279,7 +279,10 @@ function shuffle(array) {
                 if ((typeof trace.lastSubstep !== "undefined") && trace.lastSubstep !== trace.substeps[trace.substeps.length-1]) message += "<h6> -- "+trace.lastSubstep+"</h6>";
                 message += "<br>";
                 message += "<h6>Erroneous node:</h6>";
-                let errorNode = generatorStuff.errorTrace.arguments.node, ogNode = config.doc.querySelector("[configId=\""+errorNode.getAttribute("configId")+"\"]");
+                let errorNode = generatorStuff.errorTrace.arguments.node;
+                // if this is a nonelement node (like a text node) just go up to the nearest element node
+                while (errorNode.nodeType != 1) errorNode = errorNode.parentNode;
+                let ogNode = config.doc.querySelector("[configId=\""+errorNode.getAttribute("configId")+"\"]");
                 let erase = function(node) {
                     if (node.removeAttribute) node.removeAttribute("configId");
                     for (let child of node.childNodes) erase(child);
