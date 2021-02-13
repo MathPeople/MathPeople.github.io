@@ -312,7 +312,7 @@ jaxLoopWait = 200;
     override = function () {
         loadProblemOverride = function loadProblemOverrideEditor(problem) {
             if (announceFunctions) console.log("loadProblemOverride "+problem);
-            if (!problems[problem]) {console.log("am here");return;}
+            if (!problems[problem]) return;
             activeProblem = problem;
             idInput.value = problem;
             changeNameFirst(problem === "changeMe");
@@ -608,11 +608,14 @@ function clearLocalQual(e) {
     for (let problem in deleteMe) eraseProblem(problem);
     Store.erase("local problems list");
     deleteMe = Object.assign({}, practiceTests);
-    for (let practiceTest in deleteMe) erasePracticeTest(practiceTest);
+    for (let practiceTest in deleteMe) erasePracticeTest(practiceTests[practiceTest]);
     Store.erase("local practiceTests list");
     qualNameIn.value = "";
     qualNameIn.removeAttribute("disabled");
+    // remove the erase button
     if (e && e.target && e.target.parentElement) e.target.parentElement.removeChild(e.target);
+    // start fresh
+    resetDoc();
 }
 
 // what to do if importing the qual failed
@@ -824,7 +827,7 @@ function fixWholeList() {
     }
     let rows = [];
     let matches = getProblemsFromSelector(practiceSearch.value);
-    for (let problem in problems) {
+    for (let problem in problems) if (problem !== "changeMe") {
         let row = xmlImporter.element("tr", null);
         rows.push(row);
         xmlImporter.text((problem in matches)? "✓": "X", xmlImporter.element("td", row)); // the X here is not the unicode fancy X so that it shows up as different even if the user doesn't have a powerful enough font for unicode check mark and fancy X
