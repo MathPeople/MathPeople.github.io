@@ -61,7 +61,9 @@ function doTypeset() {
 
 
 // When MathJax finishes loading check for typesetting every so often
-jaxScript.addEventListener("load", startJaxLoop);
+jaxScript.addEventListener("load", function() {
+    window.setTimeout(startJaxLoop, 5000);
+});
 
 // processing of TeX in a node attribute to make it ready to display as the innerHTML of something
 function texAttToInnerHTML(line) {
