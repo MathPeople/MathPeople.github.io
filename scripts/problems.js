@@ -29,7 +29,7 @@ function loadScript(location, finished = function() {}) {
 }
 
 // Initialize the holding object for problems and for metainformation types
-var problems = {}, metas = {};
+var problems = {}, metas = {}, practiceTests = {};
 
 // Used for interacting with local storage
 var Store = {};
@@ -133,11 +133,20 @@ function importProblemsRepository(qual, onSuccess = function() {}, onfail = func
                     }
                 );
             }
-        },
-        
-        function() {
+        }, function() {
             qualName = undefined; // the qual failed so don't say it is loaded
             onfail();
+        }
+    );
+    xmlImporter.openTextFile(
+        "/quals/"+qual+"/practiceTestsList.txt",
+        null,
+        function(list) {
+            if (list === "") return; // no practice tests to load
+            list = list.split(" ");
+            for (let practiceTest of list) xmlImporter.openXMLFile("/quals/"+qual+"/practiceTests/"+practiceTest+".xml", null, loadPracticeTest);
+        }, function() {
+            // no practice tests found
         }
     );
 }
@@ -154,6 +163,57 @@ function afterProblemsAreSetOverride() {}
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
+let practiceTestsLoadHere = null;
+function loadPracticeTest(configDoc) {
+    let root = xmlImporter.getRoot(configDoc);
+    let config = practiceTests[root.nodeName] = {};
+    config.doc = configDoc;
+    config.name = root.nodeName;
+    config.displayName = root.hasAttribute("displayName")? root.getAttribute("displayName"): root.nodeName;
+    config.div = xmlImporter.makeDetails(config.displayName, practiceTestsLoadHere, true, ["class", "practicetestholder"]);
+    config.button = xmlImporter.makeButton("new test", config.div, "practiceTestMakeTestButton-"+config.name, function() {makeTest(config)});
+    config.errorOutPlace = xmlImporter.element("div", config.div, ["class", "errorout"]);
+    config.testOut = xmlImporter.element("div", config.div, ["class", "testout", "hide", ""]);
+    xmlImporter.text("test goes here", config.test = xmlImporter.element("div", config.testOut));
+    loadPracticeTestOverride(config);
+}
+function loadPracticeTestOverride() {}
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
+function practiceTestErrorOut(config, message) {
+    config.errorOutPlace.innerHTML = message;
+    config.testOut.setAttribute("hide", "");
+}
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
+function makeTest(config) {
+    practiceTestErrorOut(config, "");
+    config.countSpot = xmlImporter.element("p", config.div);
+    config.putTestCountHere = xmlImporter.text("tries left", config.countSpot);
+    makePracticeTest(problems, config);
+}
+
+function processPracticeTest(config, result, success) {
+    if (success) {
+        let oldTest = config.test;
+        config.test = result;
+        config.testOut.replaceChild(config.test, oldTest);
+        practiceTestErrorOut(config, "");
+        config.testOut.removeAttribute("hide");
+    } else {
+        practiceTestErrorOut(config, result);
+    }
+    typeset(config.testOut);
+    config.putTestCountHere = undefined;
+    config.div.removeChild(config.countSpot);
+    config.countSpot = config.putTestCountHere = undefined;
+}
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
+
 let currentlyErasing;
 function eraseProblem(problem) {
     currentlyErasing = problem;

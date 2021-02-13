@@ -19,3 +19,25 @@
     background: yellow;
     border: 2px inset goldenrod;
 }
+
+.errorout {
+    padding: .6em;
+}
+
+.practicetestholder .errorout:empty {
+    display: none;
+}
+
+.practicetestholder .errorout {
+    background: rgb(255, 170, 170);
+    border: 3px outset red;
+    border-radius: 8px;
+}
+
+.practicetestholder {
+    overflow: hidden;
+    margin: .5em;
+    padding: .3em;
+    border: 1px solid lightgray;
+    border-radius: .3em;
+}

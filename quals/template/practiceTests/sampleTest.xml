@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sampleTest displayName="Sample Practice Test">
+    <section displayName="Easy Question">
+        <question xpath="//problem[not(difficulty) or difficulty[@scale&lt;=1]]"/>
+    </section>
+    <section displayName="Hard Question">
+        <question xpath="//problem/difficulty"/>
+    </section>
+</sampleTest>

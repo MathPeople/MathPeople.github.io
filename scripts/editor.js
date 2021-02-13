@@ -194,8 +194,7 @@ let activeProblem = "changeMe", // id of the problem currently in the gui
     changeMeOption, // option for putting in loadedProblems in between clicking clear/new problem and renaming the problem
     autosave = false,
     pairMode = true, // problem/solution pair or solo mode
-    justJax = false, // render just jax or render all the metainformation gui elements as well
-    practiceTestConfigs = []; // holds all practice test configurations
+    justJax = false; // render just jax or render all the metainformation gui elements as well
 
 // jax configuration, short so that typing tex updates live
 jaxLoopWait = 200;
@@ -355,6 +354,52 @@ jaxLoopWait = 200;
         }
         outputTexFromProblem();
         oldLoadProblemOverride(problem);
+        
+        let oldLoadPracticeTestOverride = loadPracticeTestOverride;
+        loadPracticeTestOverride = function loadPracticeTestOverride(config) {
+            if (announceFunctions) console.log("loadPracticeTest");
+            practiceTestsSpot.appendChild(config.div);
+            config.rawText = xmlImporter.element("textarea", null, ["class", "texinput", "spellcheck", "false"]);
+            config.div.insertBefore(config.rawText, config.div.firstChild.nextElementSibling);
+            xmlImporter.makeTabbable(config.rawText);
+            config.rawText.value = xmlImporter.nodeToString(config.doc);
+            xmlImporter.fixTextHeight({target: config.rawText});
+            config.rawText.addEventListener("input", xmlImporter.fixTextHeight);
+            config.rawText.addEventListener("input", function() {
+                config.compileButton.removeAttribute("hide");
+                config.button.setAttribute("hide", "");
+                config.testOut.setAttribute("hide", "");
+            });
+            config.compileButton = xmlImporter.element("button", null, ["hide", ""]);
+            config.div.insertBefore(config.compileButton, config.rawText.nextElementSibling);
+            xmlImporter.text("compile", config.compileButton);
+            config.compileButton.addEventListener("click", function() {compilePracticeTest(config)});
+        }
+        // read in from rawText and save if autosaving
+        let compilePracticeTest = function compilePracticeTest(config) {
+            config.compileButton.setAttribute("hide", "");
+            config.doc = xmlImporter.parseDoc(config.rawText.value);
+            if (xmlImporter.isParserError(config.doc)) return practiceTestErrorOut(config, "<h4>Parser error, not a valid XML file. The structure of these parser errors varies from browser to browser, see below for the specific error.</h4><pre class='errorout'>"+xmlImporter.nodeToInnerHTML(config.doc)+"</pre>");
+            else practiceTestErrorOut(config, "");
+            let root = xmlImporter.getRoot(config.doc);
+            if (config.name !== root.nodeName) Store.erase("local practiceTest " + root.nodeName);
+            config.name = root.nodeName;
+            config.displayName = root.hasAttribute("displayName")? root.getAttribute("displayName"): root.nodeName;
+            for (let c in practiceTests) if (c === config.name && practiceTests[c] !== config) return practiceTestErrorOut(config, "duplicated test name: " + config.name + " (" + config.displayName + ")");
+            config.button.removeAttribute("hide");
+            if (autosave) {
+                let list = "";
+                for (let test in practiceTestConfigs) list += " " + test;
+                Store.store("local practiceTests list", list.substring(1));
+                Store.store("local practiceTest " + config.name, config.rawText.value);
+            }
+            makeTest(config);
+        }
+
+        // make a new practice test configuration zone
+        function offerNewPracticeTest() {
+            
+        }
     }
     function changeNameFirst(isChangeMe) {
         (isChangeMe? changeNameFirstP: hideForChangeMe).removeAttribute("hide");
@@ -827,80 +872,32 @@ function saveActiveProblem() {
     document.body.removeChild(a);
 }
 
-let practiceTestProto = {};
-
-// read in from rawText
-practiceTestProto.compile = function compile() {
-    this.compileButton.setAttribute("hide", "");
-    this.doc = xmlImporter.parseDoc(this.rawText.value);
-    if (xmlImporter.isParserError(this.doc)) return this.errorOut("<h4>Parser error, not a valid XML file. The structure of these parser errors varies from browser to browser, see below for the specific error.</h4><pre class='errorout'>"+xmlImporter.nodeToInnerHTML(this.doc)+"</pre>");
-    else this.errorOut("");
-    let root = xmlImporter.getRoot(this.doc);
-    this.name = root.hasAttribute("displayName")? root.getAttribute("displayName"): root.nodeName;
-    for (let c of practiceTestConfigs) if (c !== this && c.name === this.name) return this.errorOut("duplicated test name: " + this.name);
-    this.makeTest();
-}
-
-practiceTestProto.errorOut = function errorOut(message) {
-    this.errorOutPlace.innerHTML = message;
-    this.testOut.setAttribute("hide", "");
-    if (message === "") this.makeTestButton.removeAttribute("hide");
-    else this.makeTestButton.setAttribute("hide", "");
-}
-
-practiceTestProto.makeTest = function makeTest() {
-    let oldTest = this.test;
-    this.testNameNode.nodeValue = this.name;
-    this.errorOut("");
-    let countSpot = xmlImporter.element("p", this.div);
-    this.putTestCountHere = xmlImporter.text("tries left", countSpot);
-    let me = this;
-    // timeout is to remove generator from the main thread
-    makePracticeTest(problems, this.doc, function(result, success) {
-        if (success) {
-            me.test = result;
-            me.testOut.replaceChild(me.test, oldTest);
-            me.errorOut("");
-            me.testOut.removeAttribute("hide");
-        } else {
-            me.errorOut(result);
-        }
-        typeset(me.testOut);
-        me.putTestCountHere = undefined;
-        me.div.removeChild(countSpot);
-    }, this.putTestCountHere, 100);
-}
-
-function onPracticeTestReady() {
-    // this is one place to automatically load a practice test, but since this is the editor and we don't know what problems will be loaded automatic loading may not be a good idea
-}
-
 // make a new practice test configuration zone
-function offerNewPracticeTest() {
-    if (announceFunctions) console.log("offerNewPracticeTest");
-    let config = Object.create(practiceTestProto);
-    practiceTestConfigs.push(config);
-    config.div = xmlImporter.element("div", practiceTestsSpot, ["class", "practicetestconfig"]);
-    config.rawText = xmlImporter.element("textarea", config.div, ["class", "texinput"]);
-    xmlImporter.makeTabbable(config.rawText);
-    config.rawText.addEventListener("input", xmlImporter.fixTextHeight);
-    config.rawText.addEventListener("input", function() {
-        config.compileButton.removeAttribute("hide");
-        config.makeTestButton.setAttribute("hide", "");
-        config.testOut.setAttribute("hide", "");
-    });
-    config.compileButton = xmlImporter.element("button", config.div);
-    xmlImporter.text("compile", config.compileButton);
-    config.compileButton.addEventListener("click", function() {config.compile()});
-    config.makeTestButton = xmlImporter.element("button", config.div, ["hide", ""]);
-    xmlImporter.text("make test", config.makeTestButton);
-    config.makeTestButton.addEventListener("click", function() {config.makeTest()});
-    config.errorOutPlace = xmlImporter.element("div", config.div, ["class", "errorout"]);
-    config.testOut = xmlImporter.element("details", config.div, ["class", "testout", "hide", "", "open", ""]);
-    config.testNameNode = xmlImporter.text("", xmlImporter.element("summary", config.testOut));
-    xmlImporter.text("test goes here", config.test = xmlImporter.element("p", config.testOut));
-    return config;
-}
+        function offerNewPracticeTest() {
+            if (announceFunctions) console.log("offerNewPracticeTest");
+            let config = Object.create(practiceTestProto);
+            practiceTestConfigs.push(config);
+            config.div = xmlImporter.element("div", practiceTestsSpot, ["class", "practicetestconfig"]);
+            config.rawText = xmlImporter.element("textarea", config.div, ["class", "texinput"]);
+            xmlImporter.makeTabbable(config.rawText);
+            config.rawText.addEventListener("input", xmlImporter.fixTextHeight);
+            config.rawText.addEventListener("input", function() {
+                config.compileButton.removeAttribute("hide");
+                config.makeTestButton.setAttribute("hide", "");
+                config.testOut.setAttribute("hide", "");
+            });
+            config.compileButton = xmlImporter.element("button", config.div);
+            xmlImporter.text("compile", config.compileButton);
+            config.compileButton.addEventListener("click", function() {config.compile()});
+            config.makeTestButton = xmlImporter.element("button", config.div, ["hide", ""]);
+            xmlImporter.text("make test", config.makeTestButton);
+            config.makeTestButton.addEventListener("click", function() {config.makeTest()});
+            config.errorOutPlace = xmlImporter.element("div", config.div, ["class", "errorout"]);
+            config.testOut = xmlImporter.element("details", config.div, ["class", "testout", "hide", "", "open", ""]);
+            config.testNameNode = xmlImporter.text("", xmlImporter.element("summary", config.testOut));
+            xmlImporter.text("test goes here", config.test = xmlImporter.element("p", config.testOut));
+            return config;
+        }
 
 // use JSZip magic to save all loaded problems in one .zip file/folder
 let zip;
