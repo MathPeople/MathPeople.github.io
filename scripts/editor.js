@@ -374,6 +374,12 @@ jaxLoopWait = 200;
             config.div.insertBefore(config.compileButton, config.rawText.nextElementSibling);
             xmlImporter.text("compile", config.compileButton);
             config.compileButton.addEventListener("click", function() {compilePracticeTest(config)});
+            if (autosave) {
+                Store.store("local practiceTest "+config.name, config.rawText.value);
+                Store.store("local practiceTests list", practiceTestsListString());
+            }
+            sortPracticeTests();
+            oldLoadPracticeTestOverride(config);
         }
         // read in from rawText and save if autosaving
         let compilePracticeTest = function compilePracticeTest(config) {
@@ -386,10 +392,11 @@ jaxLoopWait = 200;
             erasePracticeTest(config);
             loadPracticeTest(xmlImporter.trim(doc));
         }
-
-        // make a new practice test configuration zone
-        function offerNewPracticeTest() {
-            
+        
+        let oldErasePracticeTestOverride = erasePracticeTestOverride;
+        erasePracticeTestOverride = function erasePracticeTestOverride(config) {
+            practiceTestsSpot.removeChild(config.div);
+            if (autosave) Store.erase("local practiceTest "+config.name);
         }
     }
     function changeNameFirst(isChangeMe) {
@@ -551,6 +558,12 @@ function loadFromLocalStorage() {
             loadProblem(xmlImporter.trim(xmlImporter.parseDoc(Store.fetch("local " + problem))));
         }
     }
+    list = Store.fetch("local practiceTests list");
+    if (!list) list = "";
+    lines = list.split(" ");
+    for (let practiceTest of lines) {
+        if (practiceTest !== "") loadPracticeTest(xmlImporter.trim(xmlImporter.parseDoc(Store.fetch("local practiceTest "+practiceTest))));
+    }
     qualNameIn.parentElement.insertBefore(
         xmlImporter.makeButton(
             "Erase Local Storage",
@@ -567,6 +580,9 @@ function clearLocalQual(e) {
     let deleteMe = Object.assign({}, problems);
     for (let problem in deleteMe) eraseProblem(problem);
     Store.erase("local problems list");
+    deleteMe = Object.assign({}, practiceTests);
+    for (let practiceTest in deleteMe) erasePracticeTest(practiceTest);
+    Store.erase("local practiceTests list");
     qualNameIn.value = "";
     qualNameIn.removeAttribute("disabled");
     if (e && e.target && e.target.parentElement) e.target.parentElement.removeChild(e.target);
@@ -867,9 +883,16 @@ function saveActiveProblem() {
 function offerNewPracticeTest() {
     if (announceFunctions) console.log("offerNewPracticeTest");
     let num = 0;
-    while (("practiceTest"+num) in practiceTests) ++num;
-    let fakeDoc = xmlImporter.parseDoc("<practiceTest"+num+"/>");
-    loadPracticeTest(fakeDoc);
+    while (("practiceTest"+(++num)) in practiceTests);
+    let plainDoc = xmlImporter.parseDoc("<practiceTest"+num+"/>");
+    loadPracticeTest(plainDoc);
+}
+
+function sortPracticeTests() {
+    let testNames = [];
+    for (let testName in practiceTests) testNames.push(testName);
+    testNames.sort();
+    for (let testName of testNames) practiceTestsSpot.insertBefore(practiceTests[testName].div, newPracticeTestButton);
 }
 
 // use JSZip magic to save all loaded problems in one .zip file/folder

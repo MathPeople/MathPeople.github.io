@@ -319,14 +319,25 @@ function isEmpty(o) {
     return Object.keys(o).length === 0;
 }
 
-// get ids of all loaded problems
-function problemsListString() {
+function sortedProperties(object) {
+    if (isEmpty(object)) return "";
     let list = [];
-    for (let problem in problems) if (problem !== "changeMe" && problem !== currentlyErasing) list.push(problem);
+    for (let prop in object) list.push(prop);
     list.sort();
     let returner = "";
-    for (let problem of list) returner += " " + problem;
+    for (let prop of list) returner += " " + prop;
     return returner.substring(1);
+}
+
+// get ids of all loaded problems
+function problemsListString() {
+    let copy  = {};
+    for (let problem in problems) if (problem !== "changeMe" && problem !== currentlyErasing) copy[problem] = undefined;
+    return sortedProperties(copy);
+}
+
+function practiceTestsListString() {
+    return sortedProperties(practiceTests);
 }
 //----------------------------------------------------------------------------------------------------------------
 
