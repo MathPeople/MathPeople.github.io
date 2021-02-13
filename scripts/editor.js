@@ -816,20 +816,54 @@ function toggleColumnListener() {
 // update the whole list of problems with the current values
 function fixWholeList() {
     if (announceFunctions) console.log("fixWholeList");
+    let matches = getProblemsFromSelector(practiceSearch.value);
     wholeListHere.innerHTML = "";
     let header = xmlImporter.element("tr", wholeListHere);
     xmlImporter.text("🔍", xmlImporter.element("th", header));
-    xmlImporter.text("problem id", xmlImporter.element("th", header));
+    function buttonListener(e) {
+        let button = e.target;
+        let wasIncreasing = button.getAttribute("order") === "increasing";
+        for (let otherButton of header.querySelectorAll("button")) otherButton.removeAttribute("order");
+        button.setAttribute("order", wasIncreasing? "decreasing": "increasing");
+        sortTable(button.getAttribute("colnumber"), !wasIncreasing);
+    }
+    function sortTable(column, increasing) {
+        let rows = [];
+        for (let child of wholeListHere.childNodes) if (child !== header) rows.push(child);
+        rows.sort(function(a, b) {
+            // first any matched problem is before any unmatched problem
+            if (a.childNodes[1].firstChild.nodeValue in matches) {
+                if (!(b.childNodes[1].firstChild.nodeValue in matches)) return -1;
+            } else if (b.childNodes[1].firstChild.nodeValue in matches) return 1;
+            // reverse order if decreasing
+            if (!increasing) {
+                let c = b;
+                b = a;
+                a = c;
+            }
+            // sort by value in column
+            return a.childNodes[column].innerText.localeCompare(b.childNodes[column].innerText);
+        });
+        for (let row of rows) {
+            wholeListHere.removeChild(row);
+            wholeListHere.appendChild(row);
+        }
+    }
+    let colNumber = 1; // skip the first column (xpath match column)
+    function makeColumnHeader(text) {
+        let button = xmlImporter.element("button", xmlImporter.element("th", header), ["colnumber", colNumber++]);
+        xmlImporter.text(text, button);
+        button.addEventListener("click", buttonListener);
+        return button;
+    }
+    let idButton = makeColumnHeader("problem id");
     let showMetas = [];
     for (let meta in metas) if (!metas[meta].hide) {
         showMetas.push(meta);
-        xmlImporter.text(meta, xmlImporter.element("th", header));
+        makeColumnHeader(meta);
     }
-    let rows = [];
-    let matches = getProblemsFromSelector(practiceSearch.value);
     for (let problem in problems) if (problem !== "changeMe") {
-        let row = xmlImporter.element("tr", null);
-        rows.push(row);
+        let row = xmlImporter.element("tr", wholeListHere);
         xmlImporter.text((problem in matches)? "✓": "X", xmlImporter.element("td", row)); // the X here is not the unicode fancy X so that it shows up as different even if the user doesn't have a powerful enough font for unicode check mark and fancy X
         xmlImporter.text(problem, xmlImporter.element("td", row));
         for (let meta of showMetas) {
@@ -850,14 +884,7 @@ function fixWholeList() {
             }
         }
     }
-    let comparator = function(a, b) {
-        let aName = a.firstChild.nextSibling.firstChild.nodeValue, bName = b.firstChild.nextSibling.firstChild.nodeValue;
-        if ((aName in matches) && !(bName in matches)) return -1;
-        if (!(aName in matches) && (bName in matches)) return 1;
-        return aName.localeCompare(bName);
-    }
-    rows.sort(comparator);
-    for (let row of rows) wholeListHere.appendChild(row);
+    idButton.click();
 }
 
 // Update active problem to represent what is present in the interface. This consists of creating a new document from the GUI values, deleting the old problem, and reloading it with the new doc.

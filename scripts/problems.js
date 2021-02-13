@@ -297,7 +297,10 @@ function getProblemsFromSelector(selector, theseProblems = problems) {
 //----------------------------------------------------------------------------------------------------------------
 // xmlImporter.js, jax.js, and practiceTests.js are all loaded so see what application we are being used in and start that application.
 function start() {
-    if (document.getElementById("problemsSpot")) {
+    if (document.getElementById("editor")) {
+        // set up editor
+        loadScript("editor");
+    } else if (document.getElementById("problemsSpot")) {
         // set up to show the problems like on the qual pages
         importProblemsRepository(
             document.getElementById("problemsSpot").getAttribute("qual"),
@@ -305,9 +308,6 @@ function start() {
                 loadScript("showProblems");
             }
         );
-    } else if (document.getElementById("editor")) {
-        // set up editor
-        loadScript("editor");
     }
     // any other applications beyond the two already created can be linked in here
 }

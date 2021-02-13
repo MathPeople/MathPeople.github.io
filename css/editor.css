@@ -119,3 +119,13 @@ details {
 td.checkboxlist {
     font-size: 70%;
 }
+
+[order="increasing"]:after {
+    content: "▲";
+    margin-left: 1ex;
+}
+
+[order="decreasing"]:after {
+    content: "▼";
+    margin-left: 1ex;
+}
