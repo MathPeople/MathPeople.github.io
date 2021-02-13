@@ -11,7 +11,7 @@
         - Typeset test
     
     Many of the generator processes are recursive.
-    You can probably figure out what is happening at each stage of generation if you look through the error tracing.
+    You can find out what is happening at each stage of generation if you look through the error tracing.
 */
 // test display stylesheet
 xmlImporter.element("link", document.head, ["rel", "stylesheet", "type", "text/css", "href", "/css/tests.css"]);
@@ -211,16 +211,16 @@ function shuffle(array) {
     
     generatorStuff.errors = {};
     
-    function makePracticeTest(theseProblems, configuration, callback, numTries = 100) {
+    function makePracticeTest(theseProblems, config, numTries = 100) {
         let startedWith = numTries;
         // Why the internal function makeTest? To allow for window.setTimeout callbacks which give time between each try so as to update the number of tries displayed to the user in putTestCountHere
         function makeTest() {
-            if (putTestCountHere) putTestCountHere.nodeValue = "tries left: " + numTries;
-            let trace = generatorStuff.errorTrace = errorTrace.newErrorTrace("making practice test", {node: xmlImporter.getRoot(configuration)});
+            config.putTestCountHere.nodeValue = "tries left: " + numTries;
+            let trace = generatorStuff.errorTrace = errorTrace.newErrorTrace("making practice test", {node: xmlImporter.getRoot(config.doc)});
             try {
-                let usedProblems = {};
+                let usedProblems = {changeMe: undefined};
                 generatorStuff.errorTrace = trace.substep("obtaining mutable copy of configuration");
-                let identifiedConfig = generatorStuff.copyConfig(xmlImporter.trim(configuration));
+                let identifiedConfig = generatorStuff.copyConfig(xmlImporter.trim(config.doc));
                 let configRoot = xmlImporter.getRoot(identifiedConfig);
                 generatorStuff.errorTrace = trace.substep("choosing from weighted sections");
                 generatorStuff.resolveWeightedSections(configRoot);
@@ -270,7 +270,7 @@ function shuffle(array) {
                 generatorStuff.errorTrace = trace.substep("setting question numbers");
                 generatorStuff.setQuestionNumbers(test, {value: 1});
                 generatorStuff.errors = {};
-                callback(test, true);
+                processPracticeTest(config, test, true);
             } catch (e) {
                 // found error, interpret and return interpretation
                 let trace = generatorStuff.errorTrace;
@@ -279,13 +279,16 @@ function shuffle(array) {
                 if ((typeof trace.lastSubstep !== "undefined") && trace.lastSubstep !== trace.substeps[trace.substeps.length-1]) message += "<h6> -- "+trace.lastSubstep+"</h6>";
                 message += "<br>";
                 message += "<h6>Erroneous node:</h6>";
-                let errorNode = generatorStuff.errorTrace.arguments.node, ogNode = configuration.querySelector("[configId=\""+errorNode.getAttribute("configId")+"\"]");
+                let errorNode = generatorStuff.errorTrace.arguments.node;
+                // if this is a nonelement node (like a text node) just go up to the nearest element node
+                while (errorNode.nodeType != 1) errorNode = errorNode.parentNode;
+                let ogNode = config.doc.querySelector("[configId=\""+errorNode.getAttribute("configId")+"\"]");
                 let erase = function(node) {
                     if (node.removeAttribute) node.removeAttribute("configId");
                     for (let child of node.childNodes) erase(child);
                 }
-                erase(configuration);
-                message += xmlImporter.nodeToInnerHTML(configuration, ogNode);
+                erase(config.doc);
+                message += xmlImporter.nodeToInnerHTML(config.doc, ogNode);
                 if (message in generatorStuff.errors) ++generatorStuff.errors[message];
                 else generatorStuff.errors[message] = 1;
                 if (numTries > 1) {
@@ -294,7 +297,7 @@ function shuffle(array) {
                 } else {
                     let max = 0;
                     for (let m in generatorStuff.errors) max = Math.max(max, generatorStuff.errors[m]);
-                    for (let m in generatorStuff.errors) callback("<h6>Failed "+startedWith+" times. Coming in with "+max+" fails, the most common error was:</h6>"+m, false);
+                    for (let m in generatorStuff.errors) if (generatorStuff.errors[m]) return processPracticeTest(config, "<h6>Failed "+startedWith+" times. Coming in with "+max+" fails, the most common error was:</h6>"+m, false);
                 }
             }
         }

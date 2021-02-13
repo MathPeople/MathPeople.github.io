@@ -1,5 +1,28 @@
+[hide] {
+    display: none !important;
+}
+
+[default]::after {
+    content: " (default)";
+}
+
+[floatright] {
+    display: inline;
+    float: right;
+}
+
 p {
     text-indent: .3em;
+}
+
+#showForChangeMe {
+    border: .5em ridge darkred;
+    border-radius: 2em;
+    background: chartreuse;
+    fill: purple;
+    padding: .5em;
+    font-size: 200%;
+    text-align: center;
 }
 
 .meta {
@@ -10,15 +33,18 @@ p {
     margin: .5em;
 }
 
-textarea {
+.metavalue {
+    display: inline-block;
+}
+
+.texinput {
     resize: none;
-    overflow: hidden;
     min-height: 5em;
     max-height: 80vh;
     width: 100%;
-    -moz-tab-size: 3;
-    -o-tab-size: 5;
-    tab-size: 3;
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
 }
 
 #texLiveOut {
@@ -35,9 +61,24 @@ textarea {
     border: 3px outset skyblue;
 }
 
+.texoutput {
+    resize: none;
+    min-height: 5em;
+    max-height: 80vh;
+    width: 100%;
+    background: lightgray;
+    -moz-tab-size: 4;
+    -o-tab-size: 4;
+    tab-size: 4;
+}
+
 #texOut {
     border: 1px dashed black;
     background-color: palegoldenrod;
+    display: block;
+}
+
+#codeOut {
     display: block;
 }
 
@@ -77,26 +118,4 @@ details {
 
 td.checkboxlist {
     font-size: 70%;
-}
-
-.errorout {
-    padding: .6em;
-}
-
-.practicetestconfig .errorout:empty {
-    display: none;
-}
-
-.practicetestconfig .errorout {
-    background: rgb(255, 170, 170);
-    border: 3px outset red;
-    border-radius: 8px;
-}
-
-.practicetestconfig {
-    overflow: hidden;
-    margin: .5em;
-    padding: .3em;
-    border: 1px solid lightgray;
-    border-radius: .3em;
 }

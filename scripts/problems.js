@@ -1,140 +1,93 @@
+/*
+    This script is used for the foundational infrastructure of importing a problems repository. That is, it fetches the problems from the server and sets them up in the local holder object. It also has the functionality of collecting all the metainformation and executing the XPath searches.
+    
+    In an effort to automate page design, this script will load things it needs. It loads xmlImporter.js, jax.js, and practiceTests.js every time. If a DOM element with id "problemsSpot" is found, it will load showProblems.js and import the qual saved as the qual attribute on that DOM element. If a DOM element with id "editor" is found, it will load editor.js and prepare for editor mode. If values are given for page hiding during a test, it loads pageHider.js.
+    
+    This script also interacts with local storage. Other scripts can just use the infrastructure here.
+*/
 
-//----------------------------------------------------------------------------------------------------------------
-// Global script variables.
-//----------------------------------------------------------------------------------------------------------------
+// Autoloading of other scripts
+// Start with xmlImporter so that we can use its functionality to autoload the rest
+let loader = document.createElement("script");
+loader.setAttribute("type", "text/javascript");
+loader.setAttribute("src", "/scripts/xmlImporter.js");
+loader.addEventListener("load", function() {
+    loadScript("jax", function() {
+        loadScript("practiceTests", start);
+    });
+});
+document.head.appendChild(loader);
 
-//----------------------------------------------------------------------------------------------------------------
-// Initialize where in the documents problems will load, creating div tags for "metainformation" and "problems"
-//      Locate this spot using the <div id="problemsSpot"/> tag
-let mainDiv = document.getElementById("problemsSpot"), 
-    metaDiv = xmlImporter.element("details", mainDiv, ["class", "metainformation"]), 
-    problemsDiv = xmlImporter.element("div", mainDiv, ["class", "problems"]);
-
-//----------------------------------------------------------------------------------------------------------------
-// User input for the renaming functionality of the "metainformation" bar
-let renameIn = xmlImporter.element(
-        "input",
-        xmlImporter.element("div", metaDiv),
-        ["type", "text", "id", "renameIn", "placeholder", "metaName optionName renamed value"]
-    );
-
-//----------------------------------------------------------------------------------------------------------------
-// User input for the problem filtering part of the "metainformation" bar
-let selectorIn = xmlImporter.element(
-        "input",
-        xmlImporter.element("div", metaDiv),
-        ["type", "text", "id", "selectorIn", "placeholder", "//metaName/optionName | //problem[not(radioMetaName)]"]
-    );
-
-// Ensures that all problems will display initially.
-selectorIn.value = "*"; 
+// shortcut for loading a script, adds the location prefix/suffix too
+function loadScript(location, finished = function() {}) {
+    xmlImporter.element(
+        "script",
+        document.head,
+        ["type", "text/javascript",
+         "src", "/scripts/"+location+".js"]
+    ).addEventListener("load", finished);
+}
 
 // Initialize the holding object for problems and for metainformation types
-var problems = {}, metas = {};
+var problems = {}, metas = {}, practiceTests = {};
 
 // Used for interacting with local storage
 var Store = {};
-
-//----------------------------------------------------------------------------------------------------------------
-
-
-//----------------------------------------------------------------------------------------------------------------
-// Main Code
-//----------------------------------------------------------------------------------------------------------------
-
 setupLocalStorage();
-setupMetainformation();
 
-// if the page was initialized with qualName then this will set up for that qual
-try {
-    importAndDisplayQualProblems(qualName);
-} catch (e) {}
-
-
-//----------------------------------------------------------------------------------------------------------------
-// Script Functions
-//----------------------------------------------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------------------------------------------
-// Work in progress; intended to create html selection tags for meta options
-// function createSelectionBoxes(){
-//     // let metaObject;
-//     // let outputString = "";
-//     // for (let meta in metas){ // For each different metainformation option...
-//     //     alert(meta);
-//     //     metaObject = metas[meta];
-//     //     for(let option in metaObject.values){
-            
-//     //     }
-//     // }
-
-//     // for (let meta in metas) {
-//     //     let bunch = metas[meta];
-//     //     if (!bunch.div) {
-//     //         bunch.div = xmlImporter.element("div", metaDiv, ["class", "metaBunch", "metaType", bunch.metaType]);
-//     //         bunch.title = xmlImporter.element("h5", bunch.div, ["class", "metaTitle"]);
-//     //         bunch.titleText = xmlImporter.text(meta, bunch.title);
-//     //     }
-//     //     switch (bunch.metaType) {
-//     //         case "checkboxes": // Remark: This case will also run the checkboxes, as there is no break statement. I do not know if this is intentional
-//     //         case "radio":
-//     //             let b = bunch.values[value] = {};
-//     //             for (let value in bunch.values) if (!bunch.values[value]) {
-//     //                 b.pair = xmlImporter.element("div", bunch.div, ["class", "metaOption"]);
-//     //                 b.name = xmlImporter.text(value, xmlImporter.element("span", b.pair));
-//     //                 b.alternateName = xmlImporter.text(
-//     //                     Store.fetch(qualName + " " + meta + " " + value), 
-//     //                     xmlImporter.element("span", b.pair, ["class", "alternateName"])
-//     //                 );
-//     //             }
-//     //             break; 
-//     //         case "scale":
-//     //     }
-//     // }
-// }
-
-//----------------------------------------------------------------------------------------------------------------
-// This function creates the input boxes for renaming options and filtering problems with XPath
-function setupMetainformation() {
-    xmlImporter.text("Metainformation", xmlImporter.element("summary", metaDiv));
+/*
+    Structure of a metanode is described in the wiki.
     
-    let label = xmlImporter.element("label", null, ["for", "renameIn"]);
-    renameIn.parentElement.insertBefore(label, renameIn);
-    xmlImporter.text("Locally Rename an Option:", label);
-    renameIn.addEventListener("change", tryRename);
+    There are three types of metainformation: checkbox, radio, and scale. Checkbox has child nodes, one for each value, where the values are the names of the child nodes. Radio has one child node whose name is the value. Scale has only the `scale` attribute on the metanode itself.
     
-    label = xmlImporter.element("label", null, ["for", "selectorIn"]);
-    selectorIn.parentElement.insertBefore(label, selectorIn);
-    xmlImporter.text("XPath to Show/Hide Problems:", label);
-    selectorIn.addEventListener("change", updateHides);
-}
-//----------------------------------------------------------------------------------------------------------------
+    Checkbox is the default type because it is the structurally simplest.
+*/
 
-//----------------------------------------------------------------------------------------------------------------
-// ensure metas has a spot for this meta and its values
+// Ensure metas holder object has a spot for this meta and its values
 function handleMetaNode(node) {
-    if (!(node.nodeName in metas)) metas[node.nodeName] = {values: {}, metaType: "checkboxes"}; // default to checkboxes, change later if needed
-    let value = node.firstChild;
+    let introducedNewType, newMetaValues = {};
+    if (!(node.nodeName in metas)) {
+        introducedNewType = true;
+        metas[node.nodeName] = {values: {}, metaType: "checkbox"}; // default to checkbox, change later if needed
+    }
+    let bunch = metas[node.nodeName], value = node.firstChild, numValues = 0; // count number of values to later make sure it is 1 in case this is a radio type
     while (value) {
-        metas[node.nodeName].values[value.nodeName] = undefined;
+        if (!(value.nodeName in bunch.values)) {
+            newMetaValues[value.nodeName] = undefined;
+            bunch.values[value.nodeName] = undefined;
+        }
         value = value.nextSibling;
+        ++numValues;
     }
     if (node.hasAttribute("radio")) {
-        metas[node.nodeName].metaType = "radio";
-        metas[node.nodeName].values[node.getAttribute("radio")] = undefined;
-        metas[node.nodeName].defaultValue = node.getAttribute("radio");
+        if (numValues !== 1) throw Error("radio must have one and only one child node but this radio has " + numValues + " children");
+        bunch.metaType = "radio"; // recognize this value
+        if (!(node.getAttribute("radio") in bunch.values)) {
+            bunch.values[node.getAttribute("radio")] = undefined; // set the default value
+            bunch.defaultValue = node.getAttribute("radio");
+            newMetaValues[node.getAttribute("radio")] = undefined;
+        }
+    } else if (node.hasAttribute("scale")) {
+        if (numValues !== 0) throw Error("scale metainformation cannot have any child nodes but this one has " + numValues + " children");
+        bunch.metaType = "scale";
+        if (typeof bunch.maxValue !== "number") bunch.maxValue = 0;
+        bunch.maxValue = Math.max(bunch.maxValue, node.getAttribute("scale"));
     }
-    if (node.hasAttribute("scale")) {
-        metas[node.nodeName].metaType = "scale";
-        metas[node.nodeName].defaultValue = "n1";
-    }
+    if (introducedNewType || !isEmpty(newMetaValues)) addingMetaOverride(node.nodeName, newMetaValues);
 }
+function addingMetaOverride() {}
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
-// 
-function loadProblem(doc) {
+/*
+    Problems holds the doc for each problem, indexed by id (root node name). This doc is always assumed to be mutable so don't cache information from it, instead query the doc whenever information has to be gathered from the problem, information such as metainformation or TeX for problem/solution.
+*/
+
+// Import problem from XML doc and update problems and metas acordingly. Pass a function in as convertDoc if you want to convert the doc before loading it.
+function loadProblem(doc, convertDoc) {
+    if (convertDoc) doc = convertDoc(doc);
     let problem = xmlImporter.getRoot(doc).nodeName;
+    if (problem in problems) eraseProblem(problem);
     problems[problem] = {doc: doc};
     let problemNode = doc.querySelector("problem");
     if (problemNode) {
@@ -144,124 +97,197 @@ function loadProblem(doc) {
             meta = meta.nextSibling;
         }
     }
+    loadProblemOverride(problem);
 }
+function loadProblemOverride() {}
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
-// This is the main function which imports and displays the problems.
-function importAndDisplayQualProblems(qualName) {
-    holdJax = true;
+var qualName;
+// Import the problems from a repository, storing the docs and populating metas with the encountered values.
+function importProblemsRepository(qual, onSuccess = function() {}, onfail = function() {}) {
+    qualName = qual; // globally declare that this is the loaded qual
     xmlImporter.openTextFile(
-        "/quals/"+qualName+"/problemsList.txt",               // File to open-- the problem list for a given qual
+        "/quals/"+qual+"/problemsList.txt",               // File to open-- the problem list for a given qual
 
         null,                                                   // Parameters to pass to the function below; here no additional
 
         function(list) {                                        // Function to be run after fetching text, if the request is successful
             if (list === "") {                                  //      "list" will be the problems retreived
                 mainDiv.innerHTML = "could not find any problems";
-                return mainDiv.innerHTML;
+                return;
             }
             list = list.split(" ");
             let toGo = list.length;
             for (let problem of list) {
                 xmlImporter.openXMLFile(
-                    "/quals/"+qualName+"/problems/"+problem+".xml",
+                    "/quals/"+qual+"/problems/"+problem+".xml",
                     null,
                     function(doc) {
+                        holdJax = true;
                         loadProblem(doc);
                         if (--toGo === 0) {
-                            showAllProblems();
+                            onSuccess();
+                            afterProblemsAreSet();
                         } 
                     }
                 );
             }
+        }, function() {
+            qualName = undefined; // the qual failed so don't say it is loaded
+            onfail();
+        }
+    );
+    xmlImporter.openTextFile(
+        "/quals/"+qual+"/practiceTestsList.txt",
+        null,
+        function(list) {
+            if (list === "") return; // no practice tests to load
+            list = list.split(" ");
+            for (let practiceTest of list) xmlImporter.openXMLFile("/quals/"+qual+"/practiceTests/"+practiceTest+".xml", null, loadPracticeTest);
+        }, function() {
+            // no practice tests found
         }
     );
 }
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
-//
-function showProblem(problem, showCompleteness = true) {
-    let bunch = problems[problem];
-    let doc = bunch.doc, problemNode = doc.querySelector("problem"), solutionNode = doc.querySelector("solution");
-    bunch.div = xmlImporter.element((showCompleteness && solutionNode)? "details": "div", problemsDiv, ["class", "problem"]);
-    if (solutionNode) {
-        if (showCompleteness) {
-            bunch.summary = xmlImporter.element("summary", bunch.div);
-            bunch.summary.innerHTML = "<h5 class=\"id\">"+problem+"</h5><br />"+texAttToInnerHTML(problemNode.getAttribute("tex"));
-        }
-        bunch.div.innerHTML += texAttToInnerHTML(solutionNode.getAttribute("tex"));
-    } else bunch.div.innerHTML = texAttToInnerHTML(problemNode.getAttribute("tex"));
-    if (showCompleteness && !doc.querySelector("solutionCompleteness")) bunch.div.setAttribute("unfinished", "");
-    else if (showCompleteness && doc.querySelector("solutionCompleteness > partial")) bunch.div.setAttribute("unfinished", "partial");
-    // just a little fun
-    for (let a of document.querySelectorAll("[href=\"https://ncatlab.org/nlab/show/Fubini+theorem\"]")) xmlImporter.rickRollLink(a);
-    typeset(bunch.div);
+// things which use the whole problems set
+function afterProblemsAreSet() {
+    holdJax = false;
+    cleanupMetainformation();
+    afterProblemsAreSetOverride();
+}
+function afterProblemsAreSetOverride() {}
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
+let practiceTestsLoadHere = null;
+function loadPracticeTest(configDoc) {
+    let root = xmlImporter.getRoot(configDoc);
+    let config = practiceTests[root.nodeName] = {};
+    config.doc = configDoc;
+    config.name = root.nodeName;
+    config.displayName = root.hasAttribute("displayName")? root.getAttribute("displayName"): root.nodeName;
+    config.div = xmlImporter.makeDetails(config.displayName, practiceTestsLoadHere, true, ["class", "practicetestholder"]);
+    config.button = xmlImporter.makeButton("new test", config.div, "practiceTestMakeTestButton-"+config.name, function() {makeTest(config)});
+    config.errorOutPlace = xmlImporter.element("div", config.div, ["class", "errorout"]);
+    config.testOut = xmlImporter.element("div", config.div, ["class", "testout", "hide", ""]);
+    xmlImporter.text("test goes here", config.test = xmlImporter.element("div", config.testOut));
+    loadPracticeTestOverride(config);
+}
+function loadPracticeTestOverride() {}
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
+function practiceTestErrorOut(config, message) {
+    config.errorOutPlace.innerHTML = message;
+    config.testOut.setAttribute("hide", "");
 }
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
-//
+function makeTest(config) {
+    practiceTestErrorOut(config, "");
+    config.countSpot = xmlImporter.element("p", config.div);
+    config.putTestCountHere = xmlImporter.text("tries left", config.countSpot);
+    makePracticeTest(problems, config);
+}
+
+function processPracticeTest(config, result, success) {
+    if (success) {
+        let oldTest = config.test;
+        config.test = result;
+        config.testOut.replaceChild(config.test, oldTest);
+        practiceTestErrorOut(config, "");
+        config.testOut.removeAttribute("hide");
+    } else {
+        practiceTestErrorOut(config, result);
+    }
+    typeset(config.testOut);
+    config.putTestCountHere = undefined;
+    config.div.removeChild(config.countSpot);
+    config.countSpot = config.putTestCountHere = undefined;
+}
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
+function erasePracticeTest(config) {
+    if (config.div.parentElement) config.div.parentElement.removeChild(config.div);
+    delete practiceTests[config.name];
+    erasePracticeTestOverride(config);
+}
+function erasePracticeTestOverride() {}
+//----------------------------------------------------------------------------------------------------------------
+
+//----------------------------------------------------------------------------------------------------------------
+let currentlyErasing;
 function eraseProblem(problem) {
-    let bunch = problems[problem];
-    if (bunch.div) bunch.div.parentElement.removeChild(bunch.div);
+    currentlyErasing = problem;
+    eraseProblemOverride(problem);
     delete problems[problem];
+    currentlyErasing = undefined;
 }
+function eraseProblemOverride(problem) {}
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
-// ensure each meta and option has an element in GUI
-function updateMetas() {
-    for (let meta in metas) {
-        let bunch = metas[meta];
-        if (!bunch.div) {
-            bunch.div = xmlImporter.element("div", metaDiv, ["class", "metaBunch", "metaType", bunch.metaType]);
-            bunch.title = xmlImporter.element("h5", bunch.div, ["class", "metaTitle"]);
-            bunch.titleText = xmlImporter.text(meta, bunch.title);
+// Checks if a metainformation is in use and if not then it erases it. Returns whether something was erased.
+function tryEraseMetainformation(metaType, metaValue) {
+    if (typeof metaValue === "string") {
+        // special case for default radio value
+        if (metas[metaType].metaType === "radio" && metaValue === metas[metaType].defaultValue) return tryEraseMetainformation(metaType);
+        // erasing just the value
+        if (isEmpty(getProblemsFromSelector("//problem/"+metaType+"/"+metaValue))) {
+            erasePartMetainformation(metaType, metaValue);
+            return true;
         }
-        switch (bunch.metaType) {
-            case "checkboxes": // Remark: This case will also run the checkboxes, as there is no break statement. I do not know if this is intentional
-            case "radio":
-                for (let value in bunch.values) if (!bunch.values[value]) {
-                    b = bunch.values[value] ={};
-                    b.pair = xmlImporter.element("div", bunch.div, ["class", "metaOption"]);
-                    b.name = xmlImporter.text(value, xmlImporter.element("span", b.pair));
-                    b.alternateName = xmlImporter.text(
-                        Store.fetch(qualName + " " + meta + " " + value), 
-                        xmlImporter.element("span", b.pair, ["class", "alternateName"])
-                    );
-                }
-                break; 
-            case "scale":
+    } else {
+        // erasing the whole metainformation
+        if (isEmpty(getProblemsFromSelector("//problem/"+metaType))) {
+            eraseWholeMetainformation(metaType);
+            return true;
         }
     }
+    return false;
 }
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
-// 
-function bunchCheckboxIsSelected() {return this.option.checked}
+function eraseWholeMetainformation(metaType) {
+    eraseWholeMetainformationOverride(metaType);
+    delete metas[metaType];
+}
+function eraseWholeMetainformationOverride() {}
+function erasePartMetainformation(metaType, metaValue) {
+    erasePartMetainformationOverride(metaType, metaValue);
+    delete metas[metaType].values[metaValue];
+}
+function erasePartMetainformationOverride() {}
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
-// all problem docs are loaded and all metas are declared, make corresponding DOM elements
-function showAllProblems() {
-    for (let problem in problems) showProblem(problem);
-    updateMetas();
-    updateHides();
-    holdJax = false;
+// find any unused metainformation and erase them
+function cleanupMetainformation() {
+    for (let meta in metas) if (!tryEraseMetainformation(meta)) if (metas[meta].values) for (let value in metas[meta].values) tryEraseMetainformation(meta, value);
 }
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
-//
-function getProblemsFromSelector(selector, theseProblems) {
+// Find which problems out of theseProblems match the XPath selector.
+function getProblemsFromSelector(selector, theseProblems = problems) {
     let returner = {};
     for (let id in theseProblems) {
         try {
-            if (theseProblems[id].doc.evaluate(selector, theseProblems[id].doc, null, XPathResult.ANY_UNORDERED_NODE_TYPE, null).singleNodeValue) 
-                returner[id] = undefined;
+            if (theseProblems[id].doc.evaluate( // structure of this function documented in MDN
+                selector,
+                theseProblems[id].doc,
+                null,
+                XPathResult.ANY_UNORDERED_NODE_TYPE, // any node match is a successful match
+                null
+            ).singleNodeValue)
+                returner[id] = undefined; // save this problem as matched
         } catch (e) {}
     }
     return returner;
@@ -269,51 +295,54 @@ function getProblemsFromSelector(selector, theseProblems) {
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
-// search problems for any node which matches the selector, show if one is found else hide
-function updateHides() {
-    let shows = getProblemsFromSelector(selectorIn.value, problems);
-    for (let id in problems) {
-        if (id in shows) problems[id].div.removeAttribute("hide");
-        else problems[id].div.setAttribute("hide", "");
+// xmlImporter.js, jax.js, and practiceTests.js are all loaded so see what application we are being used in and start that application.
+function start() {
+    if (document.getElementById("problemsSpot")) {
+        // set up to show the problems like on the qual pages
+        importProblemsRepository(
+            document.getElementById("problemsSpot").getAttribute("qual"),
+            function() {
+                loadScript("showProblems");
+            }
+        );
+    } else if (document.getElementById("editor")) {
+        // set up editor
+        loadScript("editor");
     }
+    // any other applications beyond the two already created can be linked in here
 }
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
-//
-function tryRename() {
-    let line = renameIn.value, lines = line.split(" ");
-    let meta = lines[0], tag = lines[1];
-    if (!metas[meta]) return;
-    let bunch = metas[meta];
-    if (!bunch.values || !(tag in bunch.values)) return inputMessage(renameIn, "cannot find " + tag + " in " + meta);
-    let value = line.substring(meta.length + tag.length + 2);
-    // just a little fun
-    if (value == "Dr. Ian Malcolm") value = "Dr. Ian Malcolm, renowned chaos theorist and proponent of fundamental biological understanding";
-    Store.store(qualName + " " + meta + " " + tag, value);
-    bunch.values[tag].alternateName.nodeValue = value;
-    renameIn.value = "";
+// checks if an object has any properties
+function isEmpty(o) {
+    return Object.keys(o).length === 0;
+}
+
+function sortedProperties(object) {
+    if (isEmpty(object)) return "";
+    let list = [];
+    for (let prop in object) list.push(prop);
+    list.sort();
+    let returner = "";
+    for (let prop of list) returner += " " + prop;
+    return returner.substring(1);
+}
+
+// get ids of all loaded problems
+function problemsListString() {
+    let copy  = {};
+    for (let problem in problems) if (problem !== "changeMe" && problem !== currentlyErasing) copy[problem] = undefined;
+    return sortedProperties(copy);
+}
+
+function practiceTestsListString() {
+    return sortedProperties(practiceTests);
 }
 //----------------------------------------------------------------------------------------------------------------
 
 //----------------------------------------------------------------------------------------------------------------
-// import practice test functionality
-let practiceTestsScript = xmlImporter.element("script", document.head, ["src", "/scripts/practiceTests.js"]);
-practiceTestsScript.addEventListener("load", function() {
-    // placing this call here allows the function to be overridden between loading problems.js and loading practiceTestsScript.js
-    onPracticeTestReady();
-});
-//----------------------------------------------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------------------------------------------
-// do this when practice test script is ready
-function onPracticeTestReady() {
-    
-}
-//----------------------------------------------------------------------------------------------------------------
-
-//----------------------------------------------------------------------------------------------------------------
-// Sets up a browser local storage object used elsewhere to interact with browser local storage in a fail-safe way
+// Sets up a browser local storage object used here and elsewhere to interact with browser local storage in a fail-safe way
 function setupLocalStorage() {
 
     Store.canStore = function() {return typeof (Storage) !== "undefined"};
@@ -332,5 +361,15 @@ function setupLocalStorage() {
     Store.erase = function erase(name) {
         if (Store.canStore()) localStorage.removeItem(name);
     };
+    
+    Store.move = function move(oldName, newName) {
+        if (oldName === newName) return;
+        Store.store(newName, Store.fetch(oldName));
+        Store.erase(oldName);
+    }
+    
+    Store.eraseAll = function eraseAll() {
+        if (Store.canStore()) localStorage.clear();
+    }
 }
 //----------------------------------------------------------------------------------------------------------------
