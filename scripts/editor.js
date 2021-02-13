@@ -599,6 +599,11 @@ function loadFromLocalStorage() {
             clearLocalQual
         ), qualNameIn.nextElementSibling
     );
+    // resave the repository in case there were problems created before initializing autosave
+    Store.store("local problems list", problemsListString());
+    for (let problem in problems) Store.store("local "+problem, xmlImporter.nodeToString(problems[problem].doc));
+    Store.store("local practiceTests list", practiceTestsListString());
+    for (let practiceTest in practiceTests) Store.store("local practiceTest "+practiceTest, practiceTests[practiceTest].rawText.value);
 }
 
 // remove all locally stored problems
