@@ -13,7 +13,9 @@ loader.setAttribute("type", "text/javascript");
 loader.setAttribute("src", "/scripts/xmlImporter.js");
 loader.addEventListener("load", function() {
     loadScript("jax", function() {
-        loadScript("practiceTests", start);
+        loadScript("practiceTests", function() {
+            loadScript("showProblems", start);
+        });
     });
 });
 document.head.appendChild(loader);
@@ -300,15 +302,9 @@ function start() {
     if (document.getElementById("editor")) {
         // set up editor
         loadScript("editor");
-    } else if (document.getElementById("problemsSpot")) {
-        // set up to show the problems like on the qual pages
-        importProblemsRepository(
-            document.getElementById("problemsSpot").getAttribute("qual"),
-            function() {
-                loadScript("showProblems");
-            }
-        );
+        return;
     }
+    scanAndProcessDOMProblems();
     // any other applications beyond the two already created can be linked in here
 }
 //----------------------------------------------------------------------------------------------------------------

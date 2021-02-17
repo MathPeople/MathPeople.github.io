@@ -37,6 +37,11 @@ th, td {
 
 .id {
     display: inline;
+    margin: 1ch;
+}
+
+.id::after {
+    content: ":";
 }
 
 .metaBunch {

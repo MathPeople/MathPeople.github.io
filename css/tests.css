@@ -28,7 +28,7 @@
     display: none;
 }
 
-.practicetestholder .errorout {
+.errorout {
     background: rgb(255, 170, 170);
     border: 3px outset red;
     border-radius: 8px;
