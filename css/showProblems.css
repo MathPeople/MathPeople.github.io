@@ -83,3 +83,21 @@ input[type="text"] {
 [hide] {
     display: none !important;
 }
+
+#globalErrorOut {
+    margin: 1em;
+    padding: 1em;
+    border: 3px solid red;
+    border-radius: 2em;
+    background: pink;
+    fill: purple;
+    text-align: center;
+}
+
+#globalErrorOut:empty {
+    display: none;
+}
+
+#globalErrorOut pre {
+    background: none;
+}

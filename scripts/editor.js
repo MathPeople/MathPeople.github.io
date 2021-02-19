@@ -153,10 +153,6 @@ let editor = document.getElementById("editor"),
         editor,
         "saveAll",
         saveAll
-    ), errorOutP = xmlImporter.element(
-        "p",
-        editor,
-        ["id", "errorOut"]
     ), dataRecovery = xmlImporter.makeDetails(
         "Data Recovery",
         editor,
