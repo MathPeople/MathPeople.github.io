@@ -23,20 +23,16 @@ function processElement(element) {
     
     if (element.hasAttribute("problems-repository-xpath")) { // display list of problems
         let showThese = getProblemsFromSelector(element.getAttribute("problems-repository-xpath"));
-        for (let problem in showThese) showProblem(problem, element, false);
-        typeset(element);
-        return;
-    }
-    if (element.hasAttribute("problems-repository-practice-test")) { // display practice test
+        for (let problem in showThese) showProblem(problem, element);
+    } else if (element.hasAttribute("problems-repository-practice-test")) { // display practice test
         showTest(element.getAttribute("problems-repository-practice-test"), element);
-        return;
+    } else {
+        element.innerHTML += "do not know how to process this element";
     }
-    console.log("do not know how to process:");
-    console.log(element);
 }
 
-// display the problem in element, following the rules declared on element, and optionally typeset it
-function showProblem(problem, element, typesetElement = true) {
+// display the problem in element, following the rules declared on element
+function showProblem(problem, element) {
     // declaring things which are used throughout the displaying process
     let doc = problems[problem].doc, problemNode = doc.querySelector("problem"), solutionNode = doc.querySelector("solution");
     let div;
@@ -75,7 +71,7 @@ function showProblem(problem, element, typesetElement = true) {
     // set some information on this div which identifies its contents
     div.setAttribute("problems-repository-problem", problem);
     
-    if (typesetElement) typeset(element);
+    typeset(div);
 }
 
 // add a search bar based on the problems-repository-searchable attribute

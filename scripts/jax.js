@@ -50,7 +50,7 @@ function checkTypesetting() {
 }
 
 // cooldown between typeset calls, longer means less lag but also slower typesetting
-let typesetCooldown = 100;
+let typesetCooldown = 300;
 
 // typeset one element then wait and try again
 function doTypeset() {
