@@ -245,3 +245,11 @@ xmlImporter.rickRollLink = function rickRollLink(a) {
         return xmlImporter.isParserError(returner)? false: returner;
     }
 }
+
+// for getting unique element ids
+{
+    let id = 0;
+    xmlImporter.getNewId = function getNewId() {
+        return "autoid-"+id++;
+    }
+}

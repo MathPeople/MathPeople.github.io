@@ -373,7 +373,6 @@ let globalErrorOut = document.createElement("p");
 window.setTimeout(function() {document.body.appendChild(globalErrorOut)}, 2000);
 globalErrorOut.setAttribute("id", "globalErrorOut");
 window.addEventListener("error", function(e) {
-    console.log(e);
     globalErrorOut.innerHTML = "<pre class='message'>"+e.error.message+"</pre><pre class='stack'>"+e.error.stack+"</pre>";
 });
 
