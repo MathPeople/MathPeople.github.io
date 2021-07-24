@@ -643,6 +643,7 @@ function pairSoloClicked() {
 
 function eraseActiveProblem() {
     if (activeProblem !== "changeMe") eraseProblem(activeProblem);
+    fixWholeList();
 }
 
 function pairSoloRefresh() {
