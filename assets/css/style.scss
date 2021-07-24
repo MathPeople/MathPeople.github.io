@@ -1,0 +1,40 @@
+---
+// # Filler comment
+---
+
+
+@import "{{ site.theme }}";
+
+// Change Content Width
+.inner{
+  max-width: 64rem;
+}
+
+nav {
+  font-weight: bold;
+  padding: 0px;
+  list-style: none;
+  margin-left: 0px;
+}
+
+nav ul {
+  background-color: #dddddd;
+  margin: 0;
+  padding: 0;
+}
+
+nav ul li {
+  display: inline;
+  float:left;
+}
+
+.topnav-left {
+  text-align: center;
+  padding: 14px 14px;
+  color: white;
+}
+
+// @import "../../css/BoxViewer.css",
+//         "../../css/gui.css",
+//         "../../css/tex.css",
+//         "../../css/xmlViewer.css";
