@@ -9,6 +9,4 @@ This is the home site of the MathPople account, made and maintained by UCR math 
 
 ## Content:
 
-- <a href="content/editor.html">Problems Editor</a>
-- <a href="content/complex.html">Complex Analysis Qual</a>
-- <a href="content/real.html">Real Analysis Qual</a>
+under construction
