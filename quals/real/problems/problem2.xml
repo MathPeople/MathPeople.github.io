@@ -1,1 +1,5 @@
-<problem2><problem tex="asdd"/><solution tex="asd"/></problem2>
+<?xml version="1.0" encoding="UTF-8"?>
+<problem2>
+  <problem tex="asdd"/>
+  <solution tex="asd"/>
+</problem2>

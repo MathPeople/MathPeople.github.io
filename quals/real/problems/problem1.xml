@@ -1,1 +1,12 @@
-<problem1><problem tex="What is $1+1$?"><solutionCompleteness radio="none"><full/></solutionCompleteness><topics><addition/></topics></problem><solution tex="By definition of 2,&#10;\[1+1=2.\]"/></problem1>
+<?xml version="1.0" encoding="UTF-8"?>
+<problem1>
+  <problem tex="What is $1+1$?">
+    <solutionCompleteness radio="none">
+      <full/>
+    </solutionCompleteness>
+    <topics>
+      <addition/>
+    </topics>
+  </problem>
+  <solution tex="By definition of 2,&#10;\[1+1=2.\]"/>
+</problem1>
