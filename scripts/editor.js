@@ -972,7 +972,7 @@ function saveAll() {
     for (let problem in problems) if (problem != "changeMe") problemsFolder.file(problem+".xml", xmlImporter.nodeToString(problems[problem].doc));
     bigFolder.file("problemsList.txt", problemsListString());
     for (let practiceTest in practiceTests) practiceTestsFolder.file(practiceTest+".xml", practiceTests[practiceTest].rawText.value);
-    bigFolder.file("practiceTests.txt", practiceTestsListString());
+    bigFolder.file("practiceTestsList.txt", practiceTestsListString());
     bigFolder.generateAsync({type:"blob"}).then(function (file) {
         // rename file from some machine name to "problems.zip"
         file = new File([file.slice(0, file.size, "application/zip")], "problems.zip", {type: "application/zip"});
