@@ -24,4 +24,6 @@ Use the search bar below to filter which problems are shown. See the [XPath](htt
 
 Practice test:
 
+The TeX typesetter has to typeset all the problems above before it gets to the practice test, and there are a lot of them. It may take a little time before the practice test gets typeset.
+
 <div problems-repository-practice-test="ABC-1Montel1Real1Liouville"></div>
