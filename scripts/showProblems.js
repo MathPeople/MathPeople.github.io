@@ -102,5 +102,7 @@ function searchbarListener(element) {
 
 // add a standard test widget to loadHere corresponding to practiceTest
 function showTest(practiceTest, loadHere) {
+    console.log("showing test " + practiceTest);
+    console.log(practiceTests);
     loadHere.appendChild(practiceTests[practiceTest].div);
 }
