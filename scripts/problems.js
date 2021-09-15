@@ -108,6 +108,15 @@ function loadProblemOverride() {}
 var qualName;
 // Import the problems from a repository, storing the docs and populating metas with the encountered values.
 function importProblemsRepository(qual, onSuccess = function() {}, onfail = function() {}) {
+    let allLoaded = {
+        problems: false,
+        tests: false
+    };
+    function checkIfAllLoaded() {
+        for (let stage in allLoaded) if (!allLoaded[stage]) return;
+        onSuccess();
+        afterProblemsAreSet();
+    }
     qualName = qual; // globally declare that this is the loaded qual
     xmlImporter.openTextFile(
         "/quals/"+qual+"/problemsList.txt",               // File to open-- the problem list for a given qual
@@ -129,9 +138,9 @@ function importProblemsRepository(qual, onSuccess = function() {}, onfail = func
                         holdJax = true;
                         loadProblem(doc);
                         if (--toGo === 0) {
-                            onSuccess();
-                            afterProblemsAreSet();
-                        } 
+                            allLoaded.problems = true;
+                            checkIfAllLoaded();
+                        }
                     }
                 );
             }
@@ -146,7 +155,20 @@ function importProblemsRepository(qual, onSuccess = function() {}, onfail = func
         function(list) {
             if (list === "") return; // no practice tests to load
             list = list.split(" ");
-            for (let practiceTest of list) xmlImporter.openXMLFile("/quals/"+qual+"/practiceTests/"+practiceTest+".xml", null, loadPracticeTest);
+            let toGo = list.length;
+            for (let practiceTest of list) {
+                xmlImporter.openXMLFile(
+                    "/quals/"+qual+"/practiceTests/"+practiceTest+".xml",
+                    null,
+                    function(doc) {
+                        loadPracticeTest(doc);
+                        if (--toGo === 0) {
+                            allLoaded.tests = true;
+                            checkIfAllLoaded();
+                        }
+                    }
+                );
+            }
         }, function() {
             // no practice tests found
         }

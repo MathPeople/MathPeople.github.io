@@ -4,9 +4,9 @@ xmlImporter.element("link", document.head, ["rel", "stylesheet", "href", "/css/s
 
 // search through element for any nodes which are set up to be filled with problems stuff and them process them
 function scanAndProcessDOMProblems(element = document) {
-    if (typeof qualName !== "string") {
+    if (typeof qualName !== "string") { // qual is not initialized, get qualname from the seeded link, initialize, and retry
         let link = document.querySelector("link[rel='problems-repository']");
-        if (!link) return;
+        if (!link) return console.log("cannot find qualName");
         importProblemsRepository(link.getAttribute("href"), scanAndProcessDOMProblems, function() {alert("cannot find qual "+link.getAttribute("href"))});
         return;
     }
@@ -102,7 +102,5 @@ function searchbarListener(element) {
 
 // add a standard test widget to loadHere corresponding to practiceTest
 function showTest(practiceTest, loadHere) {
-    console.log("showing test " + practiceTest);
-    console.log(practiceTests);
     loadHere.appendChild(practiceTests[practiceTest].div);
 }
