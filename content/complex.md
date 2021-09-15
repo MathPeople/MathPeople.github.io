@@ -18,7 +18,9 @@ layout: default
    
 # Complex Qual Prep Seminar Site 
 
-Use the search bar below to filter which problems are shown. See the [XPath](https://github.com/MathPeople/MathPeople.github.io/wiki/XPath) wiki for an overview of the process. To see some short and useful examples, replacing the asterisk by `//topics/RiemannSurfaces` and hitting enter will cause only problems about Riemann surfaces to appear. Use an asterisk, `*` in the bar to display all problems.
+Use the search bar below to filter which problems are shown. See the [XPath](https://github.com/MathPeople/MathPeople.github.io/wiki/XPath) wiki for an overview of the process. To see some short and useful examples, replacing the asterisk by `//topics/RiemannSurfaces` and hitting enter will cause only problems about Riemann surfaces to appear. Use an asterisk, `*` in the bar to display all problems. Clear the field to hide all problems.
+
+The test generator is at the bottom, after the list of problems.
 
 <div problems-repository-xpath="*" problems-repository-searchable="*"></div>
 
