@@ -22,10 +22,10 @@ Use the search bar below to filter which problems are shown. See the [XPath](htt
 
 The test generator is at the bottom, after the list of problems. There's a bug where sometimes the test generator doesn't load correctly, if that happens just refresh the page.
 
-<div problems-repository-xpath="*" problems-repository-searchable="*"></div>
+<div problems-repository-xpath="*" problems-repository-searchable="//topics[Liouville and RiemannSurfaces]"></div>
 
 Practice test:
 
-The TeX typesetter has to typeset all the problems above before it gets to the practice test, and there are a lot of them. It may take a little time before the practice test gets typeset.
+The TeX typesetter has to typeset all the problems above, and there are a lot of them, before it gets to the practice test. It may take a little time before the practice test gets typeset.
 
 <div problems-repository-practice-test="ABC-1Montel1Real1Liouville"></div>
