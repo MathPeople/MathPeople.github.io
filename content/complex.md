@@ -22,7 +22,7 @@ Use the search bar below to filter which problems are shown. See the [XPath](htt
 
 The test generator is at the bottom, after the list of problems. There's a bug where sometimes the test generator doesn't load correctly, if that happens just refresh the page.
 
-<div problems-repository-xpath="//topics[Liouville and RiemannSurfaces]" problems-repository-searchable="//topics[Liouville and RiemannSurfaces]"></div>
+<div problems-repository-xpath="*" problems-repository-searchable="*"></div>
 
 Practice test:
 
