@@ -8,15 +8,15 @@ layout: default
 <script src="/scripts/problemHandler.js" ></script>
 <link rel="stylesheet" type="text/css" href="/css/editor.css"/>
 
-<!-- ## Testing Buttons
+## Testing Buttons
 
-<button onClick="printMetasArray(&quot;displayhere&quot;)">Print Metas</button>
-<button onClick="initSearchData()">initSearchData()</button>
+<!-- <button onClick="printMetasArray(&quot;displayhere&quot;)">Print Metas</button>
+<button onClick="initSearchData()">initSearchData()</button> -->
 
 <button onclick="doStuff()">Do Stuff</button>
 
 Display here:
-<div id="displayhere"></div> -->
+<div id="displayhere"></div>
 
 
 ## Problem Search Bar

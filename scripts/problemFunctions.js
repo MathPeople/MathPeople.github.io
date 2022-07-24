@@ -235,33 +235,37 @@ function initSearchData() {
 function doStuff() {
     
     // Print a JSON file to the console
-    fetch("/quals/complex/problemsJSON/ArgumentPrinciple.json")
-    .then(response => {
-    return response.json();
-    })
-    .then(jsondata => console.log(jsondata));
+    // fetch("/quals/complex/problemsJSON/ArgumentPrinciple.json")
+    // .then(response => {
+    // return response.json();
+    // })
+    // .then(jsondata => console.log(jsondata));
 
     
 
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            myFunction(this);
-        }
-    };
-    xhttp.open("GET", "../quals/complex/problems/ArgumentPrinciple.xml", true);
-    xhttp.send();
+    // var xhttp = new XMLHttpRequest();
+    // xhttp.onreadystatechange = function() {
+    //     if (this.readyState == 4 && this.status == 200) {
+    //         myFunction(this);
+    //     }
+    // };
+    // xhttp.open("GET", "../quals/complex/problems/ArgumentPrinciple.xml", true);
+    // xhttp.send();
 
-    function myFunction(xml) {
-        var x, i, xmlDoc, txt;
-        xmlDoc = xml.responseXML;
-        txt = "";
-        x = xmlDoc.getElementsByTagName('problem');
-        for (i = 0; i < x.length; i++) {
-            txt += x[i].getAttribute('tex') + "<br>";
-        }
-        document.getElementById("displayhere").innerHTML = txt;
-    }
+    // function myFunction(xml) {
+    //     var x, i, xmlDoc, txt;
+    //     xmlDoc = xml.responseXML;
+    //     txt = "";
+    //     x = xmlDoc.getElementsByTagName('problem');
+    //     for (i = 0; i < x.length; i++) {
+    //         txt += x[i].getAttribute('tex') + "<br>";
+    //     }
+    //     document.getElementById("displayhere").innerHTML = txt;
+    // }
+
+    console.log(JSON.stringify(problems));
+
+    //console.log(problems[0].getElementsByTagName("problem").getAttribute("tex"));
 }
 
 // Functions which display the problems, metas, and practicetests arrays
