@@ -1,0 +1,12 @@
+{
+    "name": "f18f5",
+    "probTex": "Suppose $\\gamma$ is a closed rectifiable curve in $\\mathbb{C}$. Show that if $a$ and $b$ are in the same connected component of $\\mathbb{C}\\setminus\\gamma$ then the winding numbers $n(\\gamma; a)=n(\\gamma; b)$.",
+    "solnTex": "Reparametrize $\\gamma$ if necessary so its domain is $[0,1]$. Recall the definition of winding number.\\n\\[n(\\gamma;a)=\\frac{1}{2\\pi i}\\int_\\gamma\\frac{1}{z-a}dz=\\frac{1}{2\\pi i}\\int_0^1\\frac{1}{\\gamma(t)-a}\\gamma'(t)dt.\\]\\nLet $\\gamma_1$ be the curve $\\gamma_1(t)=\\gamma(t)+a-b$. Then $\\gamma_1'=\\gamma'$ so\\n\\[\\int_{\\gamma_1}\\frac{1}{z-a}dz=\\int_0^1\\frac{1}{\\gamma_1(t)-a}\\gamma_1'(t)dt=\\int_0^1\\frac{1}{\\gamma(t)-b}\\gamma'(t)dt=2\\pi i\\ n(\\gamma;b).\\]\\nWe need to show that $\\gamma$ and $\\gamma_1$ are homotopic in $\\mathbb{C}\\setminus\\{a\\}$ -- the region on which $\\frac{1}{z-a}$ is holomorphic. Let $G$ be the path component of $\\mathbb{C}\\setminus\\gamma$ containing both $a$ and $b$ and let $p:[0,1]\\to G$ be a path such that $p(0)=a$ and $p(1)=b$. For $s\\in[0,1]$ define the shifted path $c_s(t)=\\gamma(t)+a-p(s)$. Then $c_s$ is a path homotopy taking $\\gamma$ to $\\gamma_1$, it remains to show that $c_s(t)\\neq a$ for all $s,t$. Suppose there were some $s,t$ for which $c_s(t)=a$. Then\\n\\[\\gamma(t)+a-p(s)=a\\]\\n\\[\\gamma(t)=p(s).\\]\\nHowever, $p$ maps into $G\\subseteq\\mathbb{C}\\setminus\\gamma$, so $p(s)\\neq\\gamma(t)$ for all $s,t$. Thus $c_s(t)\\neq a$ for all $s,t$. That makes $c_s$ a path homotopy from $\\gamma$ to $\\gamma_1$ in $\\mathbb{C}\\setminus\\{a\\}$. Then\\n\\[n(\\gamma;a)=\\frac{1}{2\\pi i}\\int_\\gamma\\frac{1}{z-a}dz=\\frac{1}{2\\pi i}\\int_{\\gamma_1}\\frac{1}{z-a}dz=n(\\gamma;b).\\]",
+    "completeness": "full",
+    "topics": [
+        "PointSetTopology",
+        "CauchyIntegralTheorem",
+        "WindingNumber"
+    ],
+    "viability": "good"
+}

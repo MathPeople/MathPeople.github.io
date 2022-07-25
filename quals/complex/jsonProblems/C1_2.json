@@ -1,0 +1,13 @@
+{
+    "name": "C1_2",
+    "probTex": "Prove that there exists no non-constant holomorphic function on a compact Riemann surface $M$.",
+    "solnTex": "Let $f:M\\to\\mathbb{C}$ be a holomorphic function. Then since $f$ is continuous, we also know $|f|:M\\to\\mathbb{R}$ is continuous. Since $M$ is a compact Riemann surface and $|f|$ is continuous, there exists a point $p \\in M$ where $|f|$ achieves a maximum at $p$. Let $U$ be a chart of $M$ containing the point $p$. Then by the maximum modulus principle, $f$ is constant on $U$. Take two distinct points $p \\neq q \\in M$. Since $M$ is path connected, there exists a path from $q$ to $p$. We may form an open cover of $M$ consisting of charts which cover the path joining $q$ to $p$. Since this path is compact, there exists a finite subcover. By the uniqueness/identity theorem for holomorphic functions, this implies $f$ is constant on all these charts. Since $p$ and $q$ are arbitrary, we can repeat this argument as many times as needed for the whole Riemann surface $M$. Thus $f(p) = f(q)$ for all $p$ and $q$. Thus $f$ is constant on all of $M$.",
+    "completeness": "full",
+    "topics": [
+        "PointSetTopology",
+        "UniquenessPrinciple",
+        "RiemannSurfaces",
+        "MaxMod"
+    ],
+    "viability": "good"
+}

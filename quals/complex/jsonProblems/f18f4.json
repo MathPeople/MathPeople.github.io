@@ -1,0 +1,15 @@
+{
+    "name": "f18f4",
+    "probTex": "State and prove Liouville's theorem.",
+    "solnTex": "Theorem: a bounded entire function must be constant. In other words, if $f:\\mathbb{C}\\to\\mathbb{C}$ is bounded $(|f(z)|\\leq M\\forall z\\in\\mathbb{C})$ and holomorphic then $f$ is constant.\\nProof: use Cauchy's estimate (just the Cauchy integral formula).\\nLet $z_0\\in\\mathbb{C}$. We will show $f'(z_0)=0$. This is for all points, so $f$ must then be constant.\\nLet $r>0$ and let $\\gamma$ be the boundary of the ball centered at $z_0$ of radius $r$, $\\gamma(\\theta)=z_0+re^{i\\theta}$. Because $f$ is entire, $f$ is holomorphic on the ball. By Cauchy's integral formula (extended version with derivatives),\\n\\[f'(z_0)=\\frac{1}{2\\pi i}\\int_\\gamma\\frac{f(z)}{(z-z_0)^2}dz.\\]\\nTaking absolute value gives\\n\\[|f'(z_0)|=\\frac{1}{2\\pi}\\left|\\int_\\gamma\\frac{f(z)}{(z-z_0)^2}dz\\right|\\leq\\frac{1}{2\\pi}\\int_\\gamma\\frac{|f(z)|}{|z-z_0|^2}|dz|\\]\\n\\[=\\frac{1}{2\\pi}\\int_0^{2\\pi}\\frac{|f(z_0+re^{i\\theta})|}{|z_0+re^{i\\theta}-z_0|^2}|ire^{i\\theta}d\\theta|=\\frac{1}{2\\pi r}\\int_0^{2\\pi}|f(z_0+re^{i\\theta})|d\\theta.\\]\\nBy assumption, $|f(z_0+re^{i\\theta})|\\leq M$, so\\n\\[|f'(z_0)|\\leq\\frac{1}{2\\pi r}\\int_0^{2\\pi}Md\\theta=\\frac{M}{r}.\\]\\nThis is true for any $r>0$ because $f$ is entire. Thus $|f'(z_0)|\\leq0$, so $f'=0$ as claimed.",
+    "completeness": "full",
+    "topics": [
+        "CauchyIntegralFormula",
+        "IntegralEstimates",
+        "EntireFunction",
+        "CauchyEstimate",
+        "FunctionBounds",
+        "Liouville"
+    ],
+    "viability": "good"
+}

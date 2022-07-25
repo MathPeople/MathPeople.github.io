@@ -1,0 +1,12 @@
+{
+    "name": "q18_3",
+    "probTex": "Use the residue theorem to find\\n\\[\\int_0^{2\\pi}\\frac{1}{(2+\\sin\\theta)^2}d\\theta.\\]",
+    "solnTex": "Recall Euler's formula $e^{i\\theta}=\\cos\\theta+i\\sin\\theta$ gives\\n\\[\\sin\\theta=\\frac{1}{2i}\\left(e^{i\\theta}-e^{-i\\theta}\\right).\\]\\nLet $z=e^{i\\theta}$. This turns $(0,2\\pi)$ into the unit circle $C$ and $dz=ie^{i\\theta}d\\theta$, or $-i\\frac{dz}{z}=d\\theta$. Also $\\sin(\\theta)=\\frac{1}{2i}\\left(z-\\frac{1}{z}\\right)$. Thus our integral is\\n\\[\\int_C\\frac{-i\\frac{dz}{z}}{\\left(2+\\frac{1}{2i}\\left(z-\\frac{1}{z}\\right)\\right)^2}.\\]\\nMultiplying top and bottom by $(2iz)^2=-4z^2$ gives\\n\\[\\int_C\\frac{4izdz}{(4iz+z^2-1)^2}=\\int_C\\frac{4izdz}{(z^2+4iz-1)^2}.\\]\\nThe roots of $z^2+4iz-1$ are at $\\frac{1}{2}(-4i\\pm\\sqrt{-16+4})=\\frac{1}{2}(-4\\pm2\\sqrt3 i)=-2\\pm\\sqrt3i$. Let $a=(-2+\\sqrt3)i$ and $b=(-2-\\sqrt3)i$. Only $a$ is in the unit disc.\\nRecall the residue formula for poles, if $f$ has a pole of order $m$ at $a$, so $f(z)=\\frac{g(z)}{(z-a)^m}$, then\\n\\[Res(f;a)=\\frac{1}{(m-1)!}g^{(m-1)}(a).\\]\\nIn our situation, $f(z)=\\frac{4iz}{(z-a)^2(z-b)^2}$ so $g(z)=\\frac{4iz}{(z-b)^2}$. Then the residue at $a$ is\\n\\[g'(a)=\\frac{4i(a-b)^2-8i(a-b)a}{(a-b)^4}=4i\\frac{(2\\sqrt3i)^2-2(2\\sqrt3i)(-2+\\sqrt3)i}{(2\\sqrt3i)^4}\\]\\n\\[=4i\\frac{-12+4\\sqrt3(-2+\\sqrt3)}{144}=16i\\frac{-2\\sqrt3}{144}=\\frac{-2\\sqrt3i}{9}.\\]\\nThus the integral is\\n\\[\\int_Cf(z)dz=2\\pi iRes(f;a)=2\\pi i\\frac{-2\\sqrt3i}{9}=\\frac{4\\sqrt3\\pi}{9}.\\]",
+    "completeness": "full",
+    "topics": [
+        "RealIntegral",
+        "ResidueTheorem",
+        "ExpAndTrig"
+    ],
+    "viability": "good"
+}

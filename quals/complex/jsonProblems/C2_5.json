@@ -1,0 +1,12 @@
+{
+    "name": "C2_5",
+    "probTex": "Compute the de Rham cohomology groups of an oriented compact $2$-manifold.",
+    "solnTex": "Read Simon and Donaldsons book on Riemann Surfaces, sections 5.2.1-5.2.2 for this result.",
+    "completeness": "full",
+    "topics": [
+        "PointSetTopology",
+        "RiemannSurfaces",
+        "DifferentialForms"
+    ],
+    "viability": ""
+}

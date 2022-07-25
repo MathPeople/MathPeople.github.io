@@ -1,0 +1,12 @@
+{
+    "name": "q19_5",
+    "probTex": "Prove Vitali's theorem: If $G$ is a region and $\\{f_n\\}$ is a locally bounded sequence of holomorphic functions on $G$ with a holomorphic $f$ on $G$ such that\\n\\[A=\\{z\\in G:\\lim f_n(z)=f(z)\\}\\]\\nhas a limit point in $G$ then $f_n\\to f$.",
+    "solnTex": "Clearly $f_n\\to f$ on $A$, we will use a connectedness argument to show $A=G$. By Montel's theorem and the Arzela-Ascoli theorem the family $\\{f_n\\}$ is normal and hence equicontinuous.\\nLet $w$ be a limit point of $A$ in $G$ and let $\\epsilon>0$. By equicontinuity there is a $\\delta>0$ such that for all $n$, $|z-w|<\\delta\\implies|f_n(z)-f_n(w)|<\\frac{\\epsilon}{2}$. Because $f$ is continuous we can shrink $\\delta>0$ if necessary so that $|z-w|<\\delta\\implies|f(z)-f(w)|<\\frac{\\epsilon}{4}$. By definition of limit point there is an $a\\in A$ with $|w-a|<\\delta$. Because $a\\in A$ there is an $N>0$ such that for $n>N$ $|f_n(a)-f(a)|<\\frac{\\epsilon}{8}$. Then for all $n>N$\\n\\[|f_n(w)-f(w)|=|f_n(w)-f_n(a)+f_n(a)-f(a)+f(a)-f(w)|<\\frac{7\\epsilon}{8}<\\epsilon.\\]\\nTherefore $f_n(w)\\to f(w)$ so $A$ is closed. Now we show $A$ is open.\\nLet $a\\in A$ and $\\epsilon>0$. Because $a\\in A$ there is an $N>0$ such that for all $n>N$ we have $|f_n(a)-f(a)|<\\frac{\\epsilon}{2}$. Take $\\delta>0$ small enough that $B_\\delta(a)\\subseteq G$ and the following estimates hold for all $z\\in B_\\delta(a)$ and all $n$:\\n\\[|f_n(z)-f_n(a)|<\\frac{\\epsilon}{4}\\]\\n\\[|f(z)-f(a)|<\\frac{\\epsilon}{8}.\\]\\nThis is possible because $f$ is continuous and $\\{f_n\\}$ is an equicontinuous family. Then for all $z\\in B_\\delta(a)$ and $n>N$,\\n\\[|f_n(z)-f(z)|=|f_n(z)-f_n(a)+f_n(a)-f(a)+f(a)-f(z)|<\\frac{7\\epsilon}{8}<\\epsilon.\\]\\nThus $z\\in A$, so $A$ is open. Then $A$ is both closed and open in $G$, and $G$ is connected and $A$ is nonempty by assumption, so $A=G$. Thus $f_n\\to f$ on all of $G$.",
+    "completeness": "full",
+    "topics": [
+        "SequenceOfFunctions",
+        "Montel",
+        "FunctionBounds"
+    ],
+    "viability": "good"
+}

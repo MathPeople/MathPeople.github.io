@@ -1,0 +1,13 @@
+{
+    "name": "q15_3",
+    "probTex": "Let $f_n$ be a sequence of analytic functions on a region $\\Omega$ which converges to $f$ uniformly on compact subsets. Let $a\\in\\Omega$. Suppose each $f_n$ is injective and that $f'(a)>0$. Show that $f$ is injective and that eventually $f_n'(a)\\neq0$.",
+    "solnTex": "First, the second claim is quick. Because $f_n\\to f$, we also get $f_n'\\to f'$. Because $f'(a)\\neq0$, by definition of limit eventually $f_n'(a)\\neq0$ as well.\\nWe will use Hurwitz's theorem. Because $f'(a)>0$, we know $f\\neq0$. Then Hurwitz's theorem gives us that for every point $x\\in\\Omega$, let $d_x$ be the multiplicity of $f$ at $x$. For every ball $B_x$ sufficiently small centered at $x$, eventually $|f_m^{-1}(f(x))\\cap B_x|=d_x$ counting multiplicity.\\nSuppose $x\\neq y\\in\\Omega$ and $f(x)=f(y)=z$. Then take two small balls $B_x$ and $B_y$ of $x,y$, small enough that they are disjoint and such that Hurwitz's theorem applies. Let $d_x,d_y$ be the multiplicities of $f$ at $x,y$. By Hurwitz's theorem, eventually $|f_m^{-1}(z)\\cap B_x|=d_x$ and $|f_m^{-1}(z)\\cap B_y|=d_y$. In particular, because $d_x+d_y\\geq1+1=2$, we cannot have that $f_m$ are injective. This contradicts our injectivity assumption, so no such $x\\neq y$ can exist.",
+    "completeness": "full",
+    "topics": [
+        "Degree",
+        "SequenceOfFunctions",
+        "PointSetTopology",
+        "Hurwitz"
+    ],
+    "viability": "good"
+}

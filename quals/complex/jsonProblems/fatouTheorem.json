@@ -1,0 +1,13 @@
+{
+    "name": "fatouTheorem",
+    "probTex": "Suppose $f:\\mathbb{D}\\to\\mathbb{D}$ is a holomorphic function. Must $f$ extend continuously to a continuous function from $\\overline{\\mathbb{D}}$ to $\\overline{\\mathbb{D}}$?",
+    "solnTex": "Check out Fatou's theorem. This is not an easy question. The answer appears to be no.",
+    "completeness": "",
+    "topics": [
+        "FunctionBounds",
+        "PointSetTopology",
+        "ClassificationOfSingularities",
+        "RadiusOfConvergence"
+    ],
+    "viability": ""
+}

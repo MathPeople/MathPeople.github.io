@@ -1,0 +1,10 @@
+{
+    "name": "q19_7",
+    "probTex": "(a) Show that any compact Riemann surface admits a branched cover over the Riemann sphere. (b) Let $M$ be a compact Riemann surface of genus 5. Suppose $F$ is a branched cover from $M$ to $S^2$. Prove that $R=2(4+r)$, where $R=$ the total ramification index of $F$ , $r=$ number of sheets of the cover.",
+    "solnTex": "",
+    "completeness": "",
+    "topics": [
+        "RiemannSurfaces"
+    ],
+    "viability": "good"
+}

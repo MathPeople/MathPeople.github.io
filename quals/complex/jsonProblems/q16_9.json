@@ -1,0 +1,12 @@
+{
+    "name": "q16_9",
+    "probTex": "Find the Laurent series of the function $f(z)=\\frac{z-1}{(z-2)(z-3)}$ for the annulus $2<|z|<3$.",
+    "solnTex": "Recall that, for $|r|<1$,\\n\\[\\sum_{n=0}^\\infty r^n=\\frac{1}{1-r}.\\]\\nIf $2<|z|$ then $\\left|\\frac{2}{z}\\right|<1$, so\\n\\[\\sum_{n=0}^\\infty\\left(\\frac{2}{z}\\right)^n=\\frac{1}{1-\\frac{2}{z}}=\\frac{z}{z-2}.\\]\\nIf $|z|<3$ then $\\left|\\frac{z}{3}\\right|<1$, so\\n\\[\\sum_{n=0}^\\infty\\left(\\frac{z}{3}\\right)^n=\\frac{1}{1-\\frac{z}{3}}=\\frac{-3}{z-3}.\\]\\nNow\\n\\[\\frac{z-1}{(z-2)(z-3)}=(z-1)\\frac{1}{-3z}\\frac{-3z}{(z-2)(z-3)}=\\frac{z-1}{-3z}\\left(\\sum_{n=0}^\\infty\\left(\\frac{2}{z}\\right)^n\\right)\\left(\\sum_{n=0}^\\infty\\left(\\frac{z}{3}\\right)^n\\right).\\]\\nFurther simplification is possible, but unnecessary. We have a Laurent expansion which converges in the correct region.\\nNote that partial fractions would have ended with a sum instead of a product here.",
+    "completeness": "full",
+    "topics": [
+        "SumConvergence",
+        "RadiusOfConvergence",
+        "Laurent"
+    ],
+    "viability": "good"
+}

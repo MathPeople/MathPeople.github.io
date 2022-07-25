@@ -1,6 +1,3 @@
-
-
-
 var problemsData;
 
 begin();
@@ -18,7 +15,9 @@ function main(probs) {
     console.log(probs);
     problems = probs.problemsArray;
     document.getElementById("problemsHere").innerHTML = JSON.stringify(problems[0]);
-    MathJax.typeset();
+    //MathJax.typeset();
+
+    document.getElementById("problemsHere").innerHTML = JSON.stringify(problems[0]);
 
     //text = formatProblems(problems);
     
@@ -51,4 +50,3 @@ function formatProblems(problems,selector) {
     }
 
 }
-

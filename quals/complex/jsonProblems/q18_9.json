@@ -1,0 +1,12 @@
+{
+    "name": "q18_9",
+    "probTex": "State the Riemann Roch formula for Riemann surfaces, then prove that any nontrivial holomorphic one-form on $\\Sigma_g$, $g\\geq2$ must vanish somewhere.",
+    "solnTex": "The Riemann Roch formula (in the version we saw in class) is that if $M$ is a compact Riemann surface of genus $g$ and $D\\subset M$ with $|D|=n<\\infty$, with $H^0(D)$ being the vector space of meromorphic functions on $M$ having at worst simple poles in $D$ and $H^0(K\\setminus D)$ being the vector space of holomorphic one-forms which vanish in $D$, then\\n\\[\\dim(H^0(D))-\\dim(H^0(K\\setminus D))=n-g+1.\\]\\nFor the second part, let $g\\geq2$ and take $\\Sigma_g$ a compact Riemann surface of genus $g$. If $\\omega$ is a holomorphic one-form on $\\Sigma_g$ then, by the Hopf principle, \\n\\[Z-P=2g-2\\]\\nwhere $Z$ is the number of zeroes and $P$ is the number of poles of $\\omega$ counted with multiplicities. Because $g\\geq2, 2g-2\\geq4-2=2$ so $Z\\geq2+P\\geq2$. In particular, $Z\\geq1$ so $\\omega$ has at least one zero. Then $\\omega$ must vanish somewhere.",
+    "completeness": "full",
+    "topics": [
+        "RiemannSurfaces",
+        "RiemannRoch",
+        "HopfPrinciple"
+    ],
+    "viability": "good"
+}

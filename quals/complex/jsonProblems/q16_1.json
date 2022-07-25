@@ -1,0 +1,10 @@
+{
+    "name": "q16_1",
+    "probTex": "Find a biholomorphism from $B_1(1)\\setminus B_1(i)$ to the unit disc.",
+    "solnTex": "Note this is a lot easier to visualize with pictures of the graphs but we will try with just text. First we move one of the corners to the origin. The corners are the two points on the unit circle with distance $1$ to $i$, so $\\frac{i}{2}\\pm\\frac{\\sqrt 3}{2}$. The map $z-\\left(\\frac{\\sqrt 3}{2}+\\frac{i}{2}\\right)$ moves our region down/left, putting one corner at the origin and the other at $-\\sqrt 3$. The map $\\frac{1}{z}$ then takes this region and removes the corner at the orign (moving it to $\\infty$) and sending the other corner to $\\frac{-1}{\\sqrt 3}$. Translating via $z+\\frac{1}{\\sqrt 3}$ turns our region into a rotated version of the first quadrant, $\\lambda z$ with a particular choice of constant with $|\\lambda|=1$ sends our region to the first quadrant (the particular choice of angle would be easy enough to find if we had been tracing more points than just the corners but oh well). Now that we have the first quadrant we use $z^2$ to turn it into the upper half plane then the Mobius transformation $\\frac{z-i}{z+i}$ to get the unit disc.",
+    "completeness": "full",
+    "topics": [
+        "MobiusTransformation"
+    ],
+    "viability": "good"
+}

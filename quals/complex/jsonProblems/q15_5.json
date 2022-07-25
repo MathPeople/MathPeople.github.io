@@ -1,0 +1,14 @@
+{
+    "name": "q15_5",
+    "probTex": "Prove that a locally bounded family of analytic functions is equicontinuous on compact subsets of the domain in question. You cannot use Montel's theorem.",
+    "solnTex": "Suppose that $\\mathcal{F}$ is locally bounded at all points in $\\Omega$. Take the constants $M,r$ from the definition of locally bounded, also choose $r$ small enough so that $\\overline{B_r(z_0)}\\subset\\Omega$. That is, for all $z\\in B_r(z_0)$ and all $f\\in\\mathcal{F}$, we have asusmed that $|f(z)|\\leq M$.\\nLet $\\epsilon>0$ be given. Let $z\\in\\Omega$ with $|z-z_0|<\\frac{r}{2}$. Let $\\gamma$ be the circle $|z-z_0|=r$. By Cauchy's integral formula applied to arbitrary $f\\in\\mathcal{F}$, \\n\\[|f(z)-f(z_0)|=\\left|\\frac{1}{2\\pi i}\\int_\\gamma\\frac{f(w)}{w-z}dw-\\frac{1}{2\\pi i}\\int_\\gamma\\frac{f(w)}{w-z_0}dw\\right|=\\frac{1}{2\\pi}\\left|\\int_\\gamma\\frac{f(w)(z-z_0)}{(w-z)(w-z_0)}dw\\right|\\]\\n\\[\\leq\\frac{1}{2\\pi}\\int_\\gamma\\left|\\frac{f(w)(z-z_0)}{(w-z)(w-z_0)}\\right||dw|.\\]\\nHere we will use some bounds. $|f(w)|\\leq M$, $|w-z_0|=r$, and $|w-z|\\geq\\frac{r}{2}$. Thus\\n\\[\\frac{1}{2\\pi}\\int_\\gamma\\left|f(w)(z-z_0)\\frac{1}{w-z}\\frac{1}{w-z_0}\\right||dw|\\leq\\frac{1}{2\\pi}\\int_\\gamma M|z-z_0|\\frac{2}{r}\\frac{1}{r}|dw|=\\frac{M}{\\pi r^2}|z-z_0|\\int_\\gamma|dw|=\\frac{2M}{r}|z-z_0|.\\]\\nTherefore if we choose $\\delta$ to be $0<\\delta<\\frac{r}{2}$ (so this whole argument applies) and less than $\\frac{r\\epsilon}{2M}$, then we have shown that $\\mathcal{F}$ is equicontinuous because\\n\\[|f(z)-f(z_0)|\\leq\\frac{2M}{r}\\delta<\\frac{2M}{r}\\frac{r\\epsilon}{2M}=\\epsilon.\\]",
+    "completeness": "full",
+    "topics": [
+        "CauchyIntegralFormula",
+        "IntegralEstimates",
+        "FunctionBounds",
+        "SequenceOfFunctions",
+        "Montel"
+    ],
+    "viability": "good"
+}

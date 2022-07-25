@@ -1,0 +1,12 @@
+{
+    "name": "C2_6",
+    "probTex": "Suppose that $\\Omega$ is a compact region with a smooth boundary in a Riemann surface $M$ and that $\\phi$ is a real-valued function which is positive on $\\Omega$ and vanishes on the boundary $\\partial \\Omega$ of $\\Omega$. Show that\\n\\[\\int_{\\partial \\Omega} i \\partial \\phi \\geq 0\\]",
+    "solnTex": "First, let us consider $\\Omega\\subset\\mathbb{C}$ and recall the definition of $\\partial \\phi := \\frac{\\partial \\phi}{\\partial z}dz$. A routine calculation shows \\begin{align*} i \\partial \\phi &= i \\frac{\\partial \\phi}{\\partial z}dz = \\frac{i}{2}(\\phi_x - i\\phi_y)(dx + idy) = \\frac{i}{2}(\\phi_xdx + i \\phi_xdy - i\\phi_ydx + \\phi_ydy) \\\\ &= \\frac{1}{2}(i \\phi_xdx - \\phi_xdy + \\phi_ydx + i \\phi_ydy) = \\frac{1}{2}(i(\\phi_xdx + \\phi_ydy) - (\\phi_xdy - \\phi_ydx)) \\\\ &= \\frac{1}{2}(i d\\phi - (\\phi_xdy - \\phi_ydx)) \\end{align*} Thus \\begin{align*} \\int_{\\partial \\Omega} i \\partial \\phi &= \\frac{i}{2}\\int_{\\partial \\Omega} d\\phi -\\frac{1}{2}\\int_{\\partial \\Omega} \\phi_xdy - \\phi_ydx \\\\ &= 0 -\\frac{1}{2}\\int_{\\partial \\Omega} \\phi_xdy - \\phi_ydx = -\\frac{1}{2}\\int_{\\partial \\Omega}\\nabla(\\phi) \\cdot (dy, -dx) \\geq 0. \\end{align*} The first integral vanishes since $\\phi$ vanishes on the boundary of $\\Omega$. Following the hint in Donaldson (pg 81), the second term is the negative of the flux of the gradient of $\\phi$ across the boundary of $\\Omega$. Since $\\phi$ is positive on $\\Omega$ and zero on the boundary, we know that the gradient of $\\phi$ points inward everywhere or vanishes. Therefore the flux is negative which is where the inequality comes from. \\nFor a general Riemann surface, one can generalize this by working with local holomorphic parametrizations of $\\phi$ and applying the same argument as above.",
+    "completeness": "full",
+    "topics": [
+        "RealIntegral",
+        "RiemannSurfaces",
+        "DifferentialForms"
+    ],
+    "viability": "good"
+}

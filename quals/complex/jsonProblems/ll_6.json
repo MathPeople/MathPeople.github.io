@@ -1,0 +1,11 @@
+{
+    "name": "ll_6",
+    "probTex": "Find the Laurent series of the function $f(z)=\\ln\\left(\\frac{z-1}{z+1}\\right)$ around the origin of the disc.",
+    "solnTex": "",
+    "completeness": "",
+    "topics": [
+        "RadiusOfConvergence",
+        "Laurent"
+    ],
+    "viability": "good"
+}

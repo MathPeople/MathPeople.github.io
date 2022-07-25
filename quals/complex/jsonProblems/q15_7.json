@@ -1,0 +1,10 @@
+{
+    "name": "q15_7",
+    "probTex": "Let $\\gamma$ be a piecewise differentiable curve and let $\\overline\\gamma$ be the image of $\\gamma$ under conjugation. If $f$ is continuous, show that $z\\mapsto\\overline{f(\\overline z)}$ is also continuous and that\\n\\[\\int_\\gamma f(z)dz=\\overline{\\int_\\overline\\gamma\\overline{f(\\overline{z})}dz}.\\]",
+    "solnTex": "First, conjugation is continuous and the composition of continuous maps is continuous so $z\\mapsto\\overline{f(\\overline z)}$ is continuous. Write the left hand side as a path integral,\\n\\[\\int_\\gamma f(z)dz=\\int_a^bf(\\gamma(t))\\gamma'(t)dt.\\]\\nRecall the path integral operation respects conjugation, giving\\n\\[\\int_a^bf(\\gamma(t))\\gamma'(t)dt=\\overline{\\int_a^b\\overline{f(\\gamma(t))}\\overline{\\gamma'(t)}dt}.\\]\\nThis comes from the definition of the integral as a limit of Riemann sums. From here we will change our coordinates so we follow $\\overline\\gamma$ instead of $\\gamma$. Note that a calculation with Jacobians shows that\\n\\[(\\overline\\gamma)'(t)=\\overline{\\gamma'(t)}.\\]\\nAlso recall $\\overline{(\\overline\\gamma)(t)}=\\gamma(t)$. Then\\n\\[\\overline{\\int_a^b\\overline{f(\\gamma(t))}\\overline{\\gamma'(t)}dt}=\\overline{\\int_a^b\\overline{f(\\overline{\\overline\\gamma(t)})}\\overline\\gamma'(t)dt}.\\]\\nBut this is exactly the path integral version of the right hand side, so we are done.",
+    "completeness": "full",
+    "topics": [
+        "Conjugation"
+    ],
+    "viability": "good"
+}

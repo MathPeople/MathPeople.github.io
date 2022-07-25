@@ -1,0 +1,14 @@
+{
+    "name": "f19f8",
+    "probTex": "Let $f$ be an entire function and let $a,b\\in\\mathbb{C}$ with $|a|<R$ and $|b|<R$. If $\\gamma(t)=Re^{it}, 0\\leq t\\leq2\\pi$, evaluate\\n\\[\\int_\\gamma\\frac{f(z)}{(z-a)(z-b)}dz.\\]\\nUse this result to give another proof of Liouville's Theorem.",
+    "solnTex": "First we rewrite the function $\\frac{f(z)}{(z-a)(z-b)}$ as $f(z)(a-b)\\left(\\frac{1}{z-a}-\\frac{1}{z-b}\\right)$ to justify evaluating the integral(s)\\n\\[\\int_\\gamma f(z)(z-a)\\left(\\frac{1}{a-b}-\\frac{1}{z-b}\\right)dz=(a-b)\\left(\\int_\\gamma\\frac{f(z)}{z-a}dz-\\int_\\gamma\\frac{f(z)}{z-b}dz\\right).\\]\\nBy Cauchy's integral formula these yield\\n\\[=(a-b)(f(a)-f(b)).\\]\\nOn the other hand, an estimate gives\\n\\[\\left|\\int_\\gamma\\frac{f(z)}{(z-a)(z-b)}dz\\right|\\leq\\int_\\gamma\\frac{|f(z)|}{|z-a||z-b|}|dz|.\\]\\nSuppose $f$ is globally bounded by $M$ in modulus. Then\\n\\[|(a-b)(f(a)-f(b))|\\leq\\int_\\gamma\\frac{M}{|z-a||z-b|}|dz|\\]\\n\\[\\leq\\int_\\gamma\\frac{M}{(|z|-|a|)(|z|-|b|)}|dz|=\\int_0^{2\\pi}\\frac{M}{(R-|a|)(R-|b|)}Rdt=\\frac{2\\pi RM}{(R-|a|)(R-|b|)}.\\]\\nNow for the proof structure. Let $a,b\\in\\mathbb{C}$ and suppose $R>|a|+|b|$. Then, by the above calculations,\\n\\[|f(a)-f(b)|\\leq\\frac{2\\pi RM}{|a-b|(R-|a|)(R-|b|)}.\\]\\nTaking the limit as $R\\to\\infty$ (which we can do because $f$ is entire) shows $f(a)=f(b)$, which is only possible for all $a,b\\in\\mathbb{C}$ if $f$ is constant.",
+    "completeness": "full",
+    "topics": [
+        "CauchyIntegralFormula",
+        "IntegralEstimates",
+        "EntireFunction",
+        "FunctionBounds",
+        "Liouville"
+    ],
+    "viability": "good"
+}
