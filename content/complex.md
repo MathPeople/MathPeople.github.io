@@ -15,8 +15,10 @@ layout: default
     <link rel="manifest" href="/site.webmanifest">
 </head>
 
-   
-# Complex Qual Prep Seminar Site 
+# Complex Analysis Problems  
+
+### XPath Problem Viewing
+<!-- <details> -->
 
 Use the search bar below to filter which problems are shown. See the [XPath](https://github.com/MathPeople/MathPeople.github.io/wiki/XPath) wiki for an overview of the process. To see some short and useful examples, replacing the asterisk by `//topics/RiemannSurfaces` and hitting enter will cause only problems about Riemann surfaces to appear. Use an asterisk, `*` in the bar to display all problems. Clear the field to hide all problems.
 
@@ -24,8 +26,15 @@ The test generator is at the bottom, after the list of problems. There's a bug w
 
 <div problems-repository-xpath="*" problems-repository-searchable="*"></div>
 
-Practice test:
+<!-- </details> -->
 
-The TeX typesetter has to typeset all the problems above, and there are a lot of them, before it gets to the practice test. It may take a little time before the practice test gets typeset.
+### Practice Test Generator:
+
+The TeX typesetter has to typeset all the problems above, and there are a lot of them, before it gets to the practice test. It may take a little time before the practice test gets typeset. Use the button to typeset the page if the practice test is not typeset automatically.
 
 <div problems-repository-practice-test="ABC-1Montel1Real1Liouville"></div>
+
+### Additional Information
+
+Use the following to re-typeset the page:
+<button onclick="MathJax.typeset()">Typeset</button>

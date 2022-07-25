@@ -3,19 +3,23 @@ title: Template Page
 layout: default
 ---
 
-<head>
-    <link rel="problems-repository" href="complex">
-    <script src="/scripts/problems.js" async defer></script>
-</head>
+<link rel="stylesheet" type="text/css" href="/css/showProblems.css">
+<script src="/scripts/jsonProblemLoader.js" async></script>
 
-# Subject Qual Prep Seminar
+# Qual Prep Seminar
 
-### Problem Search
+### Problems
 
-Use the following features to view and search problems. 
+Click the button to display all problems.
 
-<div problems-repository-xpath="//topics[Liouville and RiemannSurfaces]" problems-repository-searchable="//topics[Liouville and RiemannSurfaces]"></div>
+<button onclick="processProblems()">Process Problems</button>
 
-### Practice Test Generator
+<div id="problemsHere">Problems will display here. Please wait a few seconds as the problems load.</div>
 
-<div problems-repository-practice-test="ABC-1Montel1Real1Liouville"></div>
+
+<!-- Work in progress
+
+### Practice Test Generator 
+
+-->
+

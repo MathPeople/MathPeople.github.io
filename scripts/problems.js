@@ -195,7 +195,7 @@ function loadPracticeTest(configDoc) {
     config.name = root.nodeName;
     config.displayName = root.hasAttribute("displayName")? root.getAttribute("displayName"): root.nodeName;
     config.div = xmlImporter.makeDetails(config.displayName, practiceTestsLoadHere, true, ["class", "practicetestholder"]);
-    config.button = xmlImporter.makeButton("new test", config.div, "practiceTestMakeTestButton-"+config.name, function() {makeTest(config)});
+    config.button = xmlImporter.makeButton("New Test", config.div, "practiceTestMakeTestButton-"+config.name, function() {makeTest(config)});
     config.errorOutPlace = xmlImporter.element("div", config.div, ["class", "errorout"]);
     config.testOut = xmlImporter.element("div", config.div, ["class", "testout", "hide", ""]);
     xmlImporter.text("test goes here", config.test = xmlImporter.element("div", config.testOut));
@@ -217,6 +217,7 @@ function makeTest(config) {
     config.countSpot = xmlImporter.element("p", config.div);
     config.putTestCountHere = xmlImporter.text("tries left", config.countSpot);
     makePracticeTest(problems, config);
+    MathJax.typeset();
 }
 
 function processPracticeTest(config, result, success) {

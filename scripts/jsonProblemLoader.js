@@ -1,7 +1,7 @@
 
 
 let probs = [];
-let debug = true;
+let debug = false;
 
 //loadJSONProblemsMain().then(probs => processProblems(probs));
 loadJSONProblemsMain();
@@ -31,16 +31,24 @@ function loadJSONProblemsMain() {
 
 function processProblems(){
     if(debug) console.log("processProblems");
-    console.log(probs);
+    //console.log(probs);
 
     str = "Problems:<br>"
+    
 
     for (let i in probs){
-        console.log(probs[i]);
-        str = str + probs[i].name + "<br>";
+        probText = probs[i].probTex.replaceAll("\\n", "<br>");
+        solnText = probs[i].solnTex.replaceAll("\\n", "<br>");
+        summary = "<strong>"+probs[i].name+":</strong> "+probText;
+        content = solnText;
+        pstring = "<details class = \'problem\'><summary>"+summary+"<br></summary><p>"+content+"</p></details>";
+
+        // console.log(probs[i]);
+        str = str + pstring;
     }
 
     document.getElementById("problemsHere").innerHTML = str;
+    MathJax.typeset();
 
     //console.log(str);
 }
