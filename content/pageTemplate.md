@@ -9,7 +9,7 @@ layout: default
 </script>
 <script src="/scripts/problemLoader.js" async></script>
 
-# Qual Prep Seminar
+# (Template) Qual Prep Problems
 
 ### Problems
 
