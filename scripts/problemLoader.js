@@ -31,17 +31,18 @@ function displayAllProblems(probs){
     str = ""; //"Problems:<br>"
     
     for (let i in probs){
-        probText = probs[i].probTex.replaceAll("\\n", "<br>");
-        solnText = probs[i].solnTex.replaceAll("\\n", "<br>");
+        probText = formatTex(probs[i].probTex);
+        solnText = formatTex(probs[i].solnTex);
         summary = "<strong>"+probs[i].name+":</strong> "+probText+"<br>";
         content = "<strong>Solution: </strong>"+solnText;
-        pstring = "<details class = \'problem\'><summary>"+summary+"<br></summary><p>"+content+"</p></details>";
+        pstring = "\n\t<details class = \'problem\'>\n\t\t<summary>"+summary+"<br></summary>\n\t\t<p>"+content+"</p>\n\t</details>";
 
-        // console.log(probs[i]);
+        //console.log(probs[i]);
         str = str + pstring;
     }
 
     document.getElementById("problemsHere").innerHTML = str;
+    //console.log(str); //Use this to get a copy of the html to load onto a static page listing all problems
     MathJax.typeset();
 
     //console.log(str);
@@ -104,4 +105,13 @@ function fetchAndLoad(index, probsList, probs, qualName, lastFunction) {
             fetchAndLoad(index+1,probsList,probs,qualName,lastFunction);
         });
     }
+}
+
+// Processes raw tex code stored in json formatting for replacement into html text
+function formatTex(tex){
+    //oldTex=tex;//If old tex is needed
+    tex = tex.replaceAll("\\neq", "%NotEqualToPlaceHolder%");
+    tex = tex.replaceAll("\\n", "<br>");
+    tex = tex.replaceAll("%NotEqualToPlaceHolder%", "\\neq");
+    return tex;
 }
