@@ -1,0 +1,14 @@
+{
+    "name": "harmonicLiouville",
+    "probTex": "Prove Liouville's theorem for harmonic functions, that any bounded harmonic function defined on all of $\\mathbb{C}$ must be constant. What can you say of an entire function whose real part never vanishes?",
+    "solnTex": "Suppose $u:\\mathbb{C}\\to\\mathbb{R}$ is a bounded harmonic function. Because $\\mathbb{C}$ is simply connected, we can find a harmonic conjugate and extend $u$ to be the real part of an entire function $f$. Because $u$ is bounded, we can translate by a sufficiently large real number so that the real part of $f$ never vanishes. We will show this is sufficient to prove $f$ must be constant, answering both questions simultaneously.\\nBecause the real part of $f$ never vanishes, the image of $f$ lies in either the right or left half plane. Either way there is a Mobius transformation which takes this image into the disc, which is bounded, so $f$ must be constant by Liouville's theorem.",
+    "completeness": "full",
+    "topics": [
+        "EntireFunction",
+        "MobiusTransformation",
+        "Harmonic",
+        "HarmonicConjugate",
+        "Liouville"
+    ],
+    "viability": ""
+}

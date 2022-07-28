@@ -1,0 +1,14 @@
+{
+    "name": "q14_2",
+    "probTex": "Let $f$ be an entire function such that $|f(z)|< M|z|^\\alpha$ for all $z\\in\\mathbb{C}$, where $M,R,\\alpha$ are constants and $0<\\alpha<1$. Prove $f$ is constant.",
+    "solnTex": "Let $z_0\\in\\mathbb{C}$. Take the power series of $f$ centered at $0$,\\n\\[f(z)=\\sum_{n=0}^\\infty\\frac{f^{(n)}(0)}{n!}z^n.\\]\\nLet $R>0$ and rewrite the coefficients using Cauchy's integral formula,\\n\\[f^{(n)}(0)=\\frac{n!}{2\\pi i}\\int_{|w|=R}\\frac{f(w)}{w^{n+1}}dw.\\]\\nUsing the assumption that $|f(w)|< M|w|^\\alpha$ gives\\n\\[|f^{(n)}(0)|\\leq\\frac{n!}{2\\pi}\\int_{|w|=R}\\frac{MR^\\alpha}{R^{n+1}}|dw|=\\frac{n!M}{R^{n+1-\\alpha}}.\\]\\nNow $n\\geq0$ and $\\alpha<1$ so $n+1-\\alpha>0$. Thus $\\frac{n!M}{R^{n+1-\\alpha}}\\to0$ as $R\\to\\infty$. We are using the fact that $f$ is entire when we let $R\\to\\infty$. Thus $f^{(n)}(0)=0$ for all $n\\geq0$, meaning all coefficients in the power series are $0$, so $f$ is constantly 0.\\nNote that we showed $f=0$, which is stronger than $f$ is constant. That is because of the way this question is worded, in fact $|f(0)|\\leq M|0|^\\alpha=0$ so $f$ being constant implies that $f$ is $0$ under this bound.",
+    "completeness": "full",
+    "topics": [
+        "CauchyIntegralFormula",
+        "IntegralEstimates",
+        "SumConvergence",
+        "EntireFunction",
+        "CauchyEstimate"
+    ],
+    "viability": "good"
+}

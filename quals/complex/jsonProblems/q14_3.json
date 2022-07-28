@@ -1,0 +1,12 @@
+{
+    "name": "q14_3",
+    "probTex": "Show all solutions of $e^z=3z^2$ with $|z|<1$ are also solutions of $z=\\overline z$.",
+    "solnTex": "We will use Rouche's theorem, which states that if $|f|<|g|$ on $\\partial\\Omega$ then $g$ and $f+g$ have the same number of roots in $\\Omega$. First look at the function $e^z-3z^2=e^z+(-3z^2)$, we want the roots of this function. If $|z|=1$, then $|-3z^2|=3$. Also,\\n\\[|e^z|=|e^{x+iy}|=|e^x|=e^x\\]\\nand \\n\\[\\frac{1}{e}\\leq e^x\\leq e\\]\\nfor $-1\\leq x\\leq1$. Additionally, $e<3$ so in particular $|e^z|\\leq e<3=|-3z^2|$. Now we know how many roots $-3z^2$ has in the unit disc, it has 2 (we have to count multiplicity). That means $e^z-3z^2$ has 2 roots in the unit disc. However, $e^z-3z^2$ has 2 roots on the real interval $(-1,1)$, we can prove this with the intermediate value theorem. If $h(x)=e^x-3x^2$ then \\n\\[h(-1)=\\frac{1}{e}-3<0\\] \\n\\[h(0)=1>0\\]\\n\\[h(1)=e-3<0.\\]\\nThus $h$ has a (real) root between $-1$ and $0$ and another root between $0$ and $1$. These are the only roots of $e^z-3z^2$, as we already saw, by Rouche's theorem. The fact that they are real means they are solutions to $z=\\overline z$, as required.",
+    "completeness": "full",
+    "topics": [
+        "FunctionBounds",
+        "Degree",
+        "Rouche"
+    ],
+    "viability": ""
+}

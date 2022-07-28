@@ -1,0 +1,11 @@
+{
+    "name": "bergman5",
+    "probTex": "Recall $K(z,z)>0$ on any bounded domain. Thus $\\ln K(z,z)$ makes sense. Specifically for the disc, compute\\n\\[\\frac{d^2}{dzd\\overline z}\\ln K(z,z).\\]\\nRecall that $\\frac{d}{dz}=\\frac{1}{2}\\left(\\frac{d}{dx}+i\\frac{d}{dy}\\right)$ and that $\\frac{d}{d\\overline z}=\\frac{1}{2}\\left(\\frac{d}{dx}-i\\frac{d}{dy}\\right)$.",
+    "solnTex": "We computed $K(z,z)$ on the disc to be\\n\\[K(z,z)=\\frac{1}{\\pi\\left(1-|z|^2\\right)^2}=\\frac{1}{\\pi}\\left(1-z\\overline z\\right)^{-2}.\\]\\nThen\\n\\[\\ln K(z,z)=-\\ln\\pi-2\\ln(1-z\\overline z).\\]\\nTaking $\\frac{d}{dz}$ of this gives\\n\\[2\\frac{\\overline z}{1-z\\overline z}.\\]\\nTaking $\\frac{d}{d\\overline z}$ of this gives\\n\\[2\\frac{1-z\\overline z+z\\overline z}{\\left(1-z\\overline z\\right)^2}=\\frac{2}{\\left(1-|z|^2\\right)^2}.\\]",
+    "completeness": "full",
+    "topics": [
+        "DifferentialForms",
+        "Conjugation"
+    ],
+    "viability": ""
+}

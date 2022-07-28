@@ -1,0 +1,15 @@
+{
+    "name": "q17_5",
+    "probTex": "Let $p$ be a polynomial of degree $d\\geq2$ with distinct roots $a_i$. Show\\n\\[\\sum_{i=1}^d\\frac{1}{p'(a_i)}=0.\\]",
+    "solnTex": "First, are we dividing by zero? How do we know that $p'(a_i)\\neq0$ for all $i$? This is because the roots are distinct. If $p'(a)=0$ then $a$ is a root of order at least 2, so it is not a distinct root. Therefore $p'(a_i)\\neq0$ for all $i$. Moreover, note $p$ takes the form\\n\\[p(z)=\\lambda\\prod_{i=1}^n(z-a_i)\\]\\nby the fundamental theorem of algebra. Now to answer the question. Let $R>0$ be large enough that all $|a_i|<R$ and let $\\gamma(t)=Re^{it}$. Consider the integral\\n\\[\\int_\\gamma\\prod_{i=1}^n\\frac{1}{z-a_i}dz.\\]\\nFix any $i$ and use Cauchy's integral formula for the curve $\\gamma_i$ which encircles only the pole at $a_i$.\\n\\[\\int_{\\gamma_i}\\frac{\\prod_{j\\neq i}\\frac{1}{z-a_j}}{z-a_i}dz=(2\\pi i)\\prod_{j\\neq i}\\frac{1}{a_i-a_j}=(2\\pi i)\\frac{\\lambda}{p'(a_i)}\\]\\nThe last equality comes from the multi-chain-rule computation of $p'$, plugging in $a_i$ cancels most of the terms. Therefore\\n\\[\\int_\\gamma\\prod_{i=1}^n\\frac{1}{z-a_i}dz=(2\\pi i)\\sum_{i=1}^n\\frac{\\lambda}{p'(a_i)}.\\]\\nAlternately, let $d$ be the degree of $p$. Then $|\\prod_{i=1}^n(z-a_i)|\\sim R^d$ as $|z|$ gets very large. Then the integral is\\n\\[\\left|\\int_\\gamma\\prod_{i=1}^n\\frac{1}{z-a_i}dz\\right|\\sim\\left|\\int_\\gamma\\frac{1}{R^d}dz\\right|\\leq2\\pi\\frac{1}{R^{d-1}}\\to0.\\]\\nThe limit goes to 0 because $d\\geq2$. That shows our result.",
+    "completeness": "full",
+    "topics": [
+        "ResidueTheorem",
+        "CauchyIntegralFormula",
+        "IntegralEstimates",
+        "EntireFunction",
+        "Degree",
+        "FundamentalTheoremOfAlgebra"
+    ],
+    "viability": "good"
+}

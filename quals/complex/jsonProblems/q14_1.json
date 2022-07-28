@@ -1,0 +1,13 @@
+{
+    "name": "q14_1",
+    "probTex": "Using contour integration, find the value of\\n\\[\\int_0^{2\\pi}\\frac{dt}{\\cos(t)-2}.\\]",
+    "solnTex": "Recall Euler's formula $e^{it}=\\cos(t)+i\\sin(t)$. From this we get the identity\\n\\[\\cos(t)=\\frac{e^{it}+e^{-it}}{2}.\\]\\nThen we can rewrite our integral as\\n\\[\\int_0^{2\\pi}\\frac{dt}{\\cos(t)-2}=\\int_0^{2\\pi}\\frac{dt}{\\frac{e^{it}+e^{-it}}{2}-2}=\\int_0^{2\\pi}\\frac{2dt}{e^{it}+e^{-it}-4}=\\int_0^{2\\pi}\\frac{2e^{it}dt}{e^{2it}+1-4e^{it}}.\\]\\nNow we make the substitution $z=e^{it}$, so the path $\\gamma$ becomes the unit circle, to obtain\\n\\[\\int_\\gamma\\frac{\\frac{2}{i}dz}{z^2+1-4z}=-2i\\int_\\gamma\\frac{dz}{z^2-4z+1}.\\]\\nThe poles of this integrand occur at $z=\\frac{1}{2}(4\\pm\\sqrt{16-4})=2\\pm\\sqrt{3}$. Only $2-\\sqrt 3$ is encircled by $\\gamma$, so we use Cauchy's integral formula to obtain\\n\\[\\int_\\gamma\\frac{1/(z-(2+\\sqrt 3))}{z-(2-\\sqrt 3)}dz=2\\pi i\\frac{1}{2-\\sqrt 3-2-\\sqrt 3}=\\frac{\\pi i}{-\\sqrt 3}.\\]\\nConsidering the $-2i$ coefficient from earlier gives us that our answer is\\n\\[\\frac{-2\\pi}{\\sqrt 3}.\\]",
+    "completeness": "full",
+    "topics": [
+        "RealIntegral",
+        "ResidueTheorem",
+        "CauchyIntegralFormula",
+        "ExpAndTrig"
+    ],
+    "viability": ""
+}

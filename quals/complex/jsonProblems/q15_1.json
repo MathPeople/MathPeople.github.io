@@ -1,0 +1,15 @@
+{
+    "name": "q15_1",
+    "probTex": "State and prove Harnack's inequality for harmonic functions.",
+    "solnTex": "Suppose $f:\\overline{B_R(a)}\\to\\mathbb{C}$ is harmonic and nonnegative. For all $r, 0\\leq r<R$ and all $\\theta$,\\n\\[\\frac{R-r}{R+r}f(a)\\leq f(a+re^{i\\theta})\\leq\\frac{R+r}{R-r}f(a).\\]\\nProof: This problem is useful for remembering the Poisson kernel. The steps are somewhat out of the blue, but if you have seen them before then they aren't too hard to come up with on the spot. Out of nowhere we pull the triangle inequality.\\t\\n\\[R-r\\leq|Re^{it}-re^{i\\theta}|\\leq R+r.\\]\\nWe need to work this into the Poisson kernel and the mean value property. Good cues are that the outer bounds above guide our first steps, and the Poisson kernel will be what is left in the middle. We don't have to memorize the kernel for this problem, we actually end up creating it.\\nSquare the inequalities.\\n\\[(R-r)^2\\leq|Re^{it}-re^{i\\theta}|^2\\leq(R+r)^2.\\]\\nFlip them.\\n\\[\\frac{1}{(R-r)^2}\\geq\\frac{1}{|Re^{it}-re^{i\\theta}|^2}\\geq\\frac{1}{(R+r)^2}\\]\\n\\[\\frac{1}{(R+r)^2}\\leq\\frac{1}{|Re^{it}-re^{i\\theta}|^2}\\leq\\frac{1}{(R-r)^2}.\\]\\nMultiply all by $R^2-r^2$, which is positive because $r<R$.\\n\\[\\frac{R-r}{R+r}\\leq\\frac{R^2-r^2}{|Re^{it}-re^{i\\theta}|^2}\\leq\\frac{R+r}{R-r}\\]\\nIntegrate all terms the same way, the way which makes the outer bounds become the mean value property. This step uses the fact that $f\\geq0$ to preserve the inequality.\\n\\[\\int_{-\\pi}^\\pi\\frac{R-r}{R+r}f(a+Re^{it})dt\\leq\\int_{-\\pi}^\\pi\\frac{R^2-r^2}{|Re^{it}-re^{i\\theta}|^2}f(a+Re^{it})dt\\leq\\int_{-\\pi}^\\pi\\frac{R+r}{R-r}f(a+Re^{it})dt.\\]\\nVoila, the outer terms are the mean value property and the inner term is the Poisson kernel. We use harmonicity of $f$ for the mean value properties on the outsides and the Poisson kernel/Dirichlet solution on the inside.\\n\\[\\frac{R-r}{R+r}f(a)\\leq f(a+re^{i\\theta})\\leq\\frac{R+r}{R-r}f(a).\\]",
+    "completeness": "full",
+    "topics": [
+        "Harmonic",
+        "IntegralEstimates",
+        "FunctionBounds",
+        "MeanValueProperty",
+        "DirichletProblem",
+        "Harnack"
+    ],
+    "viability": "good"
+}

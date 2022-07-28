@@ -1,0 +1,8 @@
+{
+    "name": "MaxMod",
+    "probTex": "Let $\\Omega$ be a region, $a\\in\\Omega$, and $r>0$ such that $\\overline{B_r(a)}\\subset\\Omega$. Let $f:\\Omega\\to\\mathbb{C}$ be a holomorphic function. Suppose there is some $z\\in B_r(a)$ such that\\n\\[|f(z)|=\\sup_{w\\in\\overline{B_r(a)}}|f(w)|.\\]\\nThen $f$ is constant.\"\n        },\n        \"solution\": {\n            \"@tex\": \"Suppose $f$ is nonconstant. Then, by the open mapping theorem, $f$ is an open map. Open maps cannot have the property which is the assumption of this theorem. Justification of this claim is easiest with a few pictures, which are easier to go over in person than in text.\"\n        }\n    }",
+    "solnTex": "xMod\": {\n        \"problem\": {\n            \"@tex\": \"Let $\\Omega$ be a region, $a\\in\\Omega$, and $r>0$ such that $\\overline{B_r(a)}\\subset\\Omega$. Let $f:\\Omega\\to\\mathbb{C}$ be a holomorphic function. Suppose there is some $z\\in B_r(a)$ such that\\n\\[|f(z)|=\\sup_{w\\in\\overline{B_r(a)}}|f(w)|.\\]\\nThen $f$ is constant.\"\n        },\n        \"solution\": {\n            \"@tex\": \"Suppose $f$ is nonconstant. Then, by the open mapping theorem, $f$ is an open map. Open maps cannot have the property which is the assumption of this theorem. Justification of this claim is easiest with a few pictures, which are easier to go over in person than in text.\"\n        }\n    }",
+    "completeness": "",
+    "topics": [],
+    "viability": ""
+}

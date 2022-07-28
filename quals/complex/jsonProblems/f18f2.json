@@ -1,0 +1,10 @@
+{
+    "name": "f18f2",
+    "probTex": "Let $f(z)=\\frac{e^z}{(z-\\pi i)^6}$ and let $\\gamma$ be the counter-clockwise boundary of the square $x,y=\\pm4$. Evaluate $\\int_\\gamma f(z)dz$.",
+    "solnTex": "$f$ is a meromorphic function with a single pole at $z=\\pi i$. This pole is inside the region encircled by $\\gamma$, so we will apply Cauchy's integral formula. Note that Cauchy's integral theorem means that the integral will be the same over any curve which encircles $\\pi i$ once in the positive direction, so we don't need to worry about the fact that $\\gamma$ is a square. First recall Cauchy's integral formula for a holomorphic function $g$:\\n\\[g^{(n)}(z)=\\frac{n!}{2\\pi i}\\int_\\gamma\\frac{g(w)}{(w-z)^{n+1}}dw.\\]\\nSetting $n=5$, $z=\\pi i$, and $g(z)=e^z$ gives \\n\\[e^{(5)}(\\pi i)=\\frac{5!}{2\\pi i}\\int_\\gamma\\frac{e^w}{(w-\\pi i)^6}dw.\\]\\nThis we can calculate,\\n\\[\\int_\\gamma\\frac{e^w}{(w-\\pi i)^6}dw=\\frac{2\\pi i}{5!}e^{\\pi i}=-\\frac{2\\pi i}{5!}.\\]",
+    "completeness": "full",
+    "topics": [
+        "CauchyIntegralFormula"
+    ],
+    "viability": "good"
+}

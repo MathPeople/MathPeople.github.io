@@ -1,0 +1,10 @@
+{
+    "name": "ll_1",
+    "probTex": "For what values of $z$ is\\n\\[\\sum_{n=0}^\\infty\\left(\\frac{z}{1+z}\\right)^{\\!n}\\]\\nconvergent?",
+    "solnTex": "",
+    "completeness": "",
+    "topics": [
+        "SumConvergence"
+    ],
+    "viability": ""
+}
