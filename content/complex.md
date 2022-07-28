@@ -10,6 +10,12 @@ layout: default
 
 # Complex Qual Prep Problems
 
+### Problem Search
+
+<details><summary>Select Topics</summary>
+<div id="topicsUIHere"></div>
+</details>
+
 ### Problems
 
 <div id="problemsHere">Problems are loading. This text will disappear when they have loaded.

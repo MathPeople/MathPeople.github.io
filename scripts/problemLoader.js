@@ -1,21 +1,28 @@
 
+// Loads the problemSearch script
+var newScript = document.createElement('script');
+newScript.type = 'text/javascript';
+newScript.src = '/scripts/problemSearch.js';
+document.getElementsByTagName('head')[0].appendChild(newScript);
 
+// Announces functions calls if true
 let debug = false;
 
+// Code to run on start. All code to be run after problems are loaded should go in afterProblemsLoaded()
 if(typeof qualName == 'undefined')
     console.log("No qual name specified; unable to load problems.")
 else 
     loadProblems(qualName);
 
 
-
+// Starts the process of loading problems, and then calls the function afterProblemsLoaded
 function loadProblems(qualName="complex"){
     let probs = [];
     if(debug) console.log("loadProblems("+qualName+")");
 
     loadTextFile("/quals/"+qualName+"/problemsList.txt",
         probs, qualName, 
-        displayAllProblems,
+        afterProblemsLoaded,
         sequentialLoadProblems,
         function() {
             console.log("Failed to load problems list text file.")
@@ -23,8 +30,13 @@ function loadProblems(qualName="complex"){
     );
 }
 
-// This displays all problems
-function displayAllProblems(probs){
+function afterProblemsLoaded(probs){
+    displayProblems(probs);
+    makeTopicsUI(probs);
+}
+
+// This displays all problems in the div with id "problemsHere"
+function displayProblems(probs){
     if(debug) console.log("displayAllProblems");
     //console.log(probs);
 
