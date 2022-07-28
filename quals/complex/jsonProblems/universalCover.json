@@ -1,8 +1,8 @@
 {
     "name": "universalCover",
-    "probTex": "Prove the following are equivalent for a region $\\Omega$ and a holomorphic function $f:\\Omega\\to\\mathbb{C}$:\\n1) $f$ is conformal (angle-preserving)\\n2) $f'$ never vanishes\\n3) $f$ is locally injective, meaning for all $a\\in\\Omega$ there is a neighborhood $U$ of $a$ on which $f$ is injective\\n4) There is a simply connected Riemann surface $M$, a conformal projection $F:M\\to f(\\Omega)$ (projection means surjective holomorphic map), and a conformal projection $p:M\\to\\Omega$ such that $F=f\\circ p$\"\n        },\n        \"solution\": {\n            \"@tex\": \"\"\n        }\n    }",
-    "solnTex": "iversalCover\": {\n        \"problem\": {\n            \"@tex\": \"Prove the following are equivalent for a region $\\Omega$ and a holomorphic function $f:\\Omega\\to\\mathbb{C}$:\\n1) $f$ is conformal (angle-preserving)\\n2) $f'$ never vanishes\\n3) $f$ is locally injective, meaning for all $a\\in\\Omega$ there is a neighborhood $U$ of $a$ on which $f$ is injective\\n4) There is a simply connected Riemann surface $M$, a conformal projection $F:M\\to f(\\Omega)$ (projection means surjective holomorphic map), and a conformal projection $p:M\\to\\Omega$ such that $F=f\\circ p$\"\n        },\n        \"solution\": {\n            \"@tex\": \"\"\n        }\n    }",
-    "completeness": "",
+    "probTex": "Prove the following are equivalent for a region $\\Omega$ and a holomorphic function $f:\\Omega\\to\\mathbb{C}$:\\n1) $f$ is conformal (angle-preserving)\\n2) $f'$ never vanishes\\n3) $f$ is locally injective, meaning for all $a\\in\\Omega$ there is a neighborhood $U$ of $a$ on which $f$ is injective\\n4) There is a simply connected Riemann surface $M$, a conformal projection $F:M\\to f(\\Omega)$ (projection means surjective holomorphic map), and a conformal projection $p:M\\to\\Omega$ such that $F=f\\circ p$",
+    "solnTex": "",
+    "completeness": "none",
     "topics": [],
     "viability": ""
 }
