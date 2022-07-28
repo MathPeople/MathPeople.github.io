@@ -6,7 +6,8 @@ layout: default
 <script type="text/javascript">
     let qualName = "complex";
 </script>
-<script src="/scripts/problemLoader.js" async></script>
+<script src="/scripts/problemLoader.js"></script>
+<script src="/scripts/problemSearch.js"></script>
 
 # Complex Qual Prep Problems
 

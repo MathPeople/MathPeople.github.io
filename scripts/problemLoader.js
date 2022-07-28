@@ -1,9 +1,10 @@
 
 // Loads the problemSearch script
-var newScript = document.createElement('script');
-newScript.type = 'text/javascript';
-newScript.src = '/scripts/problemSearch.js';
-document.getElementsByTagName('head')[0].appendChild(newScript);
+// var newScript = document.createElement('script');
+// newScript.type = 'text/javascript';
+// newScript.src = '/scripts/problemSearch.js';
+// document.getElementsByTagName('head')[0].appendChild(newScript);
+// Seems to work locally, but not when on the main website?
 
 // Announces functions calls if true
 let debug = false;
