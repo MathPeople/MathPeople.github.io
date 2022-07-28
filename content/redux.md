@@ -4,15 +4,14 @@ layout: default
 ---
 
 <!-- <script src="/scripts/viewerMain.js" async></script> -->
-<script src="/scripts/jsonProblemLoader.js" async></script>
-<!-- <script src="/scripts/loadProblems.js" async></script> -->
+<!-- <script src="/scripts/jsonProblemLoader.js" async></script> -->
+<script type="text/javascript">
+    let qualName = "complex";
+</script>
+<script src="/scripts/problemLoader.js" async></script>
 
-# Problem processing from JSON
+# All Problems
 
-Below we view problems using JSON, rather than XML. The conversion currently is done via a separate program. 
+<!-- <button onclick="processProblems()">Process Problems</button> -->
 
-$\LaTeX$
-
-<button onclick="processProblems()">Process Problems</button>
-
-<p id="problemsHere"></p>
+<p id="problemsHere">Problems will load here automatically.</p>
