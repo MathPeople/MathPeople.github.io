@@ -1,6 +1,6 @@
 {
     "name": "ArzelaAscoli",
-    "probTex": "A family $\\mathcal{F}\\subset\\mathcal{H}(\\Omega)$ is normal if and only if the following two conditions hold:\\n\\[1:\\text{ For each }z\\in\\Omega\\text{, the set }\\{f(z):f\\in\\mathcal{F}\\}\\text{ has compact closure in }\\mathbb{C}\\]\\n\\[2: \\mathcal{F}\\text{ is equicontinuous at all points in }\\Omega\\]",
+    "probTex": "A family $\\mathcal{F}\\subset\\mathcal{H}(\\Omega)$ is normal if and only if the following two conditions hold:\n\\[1:\\text{ For each }z\\in\\Omega\\text{, the set }\\{f(z):f\\in\\mathcal{F}\\}\\text{ has compact closure in }\\mathbb{C}\\]\n\\[2: \\mathcal{F}\\text{ is equicontinuous at all points in }\\Omega\\]",
     "solnTex": "I doubt the proof will ever end up on a test so I won't bother to write it now. If you want to see it and can't follow Conway's proof then let me know.",
     "completeness": "none",
     "topics": [],

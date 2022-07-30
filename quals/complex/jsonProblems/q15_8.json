@@ -1,7 +1,7 @@
 {
     "name": "q15_8",
-    "probTex": "Let $D\\subseteq\\mathbb{C}$ be an open connected subset of $\\mathbb{C}$. Let $f,g$ be holomorphic functions on $D$ such that $f(z)\\neq0\\neq g(z)$ for all $z\\in D$. Let $\\{a_n\\}$ be a sequence of points in $D$ with a limit $a$ such that $\\forall n, a_n\\neq a$. Suppose\\n\\[\\frac{f'(a_n)}{f(a_n)}=\\frac{g'(a_n)}{g(a_n)}\\]\\nfor all $n$. Show there is a constant $c$ such that $f=cg$.",
-    "solnTex": "The functions $\\frac{f'}{f}$ and $\\frac{g'}{g}$ are holomorphic in $D$ because $f$ and $g$ never vanish. The fact that $\\frac{f'}{f}$ and $\\frac{g'}{g}$ agree on a set which has a limit point in $D$ means, by the uniqueness principle, that they agree on all of $D$. That is, $f'g=g'f$. Take the function $\\frac{f}{g}$. It is holomorphic because again $g$ never vanishes. Its derivative is\\n\\[\\left(\\frac{f}{g}\\right)'=\\frac{f'g-g'f}{g^2}=0.\\]\\nThen $\\frac{f}{g}$ is a constant $c$, so $f=cg$.",
+    "probTex": "Let $D\\subseteq\\mathbb{C}$ be an open connected subset of $\\mathbb{C}$. Let $f,g$ be holomorphic functions on $D$ such that $f(z)\\neq0\\neq g(z)$ for all $z\\in D$. Let $\\{a_n\\}$ be a sequence of points in $D$ with a limit $a$ such that $\\forall n, a_n\\neq a$. Suppose\n\\[\\frac{f'(a_n)}{f(a_n)}=\\frac{g'(a_n)}{g(a_n)}\\]\nfor all $n$. Show there is a constant $c$ such that $f=cg$.",
+    "solnTex": "The functions $\\frac{f'}{f}$ and $\\frac{g'}{g}$ are holomorphic in $D$ because $f$ and $g$ never vanish. The fact that $\\frac{f'}{f}$ and $\\frac{g'}{g}$ agree on a set which has a limit point in $D$ means, by the uniqueness principle, that they agree on all of $D$. That is, $f'g=g'f$. Take the function $\\frac{f}{g}$. It is holomorphic because again $g$ never vanishes. Its derivative is\n\\[\\left(\\frac{f}{g}\\right)'=\\frac{f'g-g'f}{g^2}=0.\\]\nThen $\\frac{f}{g}$ is a constant $c$, so $f=cg$.",
     "completeness": "full",
     "topics": [
         "UniquenessPrinciple"

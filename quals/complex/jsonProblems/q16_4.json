@@ -1,7 +1,7 @@
 {
     "name": "q16_4",
-    "probTex": "Let $\\gamma(t)=e^{it}$ for $0\\leq t\\leq2\\pi$. Evaluate\\n\\[\\int_\\gamma\\ln\\left(\\frac{z-2i}{z+2i}\\right)dz.\\]\\nYou will need to specify your branch of log.",
-    "solnTex": "We want to see where $\\gamma$ goes under the Mobius transformation $\\frac{z-2i}{z+2i}$. To do this, map a few points. $\\gamma$ follows $1\\mapsto i\\mapsto-1\\mapsto-i\\mapsto1$, this becomes\\n\\[-\\frac{3}{5}-\\frac{4}{5}i\\mapsto-\\frac{1}{3}\\mapsto-\\frac{3}{5}+\\frac{4}{5}i\\mapsto-3\\mapsto-\\frac{3}{5}-\\frac{4}{5}i\\]\\nNote the pole occurs at $-2i$, outside the region encircled by $\\gamma$.\\nRegardless of our branch of log, it will always be holomorphic if it can be defined. If we define our branch of log for $\\theta\\in(0,2\\pi)$ then our branch is defined on the interior of the image of $\\gamma$, so by Cauchy's integral theorem the integral vanishes.",
+    "probTex": "Let $\\gamma(t)=e^{it}$ for $0\\leq t\\leq2\\pi$. Evaluate\n\\[\\int_\\gamma\\ln\\left(\\frac{z-2i}{z+2i}\\right)dz.\\]\nYou will need to specify your branch of log.",
+    "solnTex": "We want to see where $\\gamma$ goes under the Mobius transformation $\\frac{z-2i}{z+2i}$. To do this, map a few points. $\\gamma$ follows $1\\mapsto i\\mapsto-1\\mapsto-i\\mapsto1$, this becomes\n\\[-\\frac{3}{5}-\\frac{4}{5}i\\mapsto-\\frac{1}{3}\\mapsto-\\frac{3}{5}+\\frac{4}{5}i\\mapsto-3\\mapsto-\\frac{3}{5}-\\frac{4}{5}i\\]\nNote the pole occurs at $-2i$, outside the region encircled by $\\gamma$.\nRegardless of our branch of log, it will always be holomorphic if it can be defined. If we define our branch of log for $\\theta\\in(0,2\\pi)$ then our branch is defined on the interior of the image of $\\gamma$, so by Cauchy's integral theorem the integral vanishes.",
     "completeness": "full",
     "topics": [
         "CauchyIntegralTheorem",
