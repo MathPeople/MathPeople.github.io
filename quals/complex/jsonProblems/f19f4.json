@@ -1,7 +1,7 @@
 {
     "name": "f19f4",
     "probTex": "Let $f$ be analytic in the unit disc $\\mathbb{D}=B_1(0)$ and suppose that $|f(z)|\\leq1$ for all $|z|<1$. Show that $|f'(0)|\\leq1$.",
-    "solnTex": "We could probably get this to work using Schwarz' lemma, but why not use Cauchy's estimate instead? For a refresher, if $|f(z)|\\leq M$ for all $|z|< R$ then\\n\\[|f^{k}(0)|\\leq\\frac{Mk!}{R^k}.\\]\\nApplying this to our situation where $M=k=R=1$ gives $|f'(0)|\\leq1$.",
+    "solnTex": "We could probably get this to work using Schwarz' lemma, but why not use Cauchy's estimate instead? For a refresher, if $|f(z)|\\leq M$ for all $|z|< R$ then\n\\[|f^{k}(0)|\\leq\\frac{Mk!}{R^k}.\\]\nApplying this to our situation where $M=k=R=1$ gives $|f'(0)|\\leq1$.",
     "completeness": "full",
     "topics": [
         "CauchyEstimate",

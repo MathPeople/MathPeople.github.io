@@ -1,7 +1,7 @@
 {
     "name": "q15_6",
     "probTex": "Evaluate $\\int_\\gamma\\frac{\\log z}{z^2-25}dz$ where $\\gamma$ is the boundary of $B_2(4)$ in positive orientation. using the principal branch of log.",
-    "solnTex": "The principal branch of log is holomorphic on the interior and boundary of the ball centered at 4 of radius 2. By Cauchy's integral formula\\n\\[\\int_\\gamma\\frac{\\frac{\\log z}{z+5}}{z-5}dz=2\\pi i\\frac{\\log 5}{5+5}=\\frac{\\pi i\\log 5}{5}.\\]",
+    "solnTex": "The principal branch of log is holomorphic on the interior and boundary of the ball centered at 4 of radius 2. By Cauchy's integral formula\n\\[\\int_\\gamma\\frac{\\frac{\\log z}{z+5}}{z-5}dz=2\\pi i\\frac{\\log 5}{5+5}=\\frac{\\pi i\\log 5}{5}.\\]",
     "completeness": "full",
     "topics": [
         "ResidueTheorem",

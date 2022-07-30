@@ -123,8 +123,6 @@ function fetchAndLoad(index, probsList, probs, qualName, lastFunction) {
 // Processes raw tex code stored in json formatting for replacement into html text
 function formatTex(tex){
     //oldTex=tex;//If old tex is needed
-    tex = tex.replaceAll("\\neq", "%NotEqualToPlaceHolder%");
-    tex = tex.replaceAll("\\n", "<br>");
-    tex = tex.replaceAll("%NotEqualToPlaceHolder%", "\\neq");
+    tex = tex.replaceAll(/(?<!\\)\n/g, "<br>");
     return tex;
 }

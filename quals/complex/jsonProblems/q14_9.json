@@ -1,6 +1,6 @@
 {
     "name": "q14_9",
-    "probTex": "A $C^2$ function of two real variables $u(x,y)$, defined on a region $G$, is harmonic if\\n\\[\\frac{\\partial^2u}{\\partial x^2}+\\frac{\\partial^2u}{\\partial y^2}=0\\]\\nProve that if $u$ is harmonic then $u$ is smooth ($C^\\infty$).",
+    "probTex": "A $C^2$ function of two real variables $u(x,y)$, defined on a region $G$, is harmonic if\n\\[\\frac{\\partial^2u}{\\partial x^2}+\\frac{\\partial^2u}{\\partial y^2}=0\\]\nProve that if $u$ is harmonic then $u$ is smooth ($C^\\infty$).",
     "solnTex": "On simply connected regions, harmonic functions have harmonic conjugates. Let $z\\in G$ and let $B$ be a ball around $z$ which is contained in $G$. On $B$, $u$ has a harmonic conjugate $v$ such that $f(z)=u(x,y)+iv(x,y)$ is holomorphic. Note that $f$ is only defined on $B$. However, smoothness is only a local property. Holomorphic functions are analytic and analytic functions are smooth, so $f$ is smooth. That forces $u$ to be smooth at $z$. This is true for all $z\\in G$, so $u$ is smooth.",
     "completeness": "full",
     "topics": [
