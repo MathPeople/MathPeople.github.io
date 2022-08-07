@@ -7,6 +7,7 @@ layout: default
     let qualName = "complex";
 </script>
 <script src="/scripts/problemLoader.js"></script>
+<script src="/scripts/problemLoadOnce.js"></script>
 <script src="/scripts/problemSearch.js"></script>
 
 # Complex Qual Prep Problems

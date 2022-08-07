@@ -9,14 +9,14 @@
 // Announces functions calls if true
 let debug = false;
 
-// Code to run on start. All code to be run after problems are loaded should go in afterProblemsLoaded()
-if(typeof qualName == 'undefined')
-    console.log("No qual name specified; unable to load problems.")
-else 
-    loadProblems(qualName);
+// // Code to run on start. All code to be run after problems are loaded should go in afterProblemsLoaded()
+// if(typeof qualName == 'undefined')
+//     console.log("No qual name specified; unable to load problems.")
+// else 
+//     loadProblems(qualName);
 
 
-// Starts the process of loading problems, and then calls the function afterProblemsLoaded
+// Starts the process of loading problems one by one, and then calls the function afterProblemsLoaded
 function loadProblems(qualName="complex"){
     let probs = [];
     if(debug) console.log("loadProblems("+qualName+")");
@@ -31,6 +31,29 @@ function loadProblems(qualName="complex"){
     );
 }
 
+// Load problems from a single JSON file containing the array
+function loadProblemsArray(qualName) {
+    let probs = [];
+    if(debug) console.log("loadProblemsArray("+qualName+")");
+
+    fetch("/quals/"+qualName+"/problemsArray.json")
+    .then(response => {
+        if (!response.ok) {
+            console.log("Failed to fetch problemsArray.json");
+            throw new Error("HTTP error " + response.status);
+        }
+        if(debug) console.log("Fetch resolving");
+        return response.json();
+    })
+    .then(jsonResp => {
+        if(debug) console.log("Fetch finishing");
+        probs = jsonResp;
+        if(debug) console.log(probs);
+        afterProblemsLoaded(probs);
+    });
+}
+
+// To be run after all problems are loaded into an array
 function afterProblemsLoaded(probs){
     displayProblems(probs);
     makeTopicsUI(probs);
