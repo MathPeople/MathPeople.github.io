@@ -1,8 +1,0 @@
-{
-    "name": "Liouville",
-    "probTex": "Any bounded entire functions is constant. With less jargon, if $f:\\mathbb{C}\\to\\mathbb{C}$ is holomorphic and bounded, so $|f(z)|\\leq M \\forall z\\in\\mathbb{C}$, then $f$ is constant.",
-    "solnTex": "Proof: there are several proofs, we will do the classic Cauchy estimate version. Personally I prefer to just prove Cauchy's estimate in the course of this proof, but because we just proved it we will use it without reproof.\\nLet $z\\in\\mathbb{C}, r>0$. Because $f$ is entire, $f$ is defined on a region containing $\\overline{B_r(z)}$. Cauchy's estimate on this region gives\\n\\[|f'(z)|\\leq\\frac{M}{r}.\\]\\nRepeating this argument for all $r>0$ shows that $|f'(z)|\\leq0$, so $f'(z)=0$. Repeating this argument for all $z$ shows that $f'=0$, which means $f$ is constant.",
-    "completeness": "full",
-    "topics": [],
-    "viability": "good"
-}

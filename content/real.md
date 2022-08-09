@@ -6,12 +6,19 @@ layout: default
 <script type="text/javascript">
     let qualName = "real";
 </script>
-<!-- <script src="/scripts/problemLoader.js" async></script> -->
+<script src="/scripts/problemLoading.js"></script>
+<script src="/scripts/loadProblemsMain.js"></script>
+<script src="/scripts/problemSearch.js"></script>
 
    
 # Real Qual Prep Problems
 
+### Problem Search
 
-### Problems 
+<details><summary>Select Topics</summary>
+<div id="topicsUIHere"></div>
+</details>
 
-Currently, there are no problems available yet. Stay tuned!
+### Problems
+
+<div id="problemsHere">Problems are loading. This text will disappear when they have loaded.</div>
