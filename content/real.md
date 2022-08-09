@@ -6,8 +6,8 @@ layout: default
 <script type="text/javascript">
     let qualName = "real";
 </script>
-<script src="/scripts/problemLoader.js"></script>
-<script src="/scripts/problemLoadOnce.js"></script>
+<script src="/scripts/problemLoading.js"></script>
+<script src="/scripts/loadProblemsMain.js"></script>
 <script src="/scripts/problemSearch.js"></script>
 
    
