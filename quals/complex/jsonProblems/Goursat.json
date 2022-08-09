@@ -1,8 +1,0 @@
-{
-    "name": "Goursat",
-    "probTex": "The same as Cauchy integral theorem, but we drop the assumption of $C^1$. That is, the only assumption we make on $f$ is that its complex difference quotient converges at every point. We seek the same result as the Cauchy integral theorem.",
-    "solnTex": "Proving it requires some direct analysis. We take the same approach as in the Cauchy integral theorem, by adding finer and finer grids into our region so we can do most of our work on rectangles instead of arbitrary shapes. <a href=\\\"https://planetmath.org/proofofgoursatstheorem\\\">Here</a> is a proof of it.",
-    "completeness": "full",
-    "topics": [],
-    "viability": ""
-}

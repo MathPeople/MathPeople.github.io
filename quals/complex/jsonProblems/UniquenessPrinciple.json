@@ -1,8 +1,0 @@
-{
-    "name": "UniquenessPrinciple",
-    "probTex": "Let $\\Omega$ be a region and $f$ a holomorphic function on $\\Omega$. Then the following are equivalent:\\n1) $f=0$\\n2) The set $\\{z\\in\\Omega|f(z)=0\\}$ has a limit point <em>in $\\Omega$</em>.\\n3) There is a point $a\\in\\Omega$ for which $f^{(n)}(a)=0$ for all $n\\geq0$.",
-    "solnTex": "Proof is analysis with power series",
-    "completeness": "full",
-    "topics": [],
-    "viability": ""
-}

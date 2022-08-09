@@ -1,8 +1,0 @@
-{
-    "name": "PoissonKernel",
-    "probTex": "This is for the Dirichlet problem on the unit disc. That is, given a function $f:\\{|z|=1\\}\\to\\mathbb{R}$ we are looking for a function $u:\\{|z|\\leq1\\}\\to\\mathbb{R}$ such that $u$ is harmonic on the interior of the disc and $u=f$ where $f$ is defined.",
-    "solnTex": "It turns out this is possible for so many functions $f$ that deciding what regularity we need is not what we are going to care about. Just consider $f$ to be a non-diabolical function. Then the Dirichlet problem is solvable using the Poisson kernel.\\nThe poisson kernel is a function from the unit disc to $\\mathbb{R}$ given in polar coordinates by\\n\\[P_r(\\theta)=\\frac{1-r^2}{1-2r\\cos(\\theta)+r^2}=Re\\left(\\frac{1+re^{i\\theta}}{1-re^{i\\theta}}\\right)=\\cdots\\]\\n\\[\\]There are many forms of the Poisson kernel. It is useful because the Dirichlet solution is given by\\[u(re^{i\\theta})=\\frac{1}{2\\pi}\\int_{-\\pi}^\\pi P_r(\\theta-t)f(e^{it})dt\\]",
-    "completeness": "full",
-    "topics": [],
-    "viability": ""
-}
