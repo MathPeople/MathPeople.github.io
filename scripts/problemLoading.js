@@ -1,37 +1,15 @@
+/*
+ * Contains the functions needed to load and display problems
+ *
+ * Main logic: loadProblemsArray() then afterProblemsLoaded()
+ * Requires problemSearch for creating search UI creation
+ * 
+ */
 
-// Loads the problemSearch script
-// var newScript = document.createElement('script');
-// newScript.type = 'text/javascript';
-// newScript.src = '/scripts/problemSearch.js';
-// document.getElementsByTagName('head')[0].appendChild(newScript);
-// Seems to work locally, but not when on the main website?
-
-// Announces functions calls if true
+// Announces functions calls to the console if true
 let debug = false;
 
-// // Code to run on start. All code to be run after problems are loaded should go in afterProblemsLoaded()
-// if(typeof qualName == 'undefined')
-//     console.log("No qual name specified; unable to load problems.")
-// else 
-//     loadProblems(qualName);
-
-
-// Starts the process of loading problems one by one, and then calls the function afterProblemsLoaded
-function loadProblems(qualName="complex"){
-    let probs = [];
-    if(debug) console.log("loadProblems("+qualName+")");
-
-    loadTextFile("/quals/"+qualName+"/problemsList.txt",
-        probs, qualName, 
-        afterProblemsLoaded,
-        sequentialLoadProblems,
-        function() {
-            console.log("Failed to load problems list text file.")
-        }
-    );
-}
-
-// Load problems from a single JSON file containing the array
+// Load problems from a single JSON file containing an array of json problem objects
 function loadProblemsArray(qualName) {
     let probs = [];
     if(debug) console.log("loadProblemsArray("+qualName+")");
@@ -62,10 +40,8 @@ function afterProblemsLoaded(probs){
 // This displays all problems in the div with id "problemsHere"
 function displayProblems(probs){
     if(debug) console.log("displayAllProblems");
-    //console.log(probs);
 
-    str = ""; //"Problems:<br>"
-    
+    str = "";     
     for (let i in probs){
         probText = formatTex(probs[i].probTex);
         solnText = formatTex(probs[i].solnTex);
@@ -73,15 +49,38 @@ function displayProblems(probs){
         content = "<strong>Solution: </strong>"+solnText;
         pstring = "\n\t<details class = \'problem\'>\n\t\t<summary>"+summary+"<br></summary>\n\t\t<p>"+content+"</p>\n\t</details>";
 
-        //console.log(probs[i]);
-        str = str + pstring;
+        str += pstring;
     }
 
     document.getElementById("problemsHere").innerHTML = str;
-    //console.log(str); //Use this to get a copy of the html to load onto a static page listing all problems
+    //console.log(str); //Use this to get a copy of the html. Can be used to load onto a static page listing all problems
     MathJax.typeset();
+}
 
-    //console.log(str);
+// Processes raw tex code stored in json formatting for replacement into html text
+function formatTex(tex){
+    //oldTex=tex;//If old tex is needed
+    tex = tex.replaceAll("\\neq", "%NotEqualToPlaceHolder%");
+    tex = tex.replaceAll("\\n", "<br>");
+    tex = tex.replaceAll("%NotEqualToPlaceHolder%", "\\neq");
+    return tex;
+}
+
+//------------------------------------------------------------------------------------------------------------------------------------
+// Starts the process of loading problems one by one, and then calls the function afterProblemsLoaded
+// This is much slower for many problems, and has since been depreciated in favor of loading from one file
+function loadProblems(qualName="complex"){
+    let probs = [];
+    if(debug) console.log("loadProblems("+qualName+")");
+
+    loadTextFile("/quals/"+qualName+"/problemsList.txt",
+        probs, qualName, 
+        afterProblemsLoaded,
+        sequentialLoadProblems,
+        function() {
+            console.log("Failed to load problems list text file.")
+        }
+    );
 }
 
 // Open a text file at a given location, then if successful execute the function:
@@ -141,13 +140,4 @@ function fetchAndLoad(index, probsList, probs, qualName, lastFunction) {
             fetchAndLoad(index+1,probsList,probs,qualName,lastFunction);
         });
     }
-}
-
-// Processes raw tex code stored in json formatting for replacement into html text
-function formatTex(tex){
-    //oldTex=tex;//If old tex is needed
-    tex = tex.replaceAll("\\neq", "%NotEqualToPlaceHolder%");
-    tex = tex.replaceAll("\\n", "<br>");
-    tex = tex.replaceAll("%NotEqualToPlaceHolder%", "\\neq");
-    return tex;
 }

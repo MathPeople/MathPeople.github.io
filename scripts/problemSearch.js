@@ -1,6 +1,15 @@
+/*
+ * Contains the functions for creating search UI functionality
+ * Currently supports filtering problems by topic 
+ * 
+ * 
+ */
+
+// Global variables; needed for buttons in HTML which cannot pass parameters
 var AllProbs;
 var TopicsList;
 
+// Creates a checkboxes UI and a filter problems button in the div tag "topicsUIHere"
 function makeTopicsUI(probs){
     if(debug) console.log("makeTopicsUI");
     AllProbs = probs;
@@ -26,13 +35,13 @@ function makeTopicsUI(probs){
 
 }
 
-//Display only those problems which match at least one of the selected topics checkboxes
+// Display only those problems which match at least one of the selected topics checkboxes
+// Designed to be used by a button or otherwise
 function filterProblemsByTopics(){
     displayedProbs = [];
 
-    // Filter the problems by topic
+    // Create an array indexed by topic of matching problems
     probsByTopic = [];
-
     for(let p of AllProbs){
         for(let topic of p.topics){
             if(typeof probsByTopic[topic] === 'undefined')
@@ -46,23 +55,21 @@ function filterProblemsByTopics(){
     }
     //console.log(probsByTopic);
 
-    //Query topics option. If topic is selected, add all problems to displayed problems
+    //Query all topics selectors (used in checkboxes.) If topic is selected, add all problems to displayed problems array
     for(let t in probsByTopic){
-        // console.log('#'+t);
-        // console.log(document.querySelector('#'+t));
         if(document.querySelector('#'+t).checked){
             for(let p of probsByTopic[t])
                 displayedProbs.push(p);
         }
     }
-
     //Remove duplicates
     displayedProbs = [... new Set(displayedProbs)];
+    
     //console.log(displayedProbs);
     displayProblems(displayedProbs);
 }
 
-//Display all problems. For use in buttons/where arguments are unavailable
+// Display all problems. For use in buttons or other places where arguments are unavailable
 function displayAllProblems() {
     displayProblems(AllProbs);
 }
