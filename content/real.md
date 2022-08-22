@@ -26,6 +26,3 @@ Select which topic(s) of problems should be displayed and then click "Filter Pro
 
 <div id="problemsHere">Problems are loading. This text will disappear when they have loaded.</div>
 
-
-
-<br><br><br><br><br><br><br><br><br><br><br><br>
