@@ -9,14 +9,25 @@ layout: default
 <script src="/scripts/problemLoading.js"></script>
 <script src="/scripts/loadProblemsMain.js"></script>
 <script src="/scripts/problemSearch.js"></script>
+<script src="/scripts/testMaker.js"></script>
 
 # Complex Qual Prep Problems
 
-### Problem Search
 
-<details><summary>Select Topics</summary>
-<div id="topicsUIHere"></div>
+### Problem Search
+Select which topic(s) of problems should be displayed and then click "Filter Problems." 
+<details>
+	<summary>Select Topics</summary>
+	<div id="topicsUIHere"></div>
 </details>
+<div id ="topicButtonsHere"></div>
+
+
+### Practice Test Generator
+
+Replace the problems with a nine question practice test. 
+<div id="testMakerUIHere"></div>
+
 
 ### Problems
 
@@ -615,9 +626,4 @@ layout: default
 	</details>
 </div>
 
-
-<!-- Work in progress
-
-### Practice Test Generator 
-
--->
+<br><br><br><br><br><br><br><br><br><br><br><br>
