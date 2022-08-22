@@ -8,6 +8,7 @@
 
 // Announces functions calls to the console if true
 let debug = false;
+var AllProbs;
 
 // Load problems from a single JSON file containing an array of json problem objects
 function loadProblemsArray(qualName) {
@@ -33,8 +34,10 @@ function loadProblemsArray(qualName) {
 
 // To be run after all problems are loaded into an array
 function afterProblemsLoaded(probs){
+    AllProbs = probs;
     displayProblems(probs);
     makeTopicsUI(probs);
+    makeTestCreatorUI();
 }
 
 // This displays all problems in the div with id "problemsHere"
@@ -58,11 +61,14 @@ function displayProblems(probs){
 }
 
 // Processes raw tex code stored in json formatting for replacement into html text
+// Currently unused; all instances of '\\n' have been manually removed 
 function formatTex(tex){
     //oldTex=tex;//If old tex is needed
-    tex = tex.replaceAll("\\neq", "%NotEqualToPlaceHolder%");
-    tex = tex.replaceAll("\\n", "<br>");
-    tex = tex.replaceAll("%NotEqualToPlaceHolder%", "\\neq");
+
+    // tex = tex.replaceAll("\\neq", "%NotEqualToPlaceHolder%");
+    // tex = tex.replaceAll("\\n", "<br>");
+    // tex = tex.replaceAll("%NotEqualToPlaceHolder%", "\\neq");
+
     return tex;
 }
 

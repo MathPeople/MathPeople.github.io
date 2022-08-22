@@ -9,14 +9,25 @@ layout: default
 <script src="/scripts/problemLoading.js"></script>
 <script src="/scripts/loadProblemsMain.js"></script>
 <script src="/scripts/problemSearch.js"></script>
+<script src="/scripts/testMaker.js"></script>
 
 # Complex Qual Prep Problems
 
-### Problem Search
 
-<details><summary>Select Topics</summary>
-<div id="topicsUIHere"></div>
+### Problem Search
+Select which topic(s) of problems should be displayed and then click "Filter Problems." 
+<details>
+	<summary>Select Topics</summary>
+	<div id="topicsUIHere"></div>
 </details>
+<div id ="topicButtonsHere"></div>
+
+
+### Practice Test Generator
+
+Replace the problems with a nine question practice test. 
+<div id="testMakerUIHere"></div>
+
 
 ### Problems
 
@@ -614,10 +625,3 @@ layout: default
 		<p><strong>Solution: </strong>Let $p:[0,1]\to\Omega\setminus\gamma$ be a path with $p(0)=a$ and $p(1)=b$. We want to look at the integral<br>\[\int_\gamma\frac{1}{z-p(s)}dz.\]<br>We will do a change of variables. Let $\gamma_s(t)=\gamma(t)-p(s)+a$. Note $\gamma_s(t)$ never hits $a$ for any $s,t$ because $p$ never hits $\gamma$. Also $\gamma_s'=\gamma'$ and<br>\[\int_\gamma\frac{1}{z-p_s}dz=\int_0^1\frac{\gamma'(t)}{\gamma(t)-p_s}dt=\int_0^1\frac{\gamma_s'(t)}{\gamma_s(t)-a}dt=\int_{\gamma_s}\frac{1}{z-a}dz.\]<br>We have constructed a path homotopy from $\gamma_0$ to $\gamma_1$, where the image of the homotopy lies in $\mathbb{C}\setminus\{a\}$. Thus, by Cauchy's integral theorem,<br>\[\int_{\gamma_0}\frac{1}{z-a}dz=\int_{\gamma_1}\frac{1}{z-a}dz.\]<br>Note that $\gamma_0$ is just $\gamma$, so the left hand side is $(2\pi i)n(\gamma;a)$. The right hand side is<br>\[\int_0^1\frac{\gamma_1'(t)}{\gamma(t)-p(1)+a-a}dt=\int_0^1\frac{\gamma'(t)}{\gamma(t)-b}dt=\int_\gamma\frac{1}{z-b}dz=(2\pi i)n(\gamma;b).\]<br>Thus $n(\gamma;a)=n(\gamma;b)$.</p>
 	</details>
 </div>
-
-
-<!-- Work in progress
-
-### Practice Test Generator 
-
--->

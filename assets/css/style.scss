@@ -1,7 +1,6 @@
 ---
- # YAML Header; leave formatting as-is
+ # YAML Heading
 ---
-
 
 @import "{{ site.theme }}";
 @import "/assets/css/problemFormat.css";
@@ -9,19 +8,19 @@
 // Change Content Width
 .inner{
   max-width: 64rem;
+  padding: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+footer.inner, #header_wrap .inner {
+  padding: 0;
 }
 
 nav {
-  font-weight: bold;
   padding: 0px;
   list-style: none;
   margin-left: 0px;
-}
-
-nav ul {
-  background-color: #dddddd;
-  margin: 0;
-  padding: 0;
 }
 
 nav ul li {
@@ -29,11 +28,53 @@ nav ul li {
   float:left;
 }
 
+.ul_inline {
+  float:left;
+  padding: 10px 10px 10px 10px;
+  margin: 0;
+}
+
+.ul_inline li{
+  display: inline-block;
+}
+
 .topnav-left {
   text-align: center;
+  text-decoration: none;
+  font-weight: bold;
   padding: 14px 14px;
   color: white;
 }
+
+body, html {
+  height: 100%;
+  // margin: 0;
+  // padding: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+#main_content_wrap {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+#main_content {
+  flex: 1;
+  padding-top: 10px; // Overrides site theme change
+  border: 2px groove rgb(255, 255, 255);
+  margin: 20px auto;
+}
+
+#footer_wrap {
+  flex: 1;
+  max-height: 50px;
+}
+
 
 // @import "../../css/BoxViewer.css",
 //         "../../css/gui.css",

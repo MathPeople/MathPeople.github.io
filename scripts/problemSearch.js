@@ -6,13 +6,13 @@
  */
 
 // Global variables; needed for buttons in HTML which cannot pass parameters
-var AllProbs;
+// var AllProbs; // Moved to problemLoading.js
 var TopicsList;
 
 // Creates a checkboxes UI and a filter problems button in the div tag "topicsUIHere"
 function makeTopicsUI(probs){
     if(debug) console.log("makeTopicsUI");
-    AllProbs = probs;
+    //AllProbs = probs; //Loaded elsewhere now
 
     let topicsList = [];
     for (let i in probs){
@@ -29,9 +29,10 @@ function makeTopicsUI(probs){
         topicsHTML = topicsHTML + "\n<div>\n\t<label for=\'"+topic+"\'>\n\t\t<input type=\'checkbox\' id=\'"+topic+"\' name=\'"+topic+"\' value=\'yes\'>"+topic+"\n\t</label>\n</div>";
     }
     topicsHTML += "\n</div>";
-    topicsHTML += "\n<button onclick=\'filterProblemsByTopics()\'>Filter Problems</button>";
-    topicsHTML += "\n<button onclick=\'displayAllProblems()\'>Display All</button>";
+    // topicsHTML += "\n<button onclick=\'filterProblemsByTopics()\'>Filter Problems</button>";
+    // topicsHTML += "\n<button onclick=\'displayAllProblems()\'>Display All</button>";
     document.getElementById("topicsUIHere").innerHTML = topicsHTML;
+    document.getElementById("topicButtonsHere").innerHTML = "<button onclick=\'filterProblemsByTopics()\'>Filter Problems</button>\n<button onclick=\'displayAllProblems()\'>Display All</button>";
 
 }
 
