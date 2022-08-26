@@ -15,11 +15,13 @@ layout: default
 
 
 ### Problem Search
-Select which topic(s) of problems should be displayed and then click "Filter Problems." 
+*Search by Topic* - Select which topic(s) of problems should be displayed:
 <details>
 	<summary>Select Topics</summary>
 	<div id="topicsUIHere"></div>
 </details>
+
+Then click Filter Problems. Use Display All to reset to showing all problems.
 <div id ="topicButtonsHere"></div>
 
 
