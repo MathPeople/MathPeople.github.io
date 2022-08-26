@@ -22,11 +22,16 @@ function makeTopicsUI(probs){
     }
     topicsList = [...new Set(topicsList)]; // Convert to a mathematical set (with no duplicates), then back to an array
     //console.log(topicsList);
+    topicsList = topicsList.sort((a,b) => a.localeCompare(b));
     TopicsList = topicsList;
 
-    topicsHTML = "<div class=\'grid\'>";
+    topicsHTML = "<div class=\'columnGrid\'>";
     for( let topic of topicsList){
-        topicsHTML = topicsHTML + "\n<div>\n\t<label for=\'"+topic+"\'>\n\t\t<input type=\'checkbox\' id=\'"+topic+"\' name=\'"+topic+"\' value=\'yes\'>"+topic+"\n\t</label>\n</div>";
+        topicsHTML += 
+            "\n<div>"
+            +"\n\t<label for=\'"+topic+"\'>"
+            +"\n\t\t<input type=\'checkbox\' id=\'"+topic+"\' name=\'"+topic+"\' value=\'yes\'>"+topic
+            +"\n\t</label>\n</div>";
     }
     topicsHTML += "\n</div>";
     // topicsHTML += "\n<button onclick=\'filterProblemsByTopics()\'>Filter Problems</button>";

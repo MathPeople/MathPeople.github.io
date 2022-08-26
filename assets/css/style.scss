@@ -8,6 +8,7 @@
 // Change Content Width
 .inner{
   max-width: 64rem;
+  min-width: 64rem;
   padding: 20px;
   padding-top: 20px;
   padding-bottom: 20px;
@@ -17,6 +18,7 @@ footer.inner, #header_wrap .inner {
   padding: 0;
 }
 
+// --- Nav Bar Formatting ---
 nav {
   padding: 0px;
   list-style: none;
@@ -46,6 +48,8 @@ nav ul li {
   color: white;
 }
 
+// --- Page Formatting ---
+
 body, html {
   height: 100%;
   // margin: 0;
@@ -73,6 +77,13 @@ body {
 #footer_wrap {
   flex: 1;
   max-height: 50px;
+}
+
+// --- Topics List Formatting ---
+.columnGrid {
+  -webkit-column-count: 3;  /* Chrome, Safari, Opera */
+  -moz-column-count: 3;     /* Firefox */
+  column-count: 3;
 }
 
 

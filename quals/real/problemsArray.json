@@ -6,7 +6,8 @@
         "completeness": "none",
         "topics": [
             "UndergradProblem",
-            "Continuity"
+            "Continuity",
+            "PastQual"
         ],
         "viability": "good",
         "source": "2021 Qual"
@@ -19,7 +20,8 @@
         "completeness": "none",
         "topics": [
             "UndergradProblem",
-            "Differentiability"
+            "Differentiability",
+            "PastQual"
         ],
         "viability": "good",
         "source": "2021 Qual"
@@ -32,7 +34,8 @@
         "completeness": "none",
         "topics": [
             "UndergradProblem",
-            "IntegrationByParts"
+            "IntegrationByParts",
+            "PastQual"
         ],
         "viability": "good",
         "source": "2021 Qual"
@@ -45,7 +48,8 @@
         "completeness": "none",
         "topics": [
             "UndergradProblem",
-            "Inequalities"
+            "Inequalities",
+            "PastQual"
         ],
         "viability": "good",
         "source": "2021 Qual"
@@ -58,7 +62,8 @@
         "completeness": "none",
         "topics": [
             "PartA",
-            "MeasureTheory"
+            "MeasureTheory",
+            "PastQual"
         ],
         "viability": "good",
         "source": "2021 Qual"
@@ -71,7 +76,8 @@
         "completeness": "none",
         "topics": [
             "PartA",
-            "MeasureTheory"
+            "MeasureTheory",
+            "PastQual"
         ],
         "viability": "good",
         "source": "2021 Qual"
@@ -84,7 +90,8 @@
         "completeness": "none",
         "topics": [
             "PartA",
-            "MeasureTheory"
+            "MeasureTheory",
+            "PastQual"
         ],
         "viability": "good",
         "source": "2021 Qual"
@@ -98,7 +105,8 @@
         "topics": [
             "PartA",
             "MeasureTheory",
-            "Convergence"
+            "Convergence",
+            "PastQual"
         ],
         "viability": "good",
         "source": "2021 Qual"
@@ -112,7 +120,8 @@
         "topics": [
             "PartB",
             "MeasureTheory",
-            "LebesgueDecomp"
+            "LebesgueDecomp",
+            "PastQual"
         ],
         "viability": "good",
         "source": "2021 Qual"
@@ -127,7 +136,8 @@
             "PartB",
             "BoundedVariation",
             "AbsoluteContinuity",
-            "Counterexamples"
+            "Counterexamples",
+            "PastQual"
         ],
         "viability": "good",
         "source": "2021 Qual"
@@ -143,7 +153,8 @@
             "Convergence",
             "RiemannLebesgue",
             "Counterexamples",
-            "LpSpaces"
+            "LpSpaces",
+            "PastQual"
         ],
         "viability": "good",
         "source": "2021 Qual"
@@ -157,7 +168,8 @@
         "topics": [
             "PartB",
             "LpSpaces",
-            "BaireCategory"
+            "BaireCategory",
+            "PastQual"
         ],
         "viability": "good",
         "source": "2021 Qual"
@@ -172,7 +184,8 @@
             "PartC",
             "LpSpaces",
             "BanachSpaces",
-            "Separability"
+            "Separability",
+            "PastQual"
         ],
         "viability": "good",
         "source": "2021 Qual"
@@ -187,7 +200,8 @@
             "PartC",
             "MeasureTheory",
             "LpSpaces",
-            "Convergence"
+            "Convergence",
+            "PastQual"
         ],
         "viability": "good",
         "source": "2021 Qual"
@@ -195,13 +209,14 @@
 
     {
         "name": "qual21_15",
-        "probTex": "Recall the Schwartz space $\\mathcal{S}(\\mathbb{R})$ is a Fr\\'echet space via the family of semi-norms \\[ \\lVert f \\rVert_k := \\sum_{|n|+|m|\\leq k} \\sup_{x\\in\\mathbb{R}} |x^nf^{(m)}(x)|. \\] Consider the linear map $\\Lambda:\\mathcal{S}(\\mathbb{R})\\to \\mathbb{R}$ where $\\Lambda(f) = \\int_\\mathbb{R}|xf(x)|dx$. Show that $\\Lambda$ is continuous with respect to the natural topology on $\\mathcal{S}(\\mathbb{R})$.",
+        "probTex": "Recall the Schwartz space $\\mathcal{S}(\\mathbb{R})$ is a Fréchet space via the family of semi-norms \\[ \\lVert f \\rVert_k := \\sum_{|n|+|m|\\leq k} \\sup_{x\\in\\mathbb{R}} |x^nf^{(m)}(x)|. \\] Consider the linear map $\\Lambda:\\mathcal{S}(\\mathbb{R})\\to \\mathbb{R}$ where $\\Lambda(f) = \\int_\\mathbb{R}|xf(x)|dx$. Show that $\\Lambda$ is continuous with respect to the natural topology on $\\mathcal{S}(\\mathbb{R})$.",
         "solnTex": "",
         "completeness": "none",
         "topics": [
             "PartC",
             "FrechetSpaces",
-            "SchwatzSpace"
+            "SchwatzSpace",
+            "PastQual"
         ],
         "viability": "good",
         "source": "2021 Qual"
@@ -214,7 +229,8 @@
         "completeness": "none",
         "topics": [
             "PartC",
-            "FourierTransform"
+            "FourierTransform",
+            "PastQual"
         ],
         "viability": "good",
         "source": "2021 Qual"

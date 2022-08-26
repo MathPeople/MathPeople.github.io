@@ -27,11 +27,13 @@ function makeNewTest(testFormat) {
         console.log("Problems not loaded. Cannot make test.");
     else{
         viableProbs = filterViableProblems(AllProbs);
-        probsByTopic = sortProblemsByTopic(viableProbs);
-        
+                
         switch(testFormat) {
             case "complex": 
-                makeComplexTest(viableProbs,probsByTopic);
+                makeComplexTest(viableProbs);
+                break;
+            case "real":
+                makeRealTest(viableProbs);
                 break;
             default: 
                 if(debug) console.log("makeNewTest() called with unknown test format.")
@@ -46,7 +48,8 @@ function makeNewTest(testFormat) {
  *     - Three random problems from Part C
  * 
  */
-function makeComplexTest(viableProbs,probsByTopic) {
+function makeComplexTest(viableProbs) {
+    probsByTopic = sortProblemsByTopic(viableProbs);
     
     // Create new arrarys without any Part C problems, aka those tagged RiemannSurfaces
     abProbs = [...viableProbs]; 
@@ -88,6 +91,30 @@ function makeComplexTest(viableProbs,probsByTopic) {
     if(debug) console.log(testProbs);
     displayProblems(testProbs);
     
+}
+
+/*
+ *  Create an eight question practice test, taking two problems from each of the four categories
+ *
+ * 
+ */
+function makeRealTest(viableProbs){
+    probsByTopic = sortProblemsByTopic(viableProbs);
+
+    testProbs = [];
+    for(p of getRandomProblems(probsByTopic["UndergradProblem"],2)){
+        testProbs.push(p);
+    }
+    for(p of getRandomProblems(probsByTopic["PartA"],2)){
+        testProbs.push(p);
+    }
+    for(p of getRandomProblems(probsByTopic["PartB"],2)){
+        testProbs.push(p);
+    }
+    for(p of getRandomProblems(probsByTopic["PartC"],2)){
+        testProbs.push(p);
+    }
+    displayProblems(testProbs);
 }
 
 // Remove any problems which are specified as non-viable. Returns a filtered list
