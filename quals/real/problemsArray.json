@@ -414,7 +414,7 @@
 
     {
         "name": "qual20_11",
-        "probTex": "Find numbers $a_{ij}\\in\\mathbb{R}$ for $i,j\\in\\mathbb{N}$ such that \\[ \\sum_{i=1}^\\infty \\sum_{j=1}^\\infty a_{ij}=1 \\] but \\[ \\sum_{j=1}^\\infty \\sum_{i=1}^\\infty a_{ij}=1. \\] Prove that all the sums involved actually converge.",
+        "probTex": "Find numbers $a_{ij}\\in\\mathbb{R}$ for $i,j\\in\\mathbb{N}$ such that \\[ \\sum_{i=1}^\\infty \\sum_{j=1}^\\infty a_{ij}=1 \\] but \\[ \\sum_{j=1}^\\infty \\sum_{i=1}^\\infty a_{ij}=2. \\] Prove that all the sums involved actually converge.",
         "solnTex": "",
         "completeness": "none",
         "topics": [
