@@ -42,10 +42,11 @@ function makeNewTest(testFormat) {
 }
 
 /*
- * Creates a complex analysis practice test with the following format:
- *     - At least one Montel, one RealIntegral, and one Liouville problem
- *     - First six problems from Parts A & B material
- *     - Three random problems from Part C
+ * Complex Analysis Practice Quals
+ * - Creates a complex analysis practice test with the following format:
+ *      - At least one Montel, one RealIntegral, and one Liouville problem
+ *      - First six problems from Parts A & B material
+ *      - Three random problems from Part C
  * 
  */
 function makeComplexTest(viableProbs) {
@@ -94,8 +95,8 @@ function makeComplexTest(viableProbs) {
 }
 
 /*
- *  Create an eight question practice test, taking two problems from each of the four categories
- *
+ *  Real Analysis Practice Quals
+ *  - Create an eight question practice test, taking two problems from each of the four categories
  * 
  */
 function makeRealTest(viableProbs){
