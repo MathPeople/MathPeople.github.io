@@ -10,6 +10,7 @@
             "PastQual"
         ],
         "viability": "good",
+        "isViable": true,
         "source": "2021 Qual"
     },
 
@@ -24,6 +25,7 @@
             "PastQual"
         ],
         "viability": "good",
+        "isViable": true,
         "source": "2021 Qual"
     },
 
@@ -35,9 +37,11 @@
         "topics": [
             "UndergradProblem",
             "IntegrationByParts",
+            "Inequalities",
             "PastQual"
         ],
         "viability": "good",
+        "isViable": true,
         "source": "2021 Qual"
     },
 
@@ -49,9 +53,11 @@
         "topics": [
             "UndergradProblem",
             "Inequalities",
+            "MeanValueTheorem",
             "PastQual"
         ],
         "viability": "good",
+        "isViable": true,
         "source": "2021 Qual"
     },
 
@@ -66,6 +72,7 @@
             "PastQual"
         ],
         "viability": "good",
+        "isViable": true,
         "source": "2021 Qual"
     },
 
@@ -80,6 +87,7 @@
             "PastQual"
         ],
         "viability": "good",
+        "isViable": true,
         "source": "2021 Qual"
     },
 
@@ -94,6 +102,7 @@
             "PastQual"
         ],
         "viability": "good",
+        "isViable": true,
         "source": "2021 Qual"
     },
 
@@ -109,6 +118,7 @@
             "PastQual"
         ],
         "viability": "good",
+        "isViable": true,
         "source": "2021 Qual"
     },
 
@@ -124,6 +134,7 @@
             "PastQual"
         ],
         "viability": "good",
+        "isViable": true,
         "source": "2021 Qual"
     },
 
@@ -140,12 +151,13 @@
             "PastQual"
         ],
         "viability": "good",
+        "isViable": true,
         "source": "2021 Qual"
     },
 
     {
         "name": "qual21_11",
-        "probTex": "Let $X=[0,2\\pi]$, equipped with the Lebesgue measure. (a) Let $f_n = \\sin^{21}(nx)$. Prove that $f_n$ converges to $0$ weakly in $L^2(X)$ as $n\\to\\infty$, i.e. $\\lim_{n\\to\\infty}\\langle g,f_n \\rangle=0$ for all $g\\in L^2(X)$, where $\\langle \\cdot, \\cdot \\rangle$ is the inner product on $L^2(X)$. You may assume the Riemann-Lebesgue lemma. (b) Prove that $f_n$ does not converge to $0$ almost everywhere.",
+        "probTex": "Let $X=[0,2\\pi]$, equipped with the Lebesgue measure. <br>\t(a) Let $f_n = \\sin^{21}(nx)$. Prove that $f_n$ converges to $0$ weakly in $L^2(X)$ as $n\\to\\infty$, i.e. $\\lim_{n\\to\\infty}\\langle g,f_n \\rangle=0$ for all $g\\in L^2(X)$, where $\\langle \\cdot, \\cdot \\rangle$ is the inner product on $L^2(X)$. You may assume the Riemann-Lebesgue lemma. <br>\t (b) Prove that $f_n$ does not converge to $0$ almost everywhere.",
         "solnTex": "",
         "completeness": "none",
         "topics": [
@@ -157,6 +169,7 @@
             "PastQual"
         ],
         "viability": "good",
+        "isViable": true,
         "source": "2021 Qual"
     },
 
@@ -172,6 +185,7 @@
             "PastQual"
         ],
         "viability": "good",
+        "isViable": true,
         "source": "2021 Qual"
     },
 
@@ -188,6 +202,7 @@
             "PastQual"
         ],
         "viability": "good",
+        "isViable": true,
         "source": "2021 Qual"
     },
 
@@ -204,6 +219,7 @@
             "PastQual"
         ],
         "viability": "good",
+        "isViable": true,
         "source": "2021 Qual"
     },
 
@@ -219,6 +235,7 @@
             "PastQual"
         ],
         "viability": "good",
+        "isViable": true,
         "source": "2021 Qual"
     },
 
@@ -233,6 +250,264 @@
             "PastQual"
         ],
         "viability": "good",
+        "isViable": true,
         "source": "2021 Qual"
+    },
+
+    {
+        "name": "qual20_1",
+        "probTex": "Prove that is $f:\\mathbb{R}\\to\\mathbb{R}$ is differentiable, then so too is $f^2$. Do this using only the definition of the derivative. (Do not use the product rule, chain rule, etc. unless you prove these.)",
+        "solnTex": "",
+        "completeness": "none",
+        "topics": [
+            "UndergradProblem",
+            "Differentiability",
+            "PastQual"
+        ],
+        "viability": "good",
+        "isViable": true,
+        "source": "2020 Qual"
+    },
+
+    {
+        "name": "qual20_2",
+        "probTex": "Let $f:\\mathbb{R}\\to\\mathbb{R}$ and $g:\\mathbb{R}\\to\\mathbb{R}$ be continuous functions. Show using the $\\epsilon$-$\\delta$ definition of continuity that the composite $f\\circ g:\\mathbb{R}\\to\\mathbb{R}$ is continuous.",
+        "solnTex": "",
+        "completeness": "none",
+        "topics": [
+            "UndergradProblem",
+            "Continuity",
+            "PastQual"
+        ],
+        "viability": "good",
+        "isViable": true,
+        "source": "2020 Qual"
+    },
+
+    {
+        "name": "qual20_3",
+        "probTex": "Prove or disprove the statement: if $f_n:[0,1]\\to\\mathbb{R}$ is a sequence of continuous functions which converge uniformly to $f:[0,1]\\to\\mathbb{R}$, then: \\[ \\int_0^1 f_ndx \\to \\int_0^1fdx. \\]",
+        "solnTex": "",
+        "completeness": "none",
+        "topics": [
+            "UndergradProblem",
+            "Convergence",
+            "PastQual"
+        ],
+        "viability": "good",
+        "isViable": true,
+        "source": "2020 Qual"
+    },
+
+    {
+        "name": "qual20_4",
+        "probTex": "Prove or disprove the statement: if $f:\\mathbb{R}\\to\\mathbb{R}$ is uniformly continuous, then $f^2$ is also uniformly continuous.",
+        "solnTex": "",
+        "completeness": "none",
+        "topics": [
+            "UndergradProblem",
+            "Continuity",
+            "PastQual"
+        ],
+        "viability": "good",
+        "isViable": true,
+        "source": "2020 Qual"
+    },
+
+    {
+        "name": "qual20_5",
+        "probTex": "Suppose that $f_n,f\\in L^1([0,1])$. Show that if $f_n\\to f$ in measure, then: \\[ \\lim_{n\\to\\infty}\\int_0^1 \\frac{|f_n-f}{1+|f_n-f|}dx\\to 0. \\]",
+        "solnTex": "",
+        "completeness": "none",
+        "topics": [
+            "PartA",
+            "Convergence",
+            "MeasureTheory",
+            "Limits",
+            "DominatedConvergence",
+            "PastQual"
+        ],
+        "viability": "good",
+        "isViable": true,
+        "source": "2020 Qual"
+    },
+
+    {
+        "name": "qual20_6",
+        "probTex": "Rigorously compute the limit: \\[ \\lim_{n\\to\\infty}\\int_0^1\\frac{nx^{n-1}}{1+x}dx. \\]",
+        "solnTex": "",
+        "completeness": "none",
+        "topics": [
+            "PartA",
+            "Limits",
+            "DominatedConvergence",
+            "PastQual"
+        ],
+        "viability": "good",
+        "isViable": true,
+        "source": "2020 Qual"
+    },
+
+    {
+        "name": "qual20_7",
+        "probTex": "State and prove Hölder's inequality. You may assume Young's inequality, which says that \\[ ab\\leq \\frac{a^p}{p}+\\frac{b^q}{q}, \\] if $\\frac1p+\\frac1q=1$, $p,q>1$, and $a,b\\geq 0$.",
+        "solnTex": "",
+        "completeness": "none",
+        "topics": [
+            "PartA",
+            "Inequalities",
+            "PastQual"
+        ],
+        "viability": "good",
+        "isViable": true,
+        "source": "2020 Qual"
+    },
+
+    {
+        "name": "qual20_8",
+        "probTex": "Let $f$ be a bounded measurable function and $g$ an integrable function on $\\mathbb{R}$. Prove that \\[ \\lim_{h\\to 0}\\int_{-\\infty}^\\infty f(x)(g(x+h)-g(x))dx =0. \\]",
+        "solnTex": "",
+        "completeness": "none",
+        "topics": [
+            "PartA",
+            "Limits",
+            "DominatedConvergence",
+            "PastQual"
+        ],
+        "viability": "good",
+        "isViable": true,
+        "source": "2020 Qual"
+    },
+
+    {
+        "name": "qual20_9",
+        "probTex": "Find a sequence of measurable functions $f_n:\\mathbb{R}\\to\\mathbb{R}$ such that \\[ \\lim_{n\\to\\infty}\\int_{\\mathbb{R}} |f_n(x)|dx = +\\infty \\] and \\[ \\lim_{n\\to\\infty}\\int_{\\mathbb{R}} |f_n(x)|^2dx = 0, \\] even though both integrals are finite for each fixed $n$. Prove that your sequence has all these properties.",
+        "solnTex": "",
+        "completeness": "none",
+        "topics": [
+            "PartB",
+            "Limits",
+            "Counterexamples",
+            "PastQual"
+        ],
+        "viability": "good",
+        "isViable": true,
+        "source": "2020 Qual"
+    },
+
+    {
+        "name": "qual20_10",
+        "probTex": "Produce a function $f:[0,1]\\to\\mathbb{R}$ which is differentiable everywhere (including at endpoints, using the one-sided derivatives) but not of bounded variation. Prove that it has these properties.",
+        "solnTex": "",
+        "completeness": "none",
+        "topics": [
+            "PartB",
+            "Differentiability",
+            "BoundedVariation",
+            "Counterexamples",
+            "PastQual"
+        ],
+        "viability": "good",
+        "isViable": true,
+        "source": "2020 Qual"
+    },
+
+    {
+        "name": "qual20_11",
+        "probTex": "Find numbers $a_{ij}\\in\\mathbb{R}$ for $i,j\\in\\mathbb{N}$ such that \\[ \\sum_{i=1}^\\infty \\sum_{j=1}^\\infty a_{ij}=1 \\] but \\[ \\sum_{j=1}^\\infty \\sum_{i=1}^\\infty a_{ij}=1. \\] Prove that all the sums involved actually converge.",
+        "solnTex": "",
+        "completeness": "none",
+        "topics": [
+            "PartB",
+            "Fubini",
+            "Counterexamples",
+            "InfiniteSums",
+            "PastQual"
+        ],
+        "viability": "good",
+        "isViable": true,
+        "source": "2020 Qual"
+    },
+
+    {
+        "name": "qual20_12",
+        "probTex": "Prove that there is no metric on the set of rational numbers that gives $\\mathbb{Q}$ its usual topology (i.e. as inherited from a subspace of $\\mathbb{R}$ with its standard topology) but also makes $\\mathbb{Q}$ into a complete metric space.",
+        "solnTex": "",
+        "completeness": "none",
+        "topics": [
+            "PartB",
+            "Completeness",
+            "MetricSpaces",
+            "Topology",
+            "PastQual"
+        ],
+        "viability": "good",
+        "isViable": true,
+        "source": "2020 Qual"
+    },
+
+    {
+        "name": "qual20_13",
+        "probTex": "Prove the following version of the Riemann-Lebesgue Lemma: Let $\\mathbb{T}=\\mathbb{R}/\\mathbb{Z}$. Then the Fourier coefficients $\\hat f:\\mathbb{Z}\\to\\mathbb{C}$ of any $f\\in L^1(\\mathbb{T},m)$, given by \\[ \\hat f(n) = \\int_\\mathbb{T} f(x)e^{-2\\pi i nx}dx,\\] satisfy \\[ \\lim_{|n|\\to 0}|\\hat f(n)|=0. \\] You may use without proof that trigonometric polynomials are dense in $(L^1(\\mathbb{T},m), {\\lVert\\cdot\\rVert_1})$.",
+        "solnTex": "",
+        "completeness": "none",
+        "topics": [
+            "PartC",
+            "RiemannLebesgue",
+            "FourierTransform",
+            "PastQual"
+        ],
+        "viability": "good",
+        "isViable": true,
+        "source": "2020 Qual"
+    },
+
+    {
+        "name": "qual20_14",
+        "probTex": "Let \\[ \\hat f(\\xi) := (2\\pi)^{-1/2}\\int_{\\mathbb{R}} f(x)e^{-i\\xi x}dx. \\] <br>\t (a) State the defintion of a Fréchet space. <br>\t (b) Describe the Schwatrz space $\\mathcal{S}(\\mathbb{R})$ as a Fréchet space. <br>\t (c) Show that $\\hat f\\in C^1(\\mathbb{R})$ for all $f\\in \\mathcal{S}(\\mathbb{R})$. Rigorously justify your steps.",
+        "solnTex": "",
+        "completeness": "none",
+        "topics": [
+            "PartC",
+            "FourierTransform",
+            "FrechetSpaces",
+            "SchwatzSpace",
+            "PastQual"
+        ],
+        "viability": "good",
+        "isViable": true,
+        "source": "2020 Qual"
+    },
+
+    {
+        "name": "qual20_15",
+        "probTex": "Let $M$ be a closed subspace of a Hilbert space $\\mathbb{H}$ and for each $x\\in \\mathbb{H}$, let $P(x)$ be the closest point to $x$ in $M$. <br>\t (a) Show that $P:\\mathbb{H}\\to M$ is well-defined and a bounded linear operator.  <br>\t (b) Compute the operator norm of $P$.",
+        "solnTex": "",
+        "completeness": "none",
+        "topics": [
+            "PartC",
+            "HilbertSpaces",
+            "FunctionalAnalysis",
+            "PastQual"
+        ],
+        "viability": "good",
+        "isViable": true,
+        "source": "2020 Qual"
+    },
+
+    {
+        "name": "qual20_16",
+        "probTex": "Let $L:\\mathbb{H}\\to\\mathbb{C}$ be a bounded linear functional which is not equivalently zero. Show that \\[ \\ker(L):=\\{ x\\in\\mathbb{H} : L(x)=0 \\} \\] is a subspace of $\\mathbb{H}$ with codimension one. That is, find a subspace $M\\subset\\mathbb{H}$ such that $\\dim(M)=1$ and $\\mathbb{H}=\\ker(L)\\oplus M$.",
+        "solnTex": "",
+        "completeness": "none",
+        "topics": [
+            "PartC",
+            "HilbertSpaces",
+            "FunctionalAnalysis",
+            "PastQual"
+        ],
+        "viability": "good",
+        "isViable": true,
+        "source": "2020 Qual"
     }
 ]
