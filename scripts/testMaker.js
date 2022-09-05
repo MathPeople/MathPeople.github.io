@@ -51,6 +51,7 @@ function makeNewTest(testFormat) {
  */
 function makeComplexTest(viableProbs) {
     probsByTopic = sortProblemsByTopic(viableProbs);
+    cProbs = getRandomProblems(probsByTopic["RiemannSurfaces"],3);
     
     // Create new arrarys without any Part C problems, aka those tagged RiemannSurfaces
     abProbs = [...viableProbs]; 
@@ -82,8 +83,8 @@ function makeComplexTest(viableProbs) {
         testProbs = [... new Set(testProbs)];
     }
 
-    // Add three random Part C problems
-    cProbs = getRandomProblems(probsByTopic["RiemannSurfaces"],3);
+    // Add the three random Part C problems
+    // N.B: creating cProbs here creates an error
     for(p in cProbs)
         testProbs.push(cProbs[p]);
 
@@ -131,6 +132,10 @@ function filterViableProblems(probs){
 
 // Get n random problems from the given list
 function getRandomProblems(probs, n){
+    if(probs == null){
+        console.log("Array passed to getRandomProblems is null.");
+        return null;
+    }
     probs.sort(() => Math.random()-0.5);
     return probs.splice(0,n);
 }
